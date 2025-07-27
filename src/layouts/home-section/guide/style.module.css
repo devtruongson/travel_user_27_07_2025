@@ -1,0 +1,40 @@
+.cloud div img {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: auto;
+}
+
+.bgCloud {
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 71%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cloudImage {
+  position: absolute;
+  bottom: 0;
+  height: 150px;
+  width: auto;
+  object-fit: cover;
+  object-position: center;
+  animation-name: moveClouds;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes moveClouds {
+  0% {
+    transform: translateX(-30%);
+  }
+  50% {
+    transform: translateX(30%);
+  }
+  100% {
+    transform: translateX(-30%);
+  }
+}

@@ -1,0 +1,34 @@
+.tours {
+  /* background: #faf5ef; */
+  background: url("/images/bg-tours.png");
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-bottom: 100px;
+  position: relative;
+}
+/* .tours::after {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  background-color: #00000042;
+} */
+
+.stickyBox {
+  padding-top: 10.88rem;
+  padding-bottom: 17.06rem;
+  position: sticky;
+  top: 0;
+  font-weight: 600;
+}
+.stickyBox h4 {
+  font-size: var(--size-sub-heading);
+}
+.stickyBox h2 {
+  font-size: var(--size-heading);
+}

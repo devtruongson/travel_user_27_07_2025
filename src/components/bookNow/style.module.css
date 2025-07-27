@@ -1,0 +1,36 @@
+.button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 100%;
+  background: linear-gradient(
+    228deg,
+    rgba(178, 104, 232, 1) 0%,
+    rgba(0, 193, 241, 1) 100%
+  );
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 0px 0px rgba(105, 215, 255, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+  align-items: center;
+  border: 0;
+  cursor: pointer;
+}
+.button:is(:hover, :focus) {
+  transform: scale(1.1);
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0px 0px rgba(105, 215, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 10px 15px rgba(105, 215, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0px 0px rgba(105, 215, 255, 0);
+  }
+}

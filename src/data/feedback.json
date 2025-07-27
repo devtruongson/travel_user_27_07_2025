@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "imgUrl": "https://scontent.fdad3-1.fna.fbcdn.net/v/t39.30808-1/332876245_1318915528957404_7730218585985673496_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=110&ccb=1-7&_nc_sid=e99d92&_nc_eui2=AeHDfrcEkAMgcoKDclOoPFBl0AVOaphSthLQBU5qmFK2EuZBCYj_bdVcaJPpVtgHIC6BMdXm120pElBJto6HqoNs&_nc_ohc=cGPtJXFoG0kQ7kNvwHnnlkw&_nc_oc=AdkmovGnAWimVu3Lovsat_udr8SgYVmFdoYM3wqvk8nlR4fnmIlbdD7Ku9Ygx5gCGLFXP0wlFRQms8BYagbgyPOD&_nc_zt=24&_nc_ht=scontent.fdad3-1.fna&_nc_gid=r7aJi9N9OB1V-GmQTNApwA&oh=00_AfJgs_df6Zp7EA7aIK--cBFX0_Ny39ZKDpQGJ1Mj41vTFg&oe=683CAD80",
+    "name": "Lê Nguyên Hùng",
+    "date": "20-05-2020",
+    "rating": 5,
+    "comment": "Dịch vụ tốt, lịch trình hợp lý, tôi và gia đình có chuyến đi tuyệt vời."
+  },
+  {
+    "id": 2,
+    "imgUrl": "https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-1/483487693_1443273339980332_7633753523915734710_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=111&ccb=1-7&_nc_sid=e99d92&_nc_eui2=AeHbq4KOYtWZabxfneVezj1pXAOhUroZ9PxcA6FSuhn0_KXv1j5GnFZk4fnVWjRkBZ7V8S_g-v8BxTwZ0CrUdL8s&_nc_ohc=ovOkHJBm9yAQ7kNvwGAtkZh&_nc_oc=Adl4Xq1LuI-nbCgt9O4nye4LMKT14sFFv4TKiwAxKwbDQVZLPQGwXMyURq-YZvm3BX69HoV_uYgHa5_ayVDa-73F&_nc_zt=24&_nc_ht=scontent.fdad3-5.fna&_nc_gid=STce7lTNfuMOJI6x_JluRQ&oh=00_AfKDWc6XmvuEYjWOVMZIFFA6dPuNVkgj-RJwkOwqE1o_sA&oe=683CB2C7",
+    "name": "Phan Quốc Tuấn",
+    "date": "25-05-2020",
+    "rating": 5,
+    "comment": "Tour tổ chức chuyên nghiệp, hướng dẫn viên thân thiện, sẽ quay lại."
+  },
+  {
+    "id": 3,
+    "imgUrl": "https://scontent.fdad3-5.fna.fbcdn.net/v/t39.30808-1/474475567_1265117791386694_5731291357665504049_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=102&ccb=1-7&_nc_sid=e99d92&_nc_eui2=AeEpg4bu5V14PEfpHr6Gd4q2d6XrUderfrJ3petR16t-spu_W960-sroO7ylo9gzA1-K-VSnt3xtXlacAmcRVRGu&_nc_ohc=mvhVQxbuDfAQ7kNvwFi_Clf&_nc_oc=Adnc27ogDtkzSug1yMx6wy4FXp6OWt9PZtbxU5T3Qm08p10ivqrkMubwGNwspnqEl5qa9y5K59143F-s7WCoVwx9&_nc_zt=24&_nc_ht=scontent.fdad3-5.fna&_nc_gid=kxt2FYnx6clCCLMK_zC1tw&oh=00_AfJ4R73SpElqMqNgIf2C8rZoG9jA0N4JjvVCJcIyzA8zIA&oe=683CA8FD",
+    "name": "Cao Trần Tuấn",
+    "date": "27-05-2020",
+    "rating": 5,
+    "comment": "Chuyến đi thư giãn, cảnh đẹp, dịch vụ tốt. Tôi rất hài lòng."
+  }
+]

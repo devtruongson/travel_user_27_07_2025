@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2022/02/15/09/ivivu-chua-vinh-trang-2-246x232.gif",
+    "vehicle": "Tàu Cao Tốc",
+    "tourName": "Phú Quốc - Đảo Ngọc Huyền Bí"
+  },
+  {
+    "id": 2,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2022/11/15/09/ivivu-vuon-quoc-gia-mui-ca-mau-246x232.gif",
+    "vehicle": "Xe Bus",
+    "tourName": "Cà Mau - Rừng Đước Tràm"
+  },
+  {
+    "id": 3,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2021/03/24/14/ivivu-dat-mui-ca-mau-bia-246x232.gif",
+    "vehicle": "Thuyền",
+    "tourName": "Bến Tre - Miệt Vườn Sông Nước"
+  },
+  {
+    "id": 4,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2020/07/02/11/ivivu-cho-noi-cai-rang-bia-246x232.gif",
+    "vehicle": "Ô Tô",
+    "tourName": "Vũng Tàu - Thành Phố Biển"
+  },
+  {
+    "id": 5,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2021/03/24/14/ivivu-me-nam-hai-bac-lieu-246x232.gif",
+    "vehicle": "Xe Máy",
+    "tourName": "TP.HCM - Thành Phố Sôi Động"
+  },
+  {
+    "id": 6,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2023/03/27/15/ivivu-mien-tay2-246x232.gif",
+    "vehicle": "Xe Limousine",
+    "tourName": "Cà Mau - Đất Mũi Cuối Cùng"
+  },
+  {
+    "id": 7,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2020/02/04/09/ivivu-canh-dong-quat-gio-246x232.gif",
+    "vehicle": "Xe Bus",
+    "tourName": "Cu Chi - Địa Đạo Bí Ẩn"
+  },
+  {
+    "id": 8,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2020/07/02/11/ivivu-cho-noi-cai-rang-bia-246x232.gif",
+    "vehicle": "Thuyền",
+    "tourName": "Mekong - Hành Trình Trên Sông"
+  }
+]

@@ -1,0 +1,7 @@
+.intro {
+  background: linear-gradient(
+    170deg,
+    rgba(252, 247, 242, 1) 0%,
+    rgb(254, 248, 237) 100%
+  );
+}

@@ -1,0 +1,116 @@
+.headingFooter {
+  font-size: 24px;
+  font-weight: 700;
+  color: rgb(0, 27, 74);
+  margin-bottom: 20px;
+}
+.parent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.child {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+  transition: all 0.5s ease-in-out;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.child:hover {
+  background-color: white;
+  background-position: -100px 100px, -100px 100px;
+  transform: rotate3d(0.5, 1, 0, 30deg);
+  transform: perspective(180px) rotateX(60deg) translateY(2px);
+  box-shadow: 0px 10px 10px rgb(1, 49, 182);
+}
+
+.button {
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.button:hover {
+  width: inherit;
+  height: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+.inputGroup {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  padding: 7px 0 0;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: 2px;
+}
+
+.inputText {
+  font-family: inherit;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #7f7f7f;
+  border-radius: 0 !important;
+  outline: 0;
+  font-size: 17px;
+  color: #7f7f7f;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.inputText::placeholder {
+  color: transparent;
+}
+
+.inputText:placeholder-shown ~ .inputTextLabel {
+  font-size: 17px;
+  cursor: text;
+}
+
+.inputTextLabel {
+  position: absolute;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #7f7f7f;
+  pointer-events: none;
+}
+
+.inputText:focus {
+  padding-bottom: 6px;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #00a4da, #5100ba);
+  border-image-slice: 1;
+}
+
+.inputText:focus ~ .inputTextLabel {
+  color: #005dc0;
+}
+
+.inputText:not(:placeholder-shown) ~ .inputTextLabel,
+.inputText:focus ~ .inputTextLabel {
+  position: absolute;
+  display: block;
+  transition: 0.2s;
+  font-size: 15px;
+  font-weight: 700;
+  top: -17px;
+}
+
+.inputText:required,
+.inputText:invalid {
+  box-shadow: none;
+}

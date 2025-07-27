@@ -1,0 +1,18 @@
+.loginForm input {
+  border: 1px solid rgba(4, 159, 225, 0.649);
+  transition: 0.2s ease;
+  padding: 10px 15px;
+}
+.line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.line div {
+  height: 1px;
+  border-radius: 10px;
+  background-color: rgb(188, 188, 188);
+  flex: 1;
+}

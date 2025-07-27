@@ -1,0 +1,9 @@
+.feedback {
+  background-image: url("/images/bg-feedback.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.overlay {
+  background: linear-gradient(to top, #570091 20%, #5700919b 100%);
+}

@@ -1,0 +1,9 @@
+.inputOTP {
+  display: inline-block;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 20px;
+  border: 1px solid rgba(4, 159, 225, 0.649);
+}

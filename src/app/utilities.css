@@ -1,0 +1,23 @@
+.sub-title {
+  font-weight: 800;
+  font-size: 20px !important;
+  color: #8a8a8a;
+}
+.main-title {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 55px;
+}
+.color-title {
+  color: #113d48;
+}
+
+.desc {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #959595;
+}
+.color-desc {
+  color: #00151ab7;
+}

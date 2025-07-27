@@ -1,0 +1,52 @@
+.intro {
+  background: url("/images/bg-intro.jpg");
+  background-attachment: fixed;
+  background-position: top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 5, 56, 0.704);
+  z-index: 0;
+}
+.list h6 {
+  color: #fff;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.list span {
+  font-size: 19px;
+  font-weight: 600;
+  color: #ffffff9c;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.list li svg {
+  display: block;
+  width: auto;
+  height: 40px;
+  color: #fff;
+}
+.list li .icon {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #9573ef;
+}
+.left img {
+  object-fit: cover;
+  object-position: center;
+  height: 100% !important;
+}

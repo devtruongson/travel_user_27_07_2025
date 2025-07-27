@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2025/05/12/12/dinh-fansipan-ivv-246x232.gif",
+    "vehicle": "Xe Bus",
+    "tourName": "Hà Nội - Sapa Hùng Vĩ"
+  },
+  {
+    "id": 2,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2024/11/20/10/da-lat-ne-ivv-246x232.gif",
+    "vehicle": "Máy Bay",
+    "tourName": "TP HCM - Đà Lạt Thơ Mộng"
+  },
+  {
+    "id": 3,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2020/06/04/17/ivivu-dai-noi-hue-750x460.gif",
+    "vehicle": "Tàu Hỏa",
+    "tourName": "Đà Nẵng - Huế Cổ Kính"
+  },
+  {
+    "id": 4,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2022/07/08/15/ivivu-thac-ban-gioc-2-750x460.gif",
+    "vehicle": "Xe Limousine",
+    "tourName": "Hà Nội - Hạ Long Kỳ Vĩ"
+  },
+  {
+    "id": 5,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2024/07/11/17/ivivu-cheo-kayak-du-thuyen-serenity-vinh-lan-ha-cat-ba-sst-750x460.jpg",
+    "vehicle": "Du Thuyền",
+    "tourName": "Khám Phá Vịnh Lan Hạ"
+  },
+  {
+    "id": 6,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2024/11/20/18/bao-tang-the-gioi-ca-phe-ivv-750x460.gif",
+    "vehicle": "Xe Máy",
+    "tourName": "Tây Bắc Phiêu Lưu Ký"
+  },
+  {
+    "id": 7,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2022/07/05/09/ivivu-bai-tranh-750x460.gif",
+    "vehicle": "Xe Ô Tô",
+    "tourName": "Hà Nội - Tam Đảo Mơ Màng"
+  },
+  {
+    "id": 8,
+    "time": "3 ngày 2 đêm",
+    "imgUrl": "https://cdn2.ivivu.com/2017/11/07/14/ivivu-hon-mong-tay-pq-750x460.jpg",
+    "vehicle": "Tàu Cao Tốc",
+    "tourName": "Phú Quốc - Hòn Thơm Tuyệt Đẹp"
+  }
+]

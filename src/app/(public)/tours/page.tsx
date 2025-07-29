@@ -88,7 +88,7 @@ export default async function ToursPage() {
                     className="w-full h-auto absolute z-4 left-0 right-0 bottom-0"
                 />
             </div>
-            <TourFilterSection cate={cate} key={JSON.stringify(cate)} />
+            <TourFilterSection cate={cate} />
         </>
     );
 }

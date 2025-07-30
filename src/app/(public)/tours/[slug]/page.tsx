@@ -11,6 +11,7 @@ import ScrollDownIndicator from "@/components/scrollDownIndicator";
 import BookTourButton from "./BookTourButton";
 import ReactMarkdown from "react-markdown";
 import { getTime } from "@/utils/getTime";
+import remarkGfm from "remark-gfm";
 
 interface Tour {
     tour_id: number;
@@ -122,7 +123,9 @@ export default async function TourDetailPage({
                             Giới thiệu tour
                         </h2>
                         <div className="bg-white p-6 rounded shadow text-gray-700 leading-relaxed">
-                            <ReactMarkdown>{tour.description}</ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {tour.description}
+                            </ReactMarkdown>
                         </div>
                     </section>
 
@@ -135,7 +138,7 @@ export default async function TourDetailPage({
                             {tour?.schedules?.length > 0 ? (
                                 tour?.schedules?.map((schedule, index) => (
                                     <div key={index}>
-                                        <h4 className="text-[20px] font-bold text-blue-900 mb-4">
+                                        <h4 className="text-[20px] font-bold text-blue-900 mb-2">
                                             Day{schedule.day}: {schedule.title}{" "}
                                             ({getTime(schedule.start_time)} -{" "}
                                             {getTime(schedule.end_time)})

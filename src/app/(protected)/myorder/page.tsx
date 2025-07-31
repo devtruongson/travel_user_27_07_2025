@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
 import dayjs from "dayjs";
-import { Badge } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -23,48 +22,101 @@ interface Booking {
     custom_tour_id: number | null;
     quantity: number;
     start_date: string;
-    end_date: string;
-    total_price: number;
+    end_date: string | null;
+    total_price: string;
     status: string;
-    payment_status: string;
-    payment_method: string;
-    payment_date: string | null;
-    transaction_id: string | null;
-    bank_transaction_no: string | null;
     cancel_reason: string | null;
     is_deleted: string;
     created_at: string;
     updated_at: string;
     user: {
         id: number;
-        name: string;
+        full_name: string;
         email: string;
         phone: string;
+        avatar: string | null;
+        role: string;
+        is_deleted: string;
+        is_verified: number;
+        created_at: string;
+        updated_at: string;
+        avatar_url: string | null;
     };
     tour: {
         tour_id: number;
-        name: string;
+        category_id: number;
+        album_id: number;
+        guide_id: number | null;
+        bus_route_id: number | null;
+        tour_name: string;
         description: string;
-        price: number;
+        itinerary: string;
+        image: string;
+        price: string;
+        discount_price: string;
+        duration: string;
+        status: string;
+        is_deleted: string;
+        slug: string;
+        created_at: string;
+        updated_at: string;
     };
     guide: {
         guide_id: number;
         name: string;
+        gender: string;
+        language: string;
+        experience_years: number;
+        album_id: number;
+        price_per_day: string;
+        description: string | null;
         phone: string;
+        email: string;
+        average_rating: number;
+        is_available: boolean;
+        is_deleted: string;
+        created_at: string;
+        updated_at: string;
     } | null;
     hotel: {
         hotel_id: number;
         name: string;
-        address: string;
+        location: string;
+        room_type: string;
+        price: string;
+        description: string;
+        image: string;
+        album_id: number;
+        contact_phone: string;
+        contact_email: string;
+        average_rating: number;
+        is_available: boolean;
+        max_guests: number;
+        facilities: string;
+        bed_type: string;
+        is_deleted: string;
+        created_at: string;
+        updated_at: string;
     } | null;
-    bus_route: {
-        bus_route_id: number;
-        name: string;
-        departure_time: string;
-    } | null;
-    motorbike: any;
-    custom_tour: any;
+    bus_route: any | null;
+    motorbike: any | null;
+    custom_tour: any | null;
 }
+
+// Badge component replacement since we're not importing from lucide-react
+const Badge = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => (
+    <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}
+    >
+        {children}
+    </span>
+);
 
 export default function MyBookingsPage() {
     const user = useSelector((state: RootState) => state.auth.user);
@@ -122,32 +174,6 @@ export default function MyBookingsPage() {
         }
     };
 
-    const getPaymentStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case "paid":
-                return "bg-green-100 text-green-800";
-            case "pending":
-                return "bg-yellow-100 text-yellow-800";
-            case "failed":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
-
-    const getPaymentStatusText = (status: string) => {
-        switch (status.toLowerCase()) {
-            case "paid":
-                return "💳 Đã thanh toán";
-            case "pending":
-                return "💰 Chưa thanh toán";
-            case "failed":
-                return "❌ Thanh toán thất bại";
-            default:
-                return status;
-        }
-    };
-
     const filteredBookings = bookings.filter((booking) => {
         if (filter === "all") return true;
         return booking.status.toLowerCase() === filter;
@@ -163,6 +189,19 @@ export default function MyBookingsPage() {
         } catch (error) {
             toast.error("Không thể hủy booking");
         }
+    };
+
+    const formatPrice = (price: string | number) => {
+        const numPrice = typeof price === "string" ? parseFloat(price) : price;
+        return numPrice.toLocaleString("vi-VN");
+    };
+
+    const getEndDate = (startDate: string, duration: string) => {
+        const start = dayjs(startDate);
+        // Extract number of days from duration string like "4 ngày 3 đêm" or "5 ngày 4 đêm"
+        const daysMatch = duration.match(/(\d+)\s*ngày/);
+        const days = daysMatch ? parseInt(daysMatch[1]) : 1;
+        return start.add(days - 1, "day");
     };
 
     if (!user) {
@@ -295,7 +334,7 @@ export default function MyBookingsPage() {
                                     <div className="flex flex-col md:flex-row md:items-center justify-between">
                                         <div className="mb-2 md:mb-0">
                                             <h3 className="text-xl font-bold text-gray-800 mb-1">
-                                                {booking.tour.name}
+                                                {booking.tour.tour_name}
                                             </h3>
                                             <p className="text-sm text-gray-600">
                                                 Booking ID: #
@@ -312,15 +351,6 @@ export default function MyBookingsPage() {
                                                 )} border`}
                                             >
                                                 {getStatusText(booking.status)}
-                                            </Badge>
-                                            <Badge
-                                                className={`${getPaymentStatusColor(
-                                                    booking.payment_status
-                                                )}`}
-                                            >
-                                                {getPaymentStatusText(
-                                                    booking.payment_status
-                                                )}
                                             </Badge>
                                         </div>
                                     </div>
@@ -351,13 +381,29 @@ export default function MyBookingsPage() {
                                                     <span>
                                                         {dayjs(
                                                             booking.start_date
-                                                        ).format(
-                                                            "DD/MM/YYYY"
-                                                        )}{" "}
-                                                        -{" "}
-                                                        {dayjs(
-                                                            booking.end_date
                                                         ).format("DD/MM/YYYY")}
+                                                        {booking.tour
+                                                            .duration && (
+                                                            <>
+                                                                {" "}
+                                                                -{" "}
+                                                                {getEndDate(
+                                                                    booking.start_date,
+                                                                    booking.tour
+                                                                        .duration
+                                                                ).format(
+                                                                    "DD/MM/YYYY"
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="w-6">
+                                                        ⏱️
+                                                    </span>
+                                                    <span>
+                                                        {booking.tour.duration}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center">
@@ -365,7 +411,9 @@ export default function MyBookingsPage() {
                                                         💰
                                                     </span>
                                                     <span className="font-bold text-blue-600">
-                                                        {booking.total_price.toLocaleString()}
+                                                        {formatPrice(
+                                                            booking.total_price
+                                                        )}
                                                         ₫
                                                     </span>
                                                 </div>
@@ -404,18 +452,21 @@ export default function MyBookingsPage() {
                                                         <span className="w-6">
                                                             🚌
                                                         </span>
-                                                        <span>
-                                                            {
-                                                                booking
-                                                                    .bus_route
-                                                                    .name
-                                                            }
+                                                        <span>Xe buýt</span>
+                                                    </div>
+                                                )}
+                                                {booking.motorbike && (
+                                                    <div className="flex items-center">
+                                                        <span className="w-6">
+                                                            🏍️
                                                         </span>
+                                                        <span>Xe máy</span>
                                                     </div>
                                                 )}
                                                 {!booking.guide &&
                                                     !booking.hotel &&
-                                                    !booking.bus_route && (
+                                                    !booking.bus_route &&
+                                                    !booking.motorbike && (
                                                         <p className="text-gray-500 italic">
                                                             Không có dịch vụ bổ
                                                             sung
@@ -424,50 +475,53 @@ export default function MyBookingsPage() {
                                             </div>
                                         </div>
 
-                                        {/* Payment Info */}
+                                        {/* Contact Info */}
                                         <div className="space-y-3">
                                             <h4 className="font-semibold text-gray-800 flex items-center">
-                                                <span className="mr-2">💳</span>
-                                                Thanh toán
+                                                <span className="mr-2">📞</span>
+                                                Thông tin liên hệ
                                             </h4>
                                             <div className="space-y-2 text-sm">
+                                                <div className="flex items-center">
+                                                    <span className="w-6">
+                                                        👤
+                                                    </span>
+                                                    <span>
+                                                        {booking.user.full_name}
+                                                    </span>
+                                                </div>
                                                 <div className="flex items-center">
                                                     <span className="w-6">
                                                         📱
                                                     </span>
                                                     <span>
-                                                        {booking.payment_method}
+                                                        {booking.user.phone}
                                                     </span>
                                                 </div>
-                                                {booking.payment_date && (
-                                                    <div className="flex items-center">
-                                                        <span className="w-6">
-                                                            📅
-                                                        </span>
-                                                        <span>
-                                                            {dayjs(
-                                                                booking.payment_date
-                                                            ).format(
-                                                                "DD/MM/YYYY HH:mm"
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {booking.transaction_id && (
-                                                    <div className="flex items-center">
-                                                        <span className="w-6">
-                                                            🔢
-                                                        </span>
-                                                        <span className="font-mono text-xs">
-                                                            {
-                                                                booking.transaction_id
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                <div className="flex items-center">
+                                                    <span className="w-6">
+                                                        📧
+                                                    </span>
+                                                    <span className="break-all">
+                                                        {booking.user.email}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Tour Description */}
+                                    {booking.tour.description && (
+                                        <div className="mt-6 pt-4 border-t border-gray-100">
+                                            <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
+                                                <span className="mr-2">📝</span>
+                                                Mô tả tour
+                                            </h4>
+                                            <p className="text-sm text-gray-600 line-clamp-3">
+                                                {booking.tour.description}
+                                            </p>
+                                        </div>
+                                    )}
 
                                     {/* Actions */}
                                     <div className="mt-6 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
@@ -498,15 +552,11 @@ export default function MyBookingsPage() {
                                             </Button>
                                         )}
 
-                                        {booking.payment_status === "pending" &&
-                                            booking.status === "confirmed" && (
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg"
-                                                >
-                                                    💳 Thanh toán ngay
-                                                </Button>
-                                            )}
+                                        {booking.status === "confirmed" && (
+                                            <Badge className="bg-green-100 text-green-800">
+                                                ✅ Tour đã được xác nhận
+                                            </Badge>
+                                        )}
                                     </div>
 
                                     {/* Cancel Reason */}

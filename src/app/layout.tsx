@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { Nunito, DM_Sans } from "next/font/google";
-import Header from "@/layouts/header";
-import Footer from "@/layouts/footer";
 import BackToTop from "@/components/backToTop";
 import BtnBookNow from "@/components/bookNow";
 import BookChat from "@/components/boxchat";
-import { Providers } from "./providers";
+import Footer from "@/layouts/footer";
+import Header from "@/layouts/header";
+import type { Metadata } from "next";
+import { Nunito } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { Providers } from "./providers";
 import "./utilities.css";
 
 const nunito = Nunito({

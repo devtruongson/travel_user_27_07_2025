@@ -2,17 +2,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Dialog } from "@headlessui/react";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { CalendarDatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { PUBLIC_API, API } from "@/lib/api";
+import { API, PUBLIC_API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
+import { Dialog } from "@headlessui/react";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 export default function BookingModal({
     slug,
@@ -65,20 +65,24 @@ export default function BookingModal({
                 motorbike_id: form.motorbike_id || null,
                 quantity: form.quantity,
                 start_date: dayjs(form.start_date).format("YYYY-MM-DD"),
-                end_date: dayjs(form.start_date)
-                    .add(tour.duration, "day")
-                    .format("YYYY-MM-DD"),
+                // end_date: dayjs(form.start_date)
+                //     .add(tour.duration, "day")
+                //     .format("YYYY-MM-DD"),
                 total_price:
                     parseInt(tour.discount_price || tour.price) * form.quantity,
-                payment_method: form.payment_method,
+                payment_method_id: 1,
                 status: "pending",
             };
 
-            await API.post("/bookings", body);
+            const res = await API.post("/bookings", body);
 
             toast.success("Đặt tour thành công");
             onClose();
-            router.push("/my-bookings");
+            // router.push("/my-bookings");
+
+            if (res.data.payment_url) {
+                window.open(res.data.payment_url, "_blank");
+            }
         } catch (error: any) {
             toast.error("Đặt tour thất bại");
         }

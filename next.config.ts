@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
             "scontent.fhan2-3.fna.fbcdn.net",
             "i.imgur.com",
             "localhost",
+            "dev-test.fstack.io.vn",
         ],
         remotePatterns: [
             {
@@ -23,6 +24,11 @@ const nextConfig: NextConfig = {
                 pathname: "/**", // cho phép tất cả đường dẫn ảnh
             },
         ],
+    },
+    experimental: {
+        staleTimes: {
+            dynamic: 30,
+        },
     },
 };
 

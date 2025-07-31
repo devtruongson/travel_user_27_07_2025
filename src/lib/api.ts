@@ -1,4 +1,5 @@
 import axios from "axios";
+import { store } from "./redux/store";
 
 const PUBLIC_API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -16,7 +17,7 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  const token = store.getState().auth.accessToken;
   console.log("🔐 Token in interceptor:", token); 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

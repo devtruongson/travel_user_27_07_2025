@@ -14,7 +14,7 @@ interface IProps {
     originalPrice?: number;
     promotionPrice?: number;
     time?: string;
-    startAddress?: string;
+    // startAddress?: string;
     rating?: number;
     category?: string;
     clasName?: string;
@@ -32,8 +32,8 @@ export default function TourCard(props: IProps) {
         originalPrice = 0,
         promotionPrice,
         time,
-        startAddress,
-        rating = 0,
+        // startAddress,
+        rating = 5,
         href = "/",
         imgUrl = "",
         category = "",
@@ -74,7 +74,7 @@ export default function TourCard(props: IProps) {
                 <div className="absolute z-1 left-0 right-0 bottom-0 py-5 px-5 text-[#fff]">
                     {!isDestination && (
                         <div className="flex flex-col gap-3 text-[#ffd220] uppercase text-[0.95rem] font-extrabold mb-2">
-                            <div
+                            {/* <div
                                 className={`${
                                     startAddressHidden ? "hidden" : "flex"
                                 } items-center gap-2`}
@@ -86,7 +86,7 @@ export default function TourCard(props: IProps) {
                                     <span>Xuất phát:</span>
                                     <span>{startAddress}</span>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="flex items-center gap-2">
                                 <div className="w-[23px] h-[23px] rounded-[50%] flex items-center justify-center bg-[#13c4fa81]">
                                     <MdAccessTime size={18} />

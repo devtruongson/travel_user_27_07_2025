@@ -15,6 +15,7 @@ import { DestinationType } from "@/types/location";
 import { MotorbikeType } from "@/types/motorbike";
 import BookTourButton from "../tours/[slug]/BookTourButton";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 type Props = {
     hotels: HotelType[] | null;
@@ -24,9 +25,10 @@ type Props = {
 };
 const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
     const [data, setData] = useState({
-        destination: 0,
+        destination_id: 0,
         vehicle: "",
         duration: "",
+        note: "",
     });
     if (!hotels || !motorbikes || !guides || !destinations) {
         return <div className="text-center">Loading...</div>;
@@ -43,7 +45,12 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         Điểm đến
                     </label>
                     <div>
-                        <Select>
+                        <Select
+                            value={String(data.destination_id)}
+                            onValueChange={(e) => {
+                                setData({ ...data, destination_id: Number(e) });
+                            }}
+                        >
                             <div className="h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
                                 <SelectTrigger>
                                     <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
@@ -62,7 +69,7 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                                                 <SelectItem
                                                     key={i.destination_id}
                                                     className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="apple"
+                                                    value={i.destination_id.toString()}
                                                 >
                                                     {i.name}
                                                 </SelectItem>
@@ -74,6 +81,26 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                     </div>
                 </div>
 
+                <div className="">
+                    <label
+                        htmlFor=""
+                        className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
+                    >
+                        Ghi Chú
+                    </label>
+                    <div>
+                        <div className="w-full border border-blue-400 rounded-xl mb-3">
+                            <Input
+                                placeholder="Nhập nội dung của bạn ở đây!"
+                                value={data.note}
+                                onChange={(e) =>
+                                    setData({ ...data, note: e.target.value })
+                                }
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <label
                         htmlFor=""
@@ -82,7 +109,12 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         Phương tiện di chuyển
                     </label>
                     <div>
-                        <Select>
+                        <Select
+                            value={data.vehicle}
+                            onValueChange={(e) =>
+                                setData({ ...data, vehicle: e })
+                            }
+                        >
                             <div className="h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
                                 <SelectTrigger>
                                     <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
@@ -98,7 +130,7 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                                                 <SelectItem
                                                     key={i.value}
                                                     className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="apple"
+                                                    value={i.value}
                                                 >
                                                     {i.name}
                                                 </SelectItem>
@@ -118,7 +150,12 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         Thời gian
                     </label>
                     <div>
-                        <Select>
+                        <Select
+                            value={data.duration}
+                            onValueChange={(e) =>
+                                setData({ ...data, duration: e })
+                            }
+                        >
                             <div className="h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
                                 <SelectTrigger>
                                     <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
@@ -132,11 +169,11 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                                         times.map((i) => {
                                             return (
                                                 <SelectItem
-                                                    key={i}
+                                                    key={i.value}
                                                     className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="apple"
+                                                    value={i.value}
                                                 >
-                                                    {i}
+                                                    {i.label}
                                                 </SelectItem>
                                             );
                                         })}
@@ -145,46 +182,9 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         </Select>
                     </div>
                 </div>
-
-                {/* <div>
-                    <label
-                        htmlFor=""
-                        className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
-                    >
-                        Khách sạn
-                    </label>
-                    <div>
-                        <Select>
-                            <div className="h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
-                                <SelectTrigger>
-                                    <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
-                                        <SelectValue placeholder="Chọn khách sạn" />
-                                    </div>
-                                </SelectTrigger>
-                            </div>
-                            <SelectContent>
-                                <SelectGroup className="xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-medium rounded-xl">
-                                    {hotels?.length > 0 &&
-                                        hotels.map((hotel) => {
-                                            return (
-                                                <SelectItem
-                                                    key={hotel.hotel_id}
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="apple"
-                                                >
-                                                    {hotel.name} -{" "}
-                                                    {hotel.location}
-                                                </SelectItem>
-                                            );
-                                        })}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div> */}
-                <div className="mt-5">
-                    <BookTourButton isCustom data={data} />
-                </div>
+            </div>
+            <div className="mt-5">
+                <BookTourButton isCustom data={data} />
             </div>
         </div>
     );

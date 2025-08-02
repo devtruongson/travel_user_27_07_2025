@@ -5,12 +5,13 @@
 import { Button } from "@/components/ui/button";
 import { CalendarDatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { times } from "@/constants";
 import { API, PUBLIC_API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
 import { Dialog, Transition } from "@headlessui/react";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -26,23 +27,15 @@ export default function BookingModal({
     onClose: () => void;
     isCustom?: boolean;
     data?: {
-        destination: number;
+        destination_id: number;
         vehicle: string;
         duration?: string;
+        note?: string;
     };
 }) {
     const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
-
     const [tour, setTour] = useState<any>(null);
-    const [services, setServices] = useState({
-        guides: [],
-        hotels: [],
-        busRoutes: [],
-        motorbikes: [],
-    });
-    const [isLoading, setIsLoading] = useState(false);
-
     const [form, setForm] = useState({
         quantity: 1,
         start_date: null as Date | null,
@@ -52,22 +45,81 @@ export default function BookingModal({
         motorbike_id: "",
         payment_method: "COD",
     });
+    const [services, setServices] = useState({
+        guides: [],
+        hotels: [],
+        busRoutes: [],
+        motorbikes: [],
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const price = useMemo(() => {
+        if (tour) {
+            return (
+                parseInt(tour?.discount_price || tour?.price) * form?.quantity
+            );
+        }
+        let p = 1200000;
+        const priceHotel =
+            services.hotels.find((h: any) => h.hotel_id == form.hotel_id)
+                ?.price || 0;
+        const priceGuide =
+            services.guides.find((g: any) => g.guide_id == form.guide_id)
+                ?.price_per_day || 0;
+        const priceBus =
+            services.busRoutes.find(
+                (b: any) => b.bus_route_id == form.bus_route_id
+            )?.price || 0;
+        const priceBike =
+            services.motorbikes.find(
+                (b: any) => b.motorbike_id == form.motorbike_id
+            )?.price_per_day || 0;
+        const totalPriceService =
+            Number(priceBus) +
+            Number(priceHotel) +
+            Number(priceGuide) +
+            Number(priceBike);
+
+        if (data?.duration == "1") {
+            p = 1200000 + 2 * totalPriceService;
+        }
+        if (data?.duration == "2") {
+            p = 1200000 + 3 * totalPriceService;
+        }
+        if (data?.duration == "3") {
+            p = 1200000 + 4 * totalPriceService;
+        }
+        if (data?.duration == "4") {
+            p = 1200000 + 5 * totalPriceService;
+        }
+        return p * form?.quantity;
+    }, [
+        data?.duration,
+        form.bus_route_id,
+        form.guide_id,
+        form.hotel_id,
+        form.motorbike_id,
+        form.quantity,
+        services.busRoutes,
+        services.guides,
+        services.hotels,
+        services.motorbikes,
+        tour,
+    ]);
 
     const handleChange = (key: string, value: any) => {
         setForm((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleBooking = async () => {
-        if (!form.start_date || !user || !tour) {
+    const handleBooking = useCallback(async () => {
+        if (!form.start_date || !user || (!isCustom && !tour)) {
             toast.warning("Vui lòng điền đầy đủ thông tin");
             return;
         }
-
         setIsLoading(true);
         try {
-            const body = {
+            let body = {
                 user_id: user.id,
-                tour_id: tour.tour_id,
+                // tour_id: tour.tour_id,
                 custom_tour_id: null,
                 guide_id: form.guide_id || null,
                 hotel_id: form.hotel_id || null,
@@ -75,12 +127,28 @@ export default function BookingModal({
                 motorbike_id: form.motorbike_id || null,
                 quantity: form.quantity,
                 start_date: dayjs(form.start_date).format("YYYY-MM-DD"),
-                total_price:
-                    parseInt(tour.discount_price || tour.price) * form.quantity,
+                total_price: price,
+                // parseInt(tour.discount_price || tour.price) * form.quantity,
                 payment_method_id: form.payment_method,
                 status: "pending",
-            };
+            } as any;
 
+            if (isCustom && data) {
+                body = {
+                    ...body,
+                    dataCustom: {
+                        ...data,
+                        duation:
+                            times.find((t) => t.value === data.duration)
+                                ?.label || "",
+                    },
+                };
+            } else {
+                body = {
+                    ...body,
+                    tour_id: tour.tour_id,
+                };
+            }
             const res = await API.post("/bookings", body);
 
             toast.success("Đặt tour thành công! 🎉");
@@ -90,11 +158,29 @@ export default function BookingModal({
                 window.open(res.data.payment_url, "_blank");
             }
         } catch (error: any) {
-            toast.error("Đặt tour thất bại. Vui lòng thử lại!");
+            console.error("Booking error: ", error);
+            toast.error("Đặt tour thất bại. Vui lòng thử lại!", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [
+        data,
+        form.bus_route_id,
+        form.guide_id,
+        form.hotel_id,
+        form.motorbike_id,
+        form.payment_method,
+        form.quantity,
+        form.start_date,
+        isCustom,
+        onClose,
+        services.busRoutes,
+        services.guides,
+        services.hotels,
+        services.motorbikes,
+        tour,
+        user,
+    ]);
 
     useEffect(() => {
         if (!open) return;
@@ -141,9 +227,9 @@ export default function BookingModal({
                   .format("DD/MM/YYYY")
             : null;
 
-    const totalPrice = tour
-        ? parseInt(tour.discount_price || tour.price) * form.quantity
-        : 0;
+    // const totalPrice = tour
+    //     ? parseInt(tour.discount_price || tour.price) * form.quantity
+    //     : 0;
 
     if (!user) return null;
 
@@ -208,7 +294,7 @@ export default function BookingModal({
                                 {/* Content */}
                                 <div className="px-8 py-6 space-y-6 max-h-[70vh] overflow-y-auto">
                                     {/* Tour Info Card */}
-                                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
+                                    {/* <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <p className="text-sm text-gray-600">
@@ -249,7 +335,7 @@ export default function BookingModal({
                                                 </p>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Booking Form */}
                                     <div className="space-y-6">
@@ -335,16 +421,16 @@ export default function BookingModal({
                                                         key: "bus_route_id",
                                                         options:
                                                             services.busRoutes,
-                                                        id: "route_id",
-                                                        name: "name",
+                                                        id: "bus_route_id",
+                                                        name: "route_name",
                                                     },
                                                     {
                                                         label: "🏍️ Xe máy",
                                                         key: "motorbike_id",
                                                         options:
                                                             services.motorbikes,
-                                                        id: "bike_id",
-                                                        name: "name",
+                                                        id: "motorbike_id",
+                                                        name: "bike_type",
                                                     },
                                                 ].map(
                                                     ({
@@ -484,7 +570,7 @@ export default function BookingModal({
                                                 Tổng thanh toán
                                             </p>
                                             <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                                {totalPrice.toLocaleString()}₫
+                                                {price?.toLocaleString()}₫
                                             </p>
                                         </div>
                                         <div className="text-right text-sm text-gray-500">

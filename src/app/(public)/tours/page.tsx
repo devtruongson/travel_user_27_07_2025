@@ -13,12 +13,17 @@ export const metadata: Metadata = {
 };
 
 const getCate = async () => {
-    const res = await PUBLIC_API.get("/tour-categories");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/tour-categories");
+        return res?.data || [];
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        return null;
+    }
 };
 
 export default async function ToursPage() {
-    const cate = await getCate();
+    const cates = await getCate();
 
     return (
         <>
@@ -88,7 +93,7 @@ export default async function ToursPage() {
                     className="w-full h-auto absolute z-4 left-0 right-0 bottom-0"
                 />
             </div>
-            <TourFilterSection cate={cate} />
+            <TourFilterSection cate={cates} />
         </>
     );
 }

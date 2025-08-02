@@ -17,7 +17,7 @@ const getCate = async () => {
         const res = await PUBLIC_API.get("/tour-categories");
         return res?.data || [];
     } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.log("Error fetching categories:", error);
         return null;
     }
 };

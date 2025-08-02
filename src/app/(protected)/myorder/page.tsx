@@ -142,7 +142,7 @@ export default function MyBookingsPage() {
             setBookings(response.data);
         } catch (error: any) {
             toast.error("Không thể tải danh sách đặt tour");
-            console.error("Error fetching bookings:", error);
+            console.log("Error fetching bookings:", error);
         } finally {
             setLoading(false);
         }

@@ -68,7 +68,7 @@ export default function TourFilterSection({ cate }: { cate: any }) {
                 setTours(data);
                 // setFilteredTours(data);
             } catch (err: any) {
-                console.error("Lỗi khi fetch tours:", err);
+                console.log("Lỗi khi fetch tours:", err);
                 setError(err?.response?.data?.message || "Lỗi tải dữ liệu");
             } finally {
                 setLoading(false);

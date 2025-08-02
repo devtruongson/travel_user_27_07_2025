@@ -87,7 +87,7 @@ export default function BookingModal({
             onClose();
 
             if (res.data.payment_url) {
-                window.open(res.data.payment_url, "_blank");
+                window.location.href = res.data.payment_url;
             }
         } catch (error: any) {
             toast.error("Đặt tour thất bại. Vui lòng thử lại!");

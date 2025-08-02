@@ -40,6 +40,10 @@ export default function RegionTourLayout(props: TProps) {
         classNameImg,
         nameListTour,
     } = props;
+
+    if (!data) {
+        return <></>;
+    }
     return (
         <div>
             <div

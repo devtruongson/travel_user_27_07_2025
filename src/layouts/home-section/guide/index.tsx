@@ -7,8 +7,12 @@ import styles from "./style.module.css";
 import { PUBLIC_API } from "@/lib/api";
 
 const getGuide = async () => {
-    const res = await PUBLIC_API.get("/guides");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/guides");
+        return res?.data || [];
+    } catch (error) {
+        return null;
+    }
 };
 
 export default async function Guide() {
@@ -45,28 +49,6 @@ export default async function Guide() {
                 className={`${styles.cloud} absolute z-2 h-[300px] top-0 transform translate-y-[-50%] left-0 right-0`}
             >
                 <div className="relative w-full h-full overflow-hidden">
-                    {/* {guides?.length
-                        ? guides.map((guide: any, index: number) => {
-                              return (
-                                  <Image
-                                      key={index}
-                                      src={`${
-                                          process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                      }/${guide?.image || ""}`}
-                                      alt={guide?.name || ""}
-                                      width={200}
-                                      height={200}
-                                      className={`${styles.cloudImage} absolute`}
-                                      style={{
-                                          left: `${index * 20}%`,
-                                          animationDuration: `${
-                                              10 + index * 5
-                                          }s`,
-                                      }}
-                                  />
-                              );
-                          })
-                        : null} */}
                     <Image
                         src="/images/cloud-flying-1.png"
                         alt="cloud1"

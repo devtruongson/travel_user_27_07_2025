@@ -6,16 +6,28 @@ import RegionTourLayout from "./layout";
 import { PUBLIC_API } from "@/lib/api";
 
 const getNorthernTour = async () => {
-    const res = await PUBLIC_API.get("/tours?category_id=1");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/tours?category_id=1");
+        return res?.data || [];
+    } catch (error) {
+        return null;
+    }
 };
 const getCentralTour = async () => {
-    const res = await PUBLIC_API.get("/tours?category_id=2");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/tours?category_id=2");
+        return res?.data || [];
+    } catch (error) {
+        return null;
+    }
 };
 const getSouthernTour = async () => {
-    const res = await PUBLIC_API.get("/tours?category_id=3");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/tours?category_id=3");
+        return res?.data || [];
+    } catch (error) {
+        return null;
+    }
 };
 export default async function RegionTour() {
     const northernTour = await getNorthernTour();

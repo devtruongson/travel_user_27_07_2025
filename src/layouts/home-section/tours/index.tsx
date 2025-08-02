@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./style.module.css";
 import ButtonGlobal from "@/components/buttonGlobal";
@@ -11,15 +12,18 @@ import { PUBLIC_API } from "@/lib/api";
 import getPrice from "@/utils/getPrice";
 
 const getToures = async () => {
-    const res = await PUBLIC_API.get("/tours");
-    return res?.data || [];
+    try {
+        const res = await PUBLIC_API.get("/tours");
+        return res?.data || [];
+    } catch (error) {
+        return null;
+    }
 };
 
 export default async function Tours() {
     const tours = await getToures();
-    console.log("Tours data >>>>", tours);
-    const firstList = tours.slice(0, 8);
-    const secondList = tours.slice(8);
+    const firstList = tours?.slice(0, 3);
+    const secondList = tours?.slice(3);
 
     return (
         <section className={`${styles.tours} relative z-10 pt-36`}>
@@ -31,48 +35,55 @@ export default async function Tours() {
                     </h2>
                     <ButtonGlobal text="Khám phá ngay" className="mt-8" />
                 </div>
-                {/* https://dev-test.fstack.io.vn/storage/albums/31/c6ZolvJooziA57ScDpfftkPH1AvQcCVOGAFQGQq2.png */}
                 <div className="w-[calc(100%-400px)] ml-[400px] relative z-2">
                     <div className="flex gap-7">
                         <div className="list-tour w-1/2 flex flex-col gap-7">
-                            {firstList.map((tour: any, index: number) => (
-                                <TourCard
-                                    key={index}
-                                    imgUrl={`${
-                                        process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                    }/${tour?.image || ""}`}
-                                    nameTour={tour.tour_name}
-                                    // startAddress={tour.startAddress}
-                                    time={tour?.duration || ""}
-                                    promotionPrice={Number(
-                                        tour?.discount_price || ""
-                                    )}
-                                    originalPrice={Number(tour?.price || "")}
-                                    rating={tour?.rating}
-                                    clasName="h-[600px]"
-                                    bottomClassName="justify-between items-center "
-                                />
-                            ))}
+                            {(firstList || []).map(
+                                (tour: any, index: number) => (
+                                    <TourCard
+                                        key={index}
+                                        imgUrl={`${
+                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                        }/${tour?.image || ""}`}
+                                        nameTour={tour.tour_name}
+                                        // startAddress={tour.startAddress}
+                                        time={tour?.duration || ""}
+                                        promotionPrice={Number(
+                                            tour?.discount_price || ""
+                                        )}
+                                        originalPrice={Number(
+                                            tour?.price || ""
+                                        )}
+                                        rating={tour?.rating}
+                                        clasName="h-[600px]"
+                                        bottomClassName="justify-between items-center "
+                                    />
+                                )
+                            )}
                         </div>
                         <div className="list-tour w-1/2 pt-[10.69rem] flex flex-col gap-7">
-                            {secondList.map((tour: any, index: number) => (
-                                <TourCard
-                                    key={index}
-                                    imgUrl={`${
-                                        process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                    }/${tour?.image || ""}`}
-                                    nameTour={tour.tour_name}
-                                    // startAddress={tour.startAddress}
-                                    time={tour?.duration || ""}
-                                    promotionPrice={Number(
-                                        tour?.discount_price
-                                    )}
-                                    originalPrice={Number(tour?.price || "")}
-                                    rating={tour?.rating}
-                                    clasName="h-[600px]"
-                                    bottomClassName="justify-between items-center "
-                                />
-                            ))}
+                            {(secondList || []).map(
+                                (tour: any, index: number) => (
+                                    <TourCard
+                                        key={index}
+                                        imgUrl={`${
+                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                        }/${tour?.image || ""}`}
+                                        nameTour={tour.tour_name}
+                                        // startAddress={tour.startAddress}
+                                        time={tour?.duration || ""}
+                                        promotionPrice={Number(
+                                            tour?.discount_price
+                                        )}
+                                        originalPrice={Number(
+                                            tour?.price || ""
+                                        )}
+                                        rating={tour?.rating}
+                                        clasName="h-[600px]"
+                                        bottomClassName="justify-between items-center "
+                                    />
+                                )
+                            )}
                         </div>
                     </div>
                     <Image

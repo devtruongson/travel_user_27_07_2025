@@ -53,6 +53,10 @@ export default function TourCard(props: IProps) {
         });
     }
 
+    if (!props) {
+        return <></>;
+    }
+
     return (
         <div
             className={`group ${

@@ -89,6 +89,10 @@ export default function TourGuideCarousel(props: TProps) {
     );
     console.log("guides", guides);
 
+    if (!guides || guides.length === 0) {
+        return <></>;
+    }
+
     return (
         <div className="wrapper w-full">
             <div className="scene">

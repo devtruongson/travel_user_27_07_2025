@@ -69,7 +69,6 @@ export default async function TourDetailPage({
     try {
         const res = await PUBLIC_API.get(`/tours/slug/${params.slug}`);
         const tour: Tour = res.data;
-        console.log("tour >>> ", tour);
         const allRes = await PUBLIC_API.get("/tours");
         const allTours: Tour[] = allRes.data;
 

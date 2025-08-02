@@ -4,7 +4,13 @@ import { useState } from "react";
 import BookingModal from "./BookingModal";
 import { Button } from "@/components/ui/button";
 
-export default function BookTourButton({ slug }: { slug: string }) {
+export default function BookTourButton({
+    slug,
+    isCustom,
+}: {
+    slug?: string;
+    isCustom?: boolean;
+}) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -19,6 +25,7 @@ export default function BookTourButton({ slug }: { slug: string }) {
                 slug={slug}
                 open={open}
                 onClose={() => setOpen(false)}
+                isCustom={isCustom}
             />
         </>
     );

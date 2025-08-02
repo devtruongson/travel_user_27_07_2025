@@ -18,10 +18,12 @@ export default function BookingModal({
     slug,
     open,
     onClose,
+    isCustom,
 }: {
-    slug: string;
+    slug?: string;
     open: boolean;
     onClose: () => void;
+    isCustom?: boolean;
 }) {
     const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
@@ -98,22 +100,25 @@ export default function BookingModal({
 
         const fetchData = async () => {
             try {
-                const [tourRes, guideRes, hotelRes, busRes, bikeRes] =
-                    await Promise.all([
-                        PUBLIC_API.get(`/tours/slug/${slug}`),
+                const [guideRes, hotelRes, busRes, bikeRes] = await Promise.all(
+                    [
                         PUBLIC_API.get("/guides"),
                         PUBLIC_API.get("/hotels"),
                         PUBLIC_API.get("/bus-routes"),
                         PUBLIC_API.get("/motorbikes"),
-                    ]);
+                    ]
+                );
 
-                setTour(tourRes.data);
                 setServices({
                     guides: guideRes.data,
                     hotels: hotelRes.data,
                     busRoutes: busRes.data,
                     motorbikes: bikeRes.data,
                 });
+                if (!isCustom) {
+                    const tourRes = await PUBLIC_API.get(`/tours/slug/${slug}`);
+                    setTour(tourRes.data);
+                }
             } catch (err) {
                 toast.error("Lỗi tải dữ liệu tour");
                 onClose();

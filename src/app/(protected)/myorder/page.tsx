@@ -277,7 +277,7 @@ export default function MyBookingsPage() {
                             <button
                                 key={tab.key}
                                 onClick={() => setFilter(tab.key as any)}
-                                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 cursor-pointer ${
                                     filter === tab.key
                                         ? "bg-white shadow-lg text-blue-600 scale-105"
                                         : "bg-white/50 text-gray-600 hover:bg-white/80"
@@ -314,7 +314,7 @@ export default function MyBookingsPage() {
                             Hãy khám phá và đặt những chuyến du lịch tuyệt vời!
                         </p>
                         <Link href="/tours">
-                            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl">
+                            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl cursor-pointer">
                                 🎯 Khám phá tour ngay
                             </Button>
                         </Link>

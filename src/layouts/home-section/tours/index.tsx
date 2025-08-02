@@ -22,8 +22,9 @@ const getToures = async () => {
 
 export default async function Tours() {
     const tours = await getToures();
-    const firstList = tours?.slice(0, 3);
-    const secondList = tours?.slice(3);
+    const length = tours?.length || 0;
+    const firstList = tours?.slice(0, length / 2);
+    const secondList = tours?.slice(length / 2);
 
     return (
         <section className={`${styles.tours} relative z-10 pt-36`}>

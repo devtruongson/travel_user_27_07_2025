@@ -5,7 +5,6 @@ import {
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
@@ -15,6 +14,7 @@ import { HotelType } from "@/types/hotel";
 import { DestinationType } from "@/types/location";
 import { MotorbikeType } from "@/types/motorbike";
 import BookTourButton from "../tours/[slug]/BookTourButton";
+import { useState } from "react";
 
 type Props = {
     hotels: HotelType[] | null;
@@ -23,6 +23,11 @@ type Props = {
     destinations?: DestinationType[] | null;
 };
 const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
+    const [data, setData] = useState({
+        destination: 0,
+        vehicle: "",
+        duration: "",
+    });
     if (!hotels || !motorbikes || !guides || !destinations) {
         return <div className="text-center">Loading...</div>;
     }
@@ -74,7 +79,7 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         htmlFor=""
                         className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
                     >
-                        Phuong tiện di chuyển
+                        Phương tiện di chuyển
                     </label>
                     <div>
                         <Select>
@@ -141,7 +146,7 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                     </div>
                 </div>
 
-                <div>
+                {/* <div>
                     <label
                         htmlFor=""
                         className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
@@ -176,11 +181,10 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                             </SelectContent>
                         </Select>
                     </div>
+                </div> */}
+                <div className="mt-5">
+                    <BookTourButton isCustom data={data} />
                 </div>
-            </div>
-
-            <div className="">
-                <BookTourButton isCustom />
             </div>
         </div>
     );

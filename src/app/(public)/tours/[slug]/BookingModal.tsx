@@ -19,11 +19,17 @@ export default function BookingModal({
     open,
     onClose,
     isCustom,
+    data,
 }: {
     slug?: string;
     open: boolean;
     onClose: () => void;
     isCustom?: boolean;
+    data?: {
+        destination: number;
+        vehicle: string;
+        duration?: string;
+    };
 }) {
     const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
@@ -415,11 +421,11 @@ export default function BookingModal({
                                             </h3>
                                             <div className="grid grid-cols-2 gap-3">
                                                 {[
-                                                    {
-                                                        value: "0",
-                                                        label: "💵 Thanh toán khi nhận",
-                                                        color: "from-green-400 to-green-600",
-                                                    },
+                                                    // {
+                                                    //     value: "0",
+                                                    //     label: "💵 Thanh toán khi nhận",
+                                                    //     color: "from-green-400 to-green-600",
+                                                    // },
                                                     {
                                                         value: "1",
                                                         label: "🏧 VNPay",

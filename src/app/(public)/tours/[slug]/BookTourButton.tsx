@@ -7,9 +7,15 @@ import { Button } from "@/components/ui/button";
 export default function BookTourButton({
     slug,
     isCustom,
+    data,
 }: {
     slug?: string;
     isCustom?: boolean;
+    data?: {
+        destination: number;
+        vehicle: string;
+        duration?: string;
+    };
 }) {
     const [open, setOpen] = useState(false);
 
@@ -26,6 +32,7 @@ export default function BookTourButton({
                 open={open}
                 onClose={() => setOpen(false)}
                 isCustom={isCustom}
+                data={data}
             />
         </>
     );

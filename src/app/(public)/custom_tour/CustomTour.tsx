@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "./style.module.css";
 import {
     Select,
     SelectContent,
@@ -34,8 +35,10 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
         return <div className="text-center">Loading...</div>;
     }
     return (
-        <div className="container mx-auto px-4 py-8 border border-gray-300 rounded-lg">
-            <p className="text-center">Tạo tour của bạn</p>
+        <div className="container mx-auto px-6 py-8 border border-gray-300 rounded-lg mb-20">
+            <p className={`${styles.subTitle} text-center text-4xl mb-6`}>
+                Tạo tour của bạn
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
                 <div>
                     <label
@@ -89,7 +92,7 @@ const CustomTour = ({ hotels, motorbikes, guides, destinations }: Props) => {
                         Ghi Chú
                     </label>
                     <div>
-                        <div className="w-full border border-blue-400 rounded-xl mb-3">
+                        <div className="w-full border border-blue-400 rounded-xl mb-3 mt-2">
                             <Input
                                 placeholder="Nhập nội dung của bạn ở đây!"
                                 value={data.note}

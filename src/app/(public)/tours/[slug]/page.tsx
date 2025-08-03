@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import BookTourButton from "./BookTourButton";
 import styles from "./style.module.css";
+import TourReviewUI from "./Review";
 
 interface Tour {
     tour_id: number;
@@ -331,6 +332,12 @@ export default async function TourDetailPage({
                                 <BookTourButton slug={params.slug} />
                             </div>
                         </div>
+                    </section>
+
+                    {/* review */}
+                    {}
+                    <section>
+                        <TourReviewUI tour_id={res?.data?.tour_id} />
                     </section>
 
                     {/* Enhanced Related Tours */}

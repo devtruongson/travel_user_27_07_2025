@@ -59,6 +59,14 @@ export default function BookingModal({
             );
         }
         let p = 1200000;
+        const priceVehicle =
+            data?.vehicle === "airplane"
+                ? 2000000
+                : data?.vehicle === "bus"
+                ? 300000
+                : data?.vehicle === "train"
+                ? 200000
+                : 0;
         const priceHotel =
             services.hotels.find((h: any) => h.hotel_id == form.hotel_id)
                 ?.price || 0;
@@ -91,9 +99,10 @@ export default function BookingModal({
         if (data?.duration == "4") {
             p = 1200000 + 5 * totalPriceService;
         }
-        return p * form?.quantity;
+        return (p + priceVehicle) * form?.quantity;
     }, [
         data?.duration,
+        data?.vehicle,
         form.bus_route_id,
         form.guide_id,
         form.hotel_id,

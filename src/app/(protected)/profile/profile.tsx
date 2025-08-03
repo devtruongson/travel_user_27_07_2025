@@ -6,8 +6,8 @@ import Image from "next/image";
 import BannerPage from "@/layouts/banner";
 import MotionFade from "@/components/motionFade";
 import CustomButton from "@/components/customButton";
-import { MdTour } from "react-icons/md";
-import { RiHeartAddFill } from "react-icons/ri";
+// import { MdTour } from "react-icons/md";
+// import { RiHeartAddFill } from "react-icons/ri";
 import UpdateInfo from "./update";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -15,7 +15,7 @@ import { API } from "@/lib/api";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/redux/store";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     Dialog,
     DialogContent,
@@ -175,7 +175,7 @@ export default function ProfileClient() {
                     </div>
                 </div>
             </section>
-            <section className="container py-24">
+            {/* <section className="container py-24">
                 <Tabs defaultValue="booked" className="w-full">
                     <TabsList className="flex border-b gap-5 border-gray-200 bg-transparent">
                         <TabsTrigger
@@ -200,7 +200,7 @@ export default function ProfileClient() {
                         Bạn chưa thêm tour yêu thích nào.
                     </TabsContent>
                 </Tabs>
-            </section>
+            </section> */}
         </div>
     );
 }

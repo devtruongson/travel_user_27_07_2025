@@ -7,7 +7,7 @@ import { API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -174,10 +174,16 @@ export default function MyBookingsPage() {
         }
     };
 
-    const filteredBookings = bookings.filter((booking) => {
-        if (filter === "all") return true;
-        return booking.status.toLowerCase() === filter;
-    });
+    const filteredBookings = useMemo(
+        () =>
+            !bookings?.length
+                ? []
+                : bookings.filter((booking) => {
+                      if (filter === "all") return true;
+                      return booking.status.toLowerCase() === filter;
+                  }),
+        [bookings, filter]
+    );
 
     const handleCancelBooking = async (bookingId: number) => {
         if (!confirm("Bạn có chắc chắn muốn hủy booking này?")) return;
@@ -250,28 +256,34 @@ export default function MyBookingsPage() {
                             {
                                 key: "all",
                                 label: "📊 Tất cả",
-                                count: bookings.length,
+                                count: bookings?.length || 0,
                             },
                             {
                                 key: "pending",
                                 label: "⏳ Chờ xử lý",
-                                count: bookings.filter(
-                                    (b) => b.status === "pending"
-                                ).length,
+                                count: !bookings?.length
+                                    ? 0
+                                    : bookings.filter(
+                                          (b) => b.status === "pending"
+                                      ).length,
                             },
                             {
                                 key: "confirmed",
                                 label: "✅ Đã xác nhận",
-                                count: bookings.filter(
-                                    (b) => b.status === "confirmed"
-                                ).length,
+                                count: !bookings?.length
+                                    ? 0
+                                    : bookings.filter(
+                                          (b) => b.status === "confirmed"
+                                      ).length,
                             },
                             {
                                 key: "cancelled",
                                 label: "❌ Đã hủy",
-                                count: bookings.filter(
-                                    (b) => b.status === "cancelled"
-                                ).length,
+                                count: !bookings?.length
+                                    ? 0
+                                    : bookings.filter(
+                                          (b) => b.status === "cancelled"
+                                      ).length,
                             },
                         ].map((tab) => (
                             <button

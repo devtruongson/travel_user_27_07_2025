@@ -124,18 +124,18 @@ export default function TourFilterSection({ cate }: { cate: any }) {
     const getFullImageUrl = (path: string) =>
         `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${path}`;
 
-    if (cate === null || cate.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center py-12 text-center gap-2">
-                <div className="text-lg font-medium">
-                    Không có danh mục nào.
-                </div>
-                <div className="text-sm text-gray-500">
-                    Thử tải lại hoặc kiểm tra kết nối.
-                </div>
-            </div>
-        );
-    }
+    // if (cate === null || cate.length === 0) {
+    //     return (
+    //         <div className="flex flex-col items-center justify-center py-12 text-center gap-2">
+    //             <div className="text-lg font-medium">
+    //                 Không có danh mục nào.
+    //             </div>
+    //             <div className="text-sm text-gray-500">
+    //                 Thử tải lại hoặc kiểm tra kết nối.
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <section id="tourlist" className="container m-auto mb-20 pt-28">

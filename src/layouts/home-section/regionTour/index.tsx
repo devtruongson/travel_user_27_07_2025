@@ -1,7 +1,5 @@
 import styles from "./style.module.css";
-import TOURSMIENBAC from "@/data/tours_mienbac.json";
-import TOURSMIENTRUNG from "@/data/tours_mientrung.json";
-import TOURSMIENNAM from "@/data/tours_miennam.json";
+
 import RegionTourLayout from "./layout";
 import { PUBLIC_API } from "@/lib/api";
 
@@ -10,6 +8,7 @@ const getNorthernTour = async () => {
         const res = await PUBLIC_API.get("/tours?category_id=1");
         return res?.data || [];
     } catch (error) {
+        console.error("Error fetching northern tours:", error);
         return null;
     }
 };
@@ -18,6 +17,7 @@ const getCentralTour = async () => {
         const res = await PUBLIC_API.get("/tours?category_id=2");
         return res?.data || [];
     } catch (error) {
+        console.error("Error fetching central tours:", error);
         return null;
     }
 };
@@ -26,6 +26,7 @@ const getSouthernTour = async () => {
         const res = await PUBLIC_API.get("/tours?category_id=3");
         return res?.data || [];
     } catch (error) {
+        console.error("Error fetching southern tours:", error);
         return null;
     }
 };

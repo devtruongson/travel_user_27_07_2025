@@ -38,7 +38,7 @@ export default async function RegionTour() {
         <section className={`${styles.regionTour} relative z-10 pt-32 pb-40`}>
             <div className="container m-auto relative z-1">
                 <RegionTourLayout
-                    href="/"
+                    href="/tours"
                     srcMap="/images/mienbac_map.png"
                     subTitle="Vẻ Đẹp Truyền Thống Miền Bắc"
                     title="Khám Phá Miền Bắc - Vùng Đất Của Di Sản Và Văn Hóa Ngàn Năm"
@@ -46,10 +46,11 @@ export default async function RegionTour() {
                     data={northernTour}
                     classNameImg="w-full"
                     nameListTour="Danh sách tour miền Bắc"
+
                 />
                 <div className={styles.distance}></div>
                 <RegionTourLayout
-                    href="/"
+                    href="/tours"
                     srcMap="/images/mientrung_map.png"
                     subTitle="Hương Vị Đặc Trưng Miền Trung"
                     title="Về Miền Trung - Nơi Giao Thoa Giữa Núi Non, Biển Cả Và Văn Hóa Đậm Đà"
@@ -62,7 +63,7 @@ export default async function RegionTour() {
                 />
                 <div className={styles.distance}></div>
                 <RegionTourLayout
-                    href="/"
+                    href="/tours"
                     srcMap="/images/miennam_map.png"
                     subTitle="Sắc Màu Phóng Khoáng Miền Nam"
                     title="Hành Trình Miền Nam - Khám Phá Vùng Đất Phóng Khoáng Và Trù Phú"

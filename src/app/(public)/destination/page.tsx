@@ -22,7 +22,7 @@ export default function DestinationPage() {
         <div className='absolute z-1 top-0 left-0 right-0 bottom-0 flex justify-between items-center container m-auto'>
           <MotionFade animation="fadeInBottomToTop">
             <h1 className={`${styles.mainTitle} font-[900] text-[180px] leading-[1]`}>VTRAVEL</h1>
-            <h3 className={`${styles.subTitle} font-[700] text-[120px] leading-[1]`}>Destinations</h3>
+            <h3 className={`${styles.subTitle} font-[700] text-[120px] leading-[1]`}>Điểm đến</h3>
           </MotionFade>
           <MotionFade animation="fadeInRightToLeft">
             <Image src="/images/vietnam-map-tour.png" alt='Vtravel tour' priority width={500} height={500} className='h-[500px] w-auto' />

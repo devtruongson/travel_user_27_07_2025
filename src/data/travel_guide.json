@@ -4,48 +4,62 @@
     "title": "Kinh nghiệm du lịch Hà Nội tự túc",
     "excerpt": "Khám phá Hà Nội với lịch trình tự túc, điểm đến hấp dẫn và mẹo tiết kiệm chi phí.",
     "imgUrl": "https://cdn2.ivivu.com/2015/06/18/15/chua-tran-quoc-750x460.jpg",
-    "address": "Hà Nội, Việt Nam"
+    "address": "Hà Nội, Việt Nam",
+    "slug": "kinh-nghiem-du-lich-ha-noi-tu-tuc",
+    "content": "Hà Nội là thủ đô nghìn năm văn hiến của Việt Nam, nơi hội tụ nét đẹp cổ kính và hiện đại. Với hành trình du lịch tự túc, bạn có thể dễ dàng di chuyển bằng xe máy, xe buýt hoặc xe điện quanh phố cổ. Đừng bỏ lỡ Hồ Hoàn Kiếm, Văn Miếu Quốc Tử Giám, và những quán ăn đường phố nổi tiếng như phở Bát Đàn, bún chả Hàng Mành. Hãy lên lịch trình hợp lý để tiết kiệm chi phí và có trải nghiệm trọn vẹn nhất tại Hà Nội."
   },
   {
     "id": 2,
     "title": "Mẹo du lịch Sapa vào mùa đông",
     "excerpt": "Gợi ý hành trình, chuẩn bị trang phục và điểm dừng chân đẹp cho mùa đông Sapa.",
     "imgUrl": "https://cdn2.ivivu.com/2023/12/20/16/ivivu-rung-gia-y-ty-750x460.jpg",
-    "address": "Sapa, Lào Cai, Việt Nam"
+    "address": "Sapa, Lào Cai, Việt Nam",
+    "slug": "meo-du-lich-sapa-vao-mua-dong",
+    "content": "Mùa đông ở Sapa mang vẻ đẹp thơ mộng và huyền bí với những biển mây bồng bềnh và băng tuyết trắng xóa. Hãy chuẩn bị áo ấm, găng tay và giày chống trượt để di chuyển an toàn. Những điểm dừng chân không thể bỏ qua gồm Fansipan, bản Cát Cát, và đỉnh Hàm Rồng. Nếu may mắn, bạn có thể ngắm tuyết rơi – một trong những hiện tượng hiếm gặp tại Việt Nam."
   },
   {
     "id": 3,
     "title": "Khám phá vịnh Hạ Long trên du thuyền",
     "excerpt": "Kinh nghiệm chọn du thuyền, lịch trình tham quan và điểm check-in đẹp tại Hạ Long.",
     "imgUrl": "https://cdn2.ivivu.com/2022/05/09/17/ivivu-sun-words-ha-long-750x460.gif",
-    "address": "Hạ Long, Quảng Ninh, Việt Nam"
+    "address": "Hạ Long, Quảng Ninh, Việt Nam",
+    "slug": "kham-pha-vinh-ha-long-tren-du-thuyen",
+    "content": "Vịnh Hạ Long được UNESCO công nhận là Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi kỳ vĩ. Du lịch bằng du thuyền là cách lý tưởng để ngắm cảnh và thư giãn. Hãy chọn các du thuyền có lịch trình ghé thăm hang Sửng Sốt, đảo Titop và làng chài Cửa Vạn. Ngoài ra, bạn còn có cơ hội thưởng thức hải sản tươi sống và các hoạt động như chèo kayak hay câu mực đêm."
   },
   {
     "id": 4,
     "title": "Hướng dẫn du lịch Đà Nẵng cho gia đình",
     "excerpt": "Lịch trình tham quan Đà Nẵng cùng gia đình, điểm vui chơi phù hợp trẻ nhỏ và người lớn.",
     "imgUrl": "https://cdn2.ivivu.com/2017/01/18/11/ivivu-tour-da-na-ng-1n-city-tour-chua-linh-ung-750x460.jpg",
-    "address": "Đà Nẵng, Việt Nam"
+    "address": "Đà Nẵng, Việt Nam",
+    "slug": "huong-dan-du-lich-da-nang-cho-gia-dinh",
+    "content": "Đà Nẵng là điểm đến lý tưởng cho kỳ nghỉ gia đình nhờ sự kết hợp giữa biển xanh, núi non và dịch vụ du lịch hiện đại. Bạn có thể đưa cả nhà đến Bà Nà Hills, Asia Park, hoặc bãi biển Mỹ Khê. Các khu nghỉ dưỡng và khách sạn gia đình tại đây đều có dịch vụ thân thiện và tiện nghi đầy đủ. Đừng quên thưởng thức món mì Quảng, bánh tráng cuốn thịt heo và hải sản tươi sống."
   },
   {
     "id": 5,
     "title": "Bí kíp khám phá phố cổ Hội An về đêm",
     "excerpt": "Những trải nghiệm thú vị, điểm ăn uống và địa điểm sống ảo tuyệt đẹp tại Hội An về đêm.",
     "imgUrl": "https://cdn2.ivivu.com/2022/06/06/14/ivivu-chua-cau-hoi-an-750x460.gif",
-    "address": "Hội An, Quảng Nam, Việt Nam"
+    "address": "Hội An, Quảng Nam, Việt Nam",
+    "slug": "bi-kip-kham-pha-pho-co-hoi-an-ve-dem",
+    "content": "Phố cổ Hội An về đêm lung linh dưới ánh đèn lồng, tạo nên khung cảnh cổ kính và lãng mạn. Bạn có thể dạo bộ dọc sông Hoài, thả hoa đăng cầu may và thưởng thức đặc sản như cao lầu, bánh mì Phượng. Các quán cà phê ven sông và khu chợ đêm là nơi tuyệt vời để chụp ảnh và tận hưởng không khí yên bình."
   },
   {
     "id": 6,
     "title": "Cẩm nang du lịch Huế 3 ngày 2 đêm",
     "excerpt": "Lịch trình tham quan di tích lịch sử, thưởng thức ẩm thực Huế đặc trưng trong 3 ngày 2 đêm.",
     "imgUrl": "https://cdn2.ivivu.com/2020/06/04/17/ivivu-dai-noi-hue-750x460.gif",
-    "address": "Huế, Thừa Thiên Huế, Việt Nam"
+    "address": "Huế, Thừa Thiên Huế, Việt Nam",
+    "slug": "cam-nang-du-lich-hue-3-ngay-2-dem",
+    "content": "Huế – cố đô cổ kính của Việt Nam, nổi tiếng với hệ thống lăng tẩm và cung điện triều Nguyễn. Trong 3 ngày 2 đêm, bạn nên ghé Đại Nội, lăng Tự Đức, Thiên Mụ và cầu Trường Tiền. Ẩm thực Huế rất đa dạng, từ bún bò Huế, bánh bèo, bánh nậm đến chè cung đình. Thời điểm lý tưởng để du lịch Huế là mùa thu với tiết trời dịu mát và không khí thơ mộng."
   },
   {
     "id": 7,
     "title": "Hướng dẫn du lịch Phú Quốc tự túc",
     "excerpt": "Kinh nghiệm đặt vé, lựa chọn khách sạn, điểm vui chơi giải trí và thưởng thức đặc sản Phú Quốc.",
     "imgUrl": "https://cdn2.ivivu.com/2024/03/12/18/ivivu-dinh-ba-phu-quoc-750x460.jpg",
-    "address": "Phú Quốc, Kiên Giang, Việt Nam"
+    "address": "Phú Quốc, Kiên Giang, Việt Nam",
+    "slug": "huong-dan-du-lich-phu-quoc-tu-tuc",
+    "content": "Phú Quốc là thiên đường nghỉ dưỡng với biển xanh cát trắng và hệ sinh thái phong phú. Đặt vé máy bay sớm và chọn khách sạn gần bãi Trường hoặc Dương Đông để thuận tiện di chuyển. Những địa điểm bạn nên ghé thăm gồm VinWonders, Safari, Hòn Thơm, và làng chài Hàm Ninh. Ngoài ra, hãy thưởng thức nhum biển nướng, gỏi cá trích và nước mắm Phú Quốc trứ danh."
   }
 ]

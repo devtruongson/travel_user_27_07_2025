@@ -139,7 +139,7 @@ export default function MyBookingsPage() {
         try {
             setLoading(true);
             const response = await API.get("/bookings/me/my-booking");
-            setBookings(response.data);
+            setBookings(response.data.data);
         } catch (error: any) {
             toast.error("Không thể tải danh sách đặt tour");
             console.log("Error fetching bookings:", error);
@@ -179,9 +179,9 @@ export default function MyBookingsPage() {
             !bookings?.length
                 ? []
                 : bookings.filter((booking) => {
-                      if (filter === "all") return true;
-                      return booking.status.toLowerCase() === filter;
-                  }),
+                    if (filter === "all") return true;
+                    return booking.status.toLowerCase() === filter;
+                }),
         [bookings, filter]
     );
 
@@ -264,8 +264,8 @@ export default function MyBookingsPage() {
                                 count: !bookings?.length
                                     ? 0
                                     : bookings.filter(
-                                          (b) => b.status === "pending"
-                                      ).length,
+                                        (b) => b.status === "pending"
+                                    ).length,
                             },
                             {
                                 key: "confirmed",
@@ -273,8 +273,8 @@ export default function MyBookingsPage() {
                                 count: !bookings?.length
                                     ? 0
                                     : bookings.filter(
-                                          (b) => b.status === "confirmed"
-                                      ).length,
+                                        (b) => b.status === "confirmed"
+                                    ).length,
                             },
                             {
                                 key: "cancelled",
@@ -282,18 +282,17 @@ export default function MyBookingsPage() {
                                 count: !bookings?.length
                                     ? 0
                                     : bookings.filter(
-                                          (b) => b.status === "cancelled"
-                                      ).length,
+                                        (b) => b.status === "cancelled"
+                                    ).length,
                             },
                         ].map((tab) => (
                             <button
                                 key={tab.key}
                                 onClick={() => setFilter(tab.key as any)}
-                                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 cursor-pointer ${
-                                    filter === tab.key
-                                        ? "bg-white shadow-lg text-blue-600 scale-105"
-                                        : "bg-white/50 text-gray-600 hover:bg-white/80"
-                                }`}
+                                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 cursor-pointer ${filter === tab.key
+                                    ? "bg-white shadow-lg text-blue-600 scale-105"
+                                    : "bg-white/50 text-gray-600 hover:bg-white/80"
+                                    }`}
                             >
                                 {tab.label} ({tab.count})
                             </button>
@@ -346,7 +345,7 @@ export default function MyBookingsPage() {
                                     <div className="flex flex-col md:flex-row md:items-center justify-between">
                                         <div className="mb-2 md:mb-0">
                                             <h3 className="text-xl font-bold text-gray-800 mb-1">
-                                                {booking.tour.tour_name}
+                                                {booking.tour?.tour_name || "Custom Tour"}
                                             </h3>
                                             <p className="text-sm text-gray-600">
                                                 Booking ID: #
@@ -394,20 +393,20 @@ export default function MyBookingsPage() {
                                                         {dayjs(
                                                             booking.start_date
                                                         ).format("DD/MM/YYYY")}
-                                                        {booking.tour
-                                                            .duration && (
-                                                            <>
-                                                                {" "}
-                                                                -{" "}
-                                                                {getEndDate(
-                                                                    booking.start_date,
-                                                                    booking.tour
-                                                                        .duration
-                                                                ).format(
-                                                                    "DD/MM/YYYY"
-                                                                )}
-                                                            </>
-                                                        )}
+                                                        {booking?.tour
+                                                            ?.duration && (
+                                                                <>
+                                                                    {" "}
+                                                                    -{" "}
+                                                                    {getEndDate(
+                                                                        booking.start_date,
+                                                                        booking.tour
+                                                                            .duration
+                                                                    ).format(
+                                                                        "DD/MM/YYYY"
+                                                                    )}
+                                                                </>
+                                                            )}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center">
@@ -415,7 +414,7 @@ export default function MyBookingsPage() {
                                                         ⏱️
                                                     </span>
                                                     <span>
-                                                        {booking.tour.duration}
+                                                        {booking?.tour?.duration}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center">
@@ -523,22 +522,22 @@ export default function MyBookingsPage() {
                                     </div>
 
                                     {/* Tour Description */}
-                                    {booking.tour.description && (
+                                    {booking.tour?.description && (
                                         <div className="mt-6 pt-4 border-t border-gray-100">
                                             <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
                                                 <span className="mr-2">📝</span>
                                                 Mô tả tour
                                             </h4>
                                             <p className="text-sm text-gray-600 line-clamp-3">
-                                                {booking.tour.description}
+                                                {booking.tour?.description}
                                             </p>
                                         </div>
                                     )}
 
                                     {/* Actions */}
-                                    <div className="mt-6 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
+                                    <div className="mt-6 !hidden pt-4 border-t border-gray-100  flex-wrap gap-3">
                                         <Link
-                                            href={`/tours/${booking.tour.tour_id}`}
+                                            href={`/tours/${booking.tour?.tour_id}`}
                                         >
                                             <Button
                                                 variant="outline"
@@ -553,7 +552,7 @@ export default function MyBookingsPage() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-red-600 border-red-300 hover:bg-red-50 rounded-lg"
+                                                className="text-red-600 hidden border-red-300 hover:bg-red-50 rounded-lg"
                                                 onClick={() =>
                                                     handleCancelBooking(
                                                         booking.booking_id

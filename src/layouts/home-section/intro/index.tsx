@@ -34,7 +34,7 @@ export default function Intro() {
             </div>
           </div>
           <div className="mt-12">
-            <ButtonGlobal text="về chúng tôi" />
+            <ButtonGlobal text="về chúng tôi" asLink href="/about" />
           </div>
         </div>
         <div className="flex-1 relative">

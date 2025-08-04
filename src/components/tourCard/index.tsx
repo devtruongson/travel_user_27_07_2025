@@ -57,11 +57,11 @@ export default function TourCard(props: IProps) {
         return <></>;
     }
 
+
     return (
         <div
-            className={`group ${
-                clasName ?? ""
-            } main-card rounded-[20px] overflow-hidden relative transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-2xl`}
+            className={`group ${clasName ?? ""
+                } main-card rounded-[20px] overflow-hidden relative transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-2xl`}
         >
             <Link href={href}>
                 {imgUrl ? (
@@ -124,8 +124,8 @@ export default function TourCard(props: IProps) {
                     <div className={`${bottomClassName ?? ""} flex gap-8`}>
                         {!isDestination &&
                             (promotionPrice != undefined &&
-                            promotionPrice > 0 &&
-                            promotionPrice < originalPrice ? (
+                                promotionPrice > 0 &&
+                                promotionPrice < originalPrice ? (
                                 <div>
                                     <p className="text-[#ffd220] text-[1.75rem] font-bold leading-[1.2]">
                                         {formatCurrency(promotionPrice)}

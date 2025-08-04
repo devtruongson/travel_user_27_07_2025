@@ -122,12 +122,12 @@ export default async function DestinationDetailPage({ params }: { params: { slug
           })()}
           <RelatedSection />
 
-          <div className='container m-auto mt-20'>
+          {/* <div className='container m-auto mt-20'>
             <h2 className="text-4xl font-bold text-[#005089] text-center mb-14">
               Khám phá thêm nhiều điểm đến thú vị
             </h2>
             <TourCarousel tours={TUORDATA} />
-          </div>
+          </div> */}
         </ContentSection>
       </>
     );

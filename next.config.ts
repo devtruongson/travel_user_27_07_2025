@@ -12,9 +12,11 @@ const nextConfig: NextConfig = {
             "scontent.fdad3-4.fna.fbcdn.net",
             "scontent.fdad3-5.fna.fbcdn.net",
             "scontent.fhan2-3.fna.fbcdn.net",
+            'scontent.fdad3-1.fna.fbcdn.net',
             "i.imgur.com",
             "localhost",
             "dev-test.fstack.io.vn",
+            'dev-hung-travel.fstack.io.vn'
         ],
         remotePatterns: [
             {

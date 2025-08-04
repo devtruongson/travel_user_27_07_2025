@@ -132,14 +132,14 @@ export default function DestinationFilterSection() {
                                                         category.category_id
                                                     )
                                                         ? prev.filter(
-                                                              (item) =>
-                                                                  item !==
-                                                                  category.category_id
-                                                          )
+                                                            (item) =>
+                                                                item !==
+                                                                category.category_id
+                                                        )
                                                         : [
-                                                              ...prev,
-                                                              category.category_id,
-                                                          ]
+                                                            ...prev,
+                                                            category.category_id,
+                                                        ]
                                                 )
                                             }
                                         />

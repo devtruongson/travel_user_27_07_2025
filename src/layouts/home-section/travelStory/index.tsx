@@ -70,7 +70,7 @@ export default function TravelStory() {
               className="cursor-pointer" >
               {GUIDEDATA.map((guide, index) => (
                 <div className="mx-2 sm:mx-4" key={index}>
-                  <GuideCard address={guide.address} imgUrl={guide.imgUrl} title={guide.title} excerpt={guide.excerpt} />
+                  <GuideCard address={guide.address} imgUrl={guide.imgUrl} title={guide.title} excerpt={guide.excerpt} href="/blog" />
                 </div>
               ))}
             </Marquee>

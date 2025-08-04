@@ -1,52 +1,63 @@
 [
     {
-        "id": 1,
-        "title": "Đặt xe máy",
-        "description": "Thuê xe máy tự lái chất lượng, giao tận nơi.",
-        "ImgUrl": "https://cdn1.ivivu.com/images/2025/03/28/16/png(5)_.webp",
-        "price": 100000,
-        "unit": "ngày",
-        "buttonText": "Khám phá ngay",
-        "rating": 4.5
+      "id": 1,
+      "title": "Đặt xe máy",
+      "slug": "dat-xe-may",
+      "description": "Thuê xe máy tự lái chất lượng, giao tận nơi.",
+      "content": "Dịch vụ cho thuê xe máy tự lái giúp bạn khám phá điểm đến một cách linh hoạt và tiết kiệm. Với nhiều dòng xe đời mới, luôn được kiểm tra kỹ lưỡng, khách hàng có thể an tâm trải nghiệm. Chúng tôi hỗ trợ giao và nhận xe tận nơi, thủ tục nhanh chóng, phù hợp cho cả du lịch cá nhân lẫn nhóm.",
+      "ImgUrl": "https://cdn1.ivivu.com/images/2025/03/28/16/png(5)_.webp",
+      "price": 100000,
+      "unit": "ngày",
+      "buttonText": "Khám phá ngay",
+      "rating": 4.5
     },
     {
-        "id": 2,
-        "title": "Book xe khách",
-        "description": "Đặt vé xe khách tuyến đường bạn muốn, giá rẻ.",
-        "ImgUrl": "https://cdn1.ivivu.com/images/2025/01/10/18/z5375306457123_877d7edf7eada56d5ad5795b5003e304_.webp",
-        "price": 200000,
-        "unit": "vé",
-        "buttonText": "Khám phá ngay",
-        "rating": 4.5
+      "id": 2,
+      "title": "Book xe khách",
+      "slug": "book-xe-khach",
+      "description": "Đặt vé xe khách tuyến đường bạn muốn, giá rẻ.",
+      "content": "Dễ dàng đặt vé xe khách mọi tuyến đường với giá ưu đãi. Nền tảng của chúng tôi giúp bạn lựa chọn nhà xe uy tín, thời gian linh hoạt và vị trí ghế mong muốn. Cập nhật liên tục các khuyến mãi và hỗ trợ hoàn/hủy vé nhanh chóng.",
+      "ImgUrl": "https://cdn1.ivivu.com/images/2025/01/10/18/z5375306457123_877d7edf7eada56d5ad5795b5003e304_.webp",
+      "price": 200000,
+      "unit": "vé",
+      "buttonText": "Khám phá ngay",
+      "rating": 4.5
     },
     {
-        "id": 3,
-        "title": "Thuê phòng nghỉ",
-        "description": "Phòng nghỉ từ homestay đến resort cao cấp.",
-        "ImgUrl": "https://cdn1.ivivu.com/images/2024/01/19/12/48d58d899ccbff7932b04bbf2ff810b3_cr_.webp",
-        "price": 200000,
-        "unit": "đêm",
-        "buttonText": "Khám phá ngay",
-        "rating": 4.5
+      "id": 3,
+      "title": "Thuê phòng nghỉ",
+      "slug": "thue-phong-nghi",
+      "description": "Phòng nghỉ từ homestay đến resort cao cấp.",
+      "content": "Tìm kiếm và đặt phòng nghỉ phù hợp với nhu cầu của bạn từ homestay thân thiện đến resort sang trọng. Đầy đủ hình ảnh, đánh giá và thông tin tiện nghi giúp bạn lựa chọn dễ dàng. Cam kết giá tốt, hỗ trợ đổi/trả phòng linh hoạt.",
+      "ImgUrl": "https://cdn1.ivivu.com/images/2024/01/19/12/48d58d899ccbff7932b04bbf2ff810b3_cr_.webp",
+      "price": 200000,
+      "unit": "đêm",
+      "buttonText": "Khám phá ngay",
+      "rating": 4.5
     },
     {
-        "id": 4,
-        "title": "Thuê hướng dẫn viên",
-        "description": "HDV bản địa chuyên nghiệp, thân thiện.",
-        "ImgUrl": "https://cdn1.ivivu.com/images/2024/02/07/16/vinwonders-nam-hoi-an-thien-duong-giai-tri-cho-moi-lua-tuoi_cr_.webp",
-        "price": 500000,
-        "unit": "ngày",
-        "buttonText": "Khám phá ngay",
-        "rating": 4.5
+      "id": 4,
+      "title": "Thuê hướng dẫn viên",
+      "slug": "thue-huong-dan-vien",
+      "description": "HDV bản địa chuyên nghiệp, thân thiện.",
+      "content": "Dịch vụ thuê hướng dẫn viên du lịch chuyên nghiệp giúp bạn hiểu sâu hơn về văn hóa, lịch sử và đặc trưng vùng miền. HDV bản địa thông thạo đường đi, linh hoạt lịch trình, nhiệt tình hỗ trợ nhóm bạn hoặc gia đình trong suốt hành trình.",
+      "ImgUrl": "https://cdn1.ivivu.com/images/2024/02/07/16/vinwonders-nam-hoi-an-thien-duong-giai-tri-cho-moi-lua-tuoi_cr_.webp",
+      "price": 500000,
+      "unit": "ngày",
+      "buttonText": "Khám phá ngay",
+      "rating": 4.5
     },
     {
-        "id": 5,
-        "title": "Đặt tour trọn gói",
-        "description": "Tour du lịch trọn gói, giá tốt, khởi hành hằng tuần.",
-        "ImgUrl": "https://cdn1.ivivu.com/images/2025/01/17/11/a120240110103817(1)_.webp",
-        "price": 1500000,
-        "unit": "người",
-        "buttonText": "Khám phá ngay",
-        "rating": 4.5
+      "id": 5,
+      "title": "Đặt tour trọn gói",
+      "slug": "dat-tour-tron-goi",
+      "description": "Tour du lịch trọn gói, giá tốt, khởi hành hằng tuần.",
+      "content": "Chọn tour trọn gói để trải nghiệm chuyến đi không lo nghĩ. Lịch trình được thiết kế hợp lý, bao gồm phương tiện di chuyển, chỗ ở, bữa ăn và vé tham quan. Hướng dẫn viên chuyên nghiệp đồng hành, lịch khởi hành cố định mỗi tuần.",
+      "ImgUrl": "https://cdn1.ivivu.com/images/2025/01/17/11/a120240110103817(1)_.webp",
+      "price": 1500000,
+      "unit": "người",
+      "buttonText": "Khám phá ngay",
+      "rating": 4.5
     }
-]
+  ]
+  

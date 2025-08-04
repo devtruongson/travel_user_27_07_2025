@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -123,7 +122,6 @@ export default function TourFilterSection({ cate }: { cate: any }) {
 
     const getFullImageUrl = (path: string) =>
         `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${path}`;
-
     // if (cate === null || cate.length === 0) {
     //     return (
     //         <div className="flex flex-col items-center justify-center py-12 text-center gap-2">

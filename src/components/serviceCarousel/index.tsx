@@ -19,6 +19,7 @@ interface IService {
     buttonText?: string;
     unit?: string;
     rating?: number;
+    slug?: string;
 }
 
 type TProps = {
@@ -26,7 +27,7 @@ type TProps = {
     href?: string;
 };
 
-export default function ServiceCarousel({ services, href = "/tours" }: TProps) {
+export default function ServiceCarousel({ services, href = "/service" }: TProps) {
     const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
         loop: true,
         slides: { perView: 1 },
@@ -72,7 +73,7 @@ export default function ServiceCarousel({ services, href = "/tours" }: TProps) {
                                 <div className="flex-1">
                                     <h3>
                                         <Link
-                                            href={href}
+                                            href={`/service/${service.slug}`}
                                             className="font-bold text-[#2d2d2d] text-[24px] inline-block transition-all duration-300 hover:text-[#01b5f3] hover:underline"
                                         >
                                             {service.title}
@@ -91,7 +92,7 @@ export default function ServiceCarousel({ services, href = "/tours" }: TProps) {
                                 </div>
                                 <div>
                                     <Link
-                                        href={href ?? "/"}
+                                        href={`/service/${service.slug}`}
                                         className="cssbuttons-io-button"
                                     >
                                         {service.buttonText ?? "Xem chi tiết"}

@@ -25,6 +25,8 @@ const getCate = async () => {
 export default async function ToursPage() {
     const cates = await getCate();
 
+    console.log("Tour categories:", cates);
+
     return (
         <>
             <SeoHead key={`Vtravel, tours`} url="https://vtravel.vn/tours" />
@@ -39,7 +41,7 @@ export default async function ToursPage() {
                         <h3
                             className={`${styles.subTitle} font-[700] text-[120px] leading-[1]`}
                         >
-                            Our Tour
+                            Tất cả Tour
                         </h3>
                     </MotionFade>
                     <MotionFade animation="fadeInRightToLeft">

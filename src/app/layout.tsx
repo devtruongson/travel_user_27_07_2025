@@ -50,7 +50,7 @@ export default async function RootLayout({
                     <Header />
                     {children}
                     <Footer />
-                    <BtnBookNow />
+                    {/* <BtnBookNow /> */}
                     <BookChat />
                     <BackToTop />
                 </Providers>

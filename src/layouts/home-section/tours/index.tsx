@@ -10,6 +10,7 @@ import GuideCard from "@/components/travelGuideCard";
 import Image from "next/image";
 import { PUBLIC_API } from "@/lib/api";
 import getPrice from "@/utils/getPrice";
+import { createSlug } from "@/utils/slug";
 
 const getToures = async () => {
     try {
@@ -34,7 +35,7 @@ export default async function Tours() {
                     <h2 className="font-[900] text-[#8e00fb] text-[52px]">
                         Khám phá Việt Nam cùng VTravel
                     </h2>
-                    <ButtonGlobal text="Khám phá ngay" className="mt-8" />
+                    <ButtonGlobal text="Khám phá ngay" className="mt-8" asLink href="/tours" />
                 </div>
                 <div className="w-[calc(100%-400px)] ml-[400px] relative z-2">
                     <div className="flex gap-7">
@@ -43,9 +44,8 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
-                                        imgUrl={`${
-                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                        }/${tour?.image || ""}`}
+                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                            }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}
@@ -67,9 +67,8 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
-                                        imgUrl={`${
-                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                        }/${tour?.image || ""}`}
+                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                            }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}
@@ -82,6 +81,9 @@ export default async function Tours() {
                                         rating={tour?.rating}
                                         clasName="h-[600px]"
                                         bottomClassName="justify-between items-center "
+                                        href={`/tours/${createSlug(
+                                            tour.tour_name
+                                        )}`}
                                     />
                                 )
                             )}
@@ -115,6 +117,7 @@ export default async function Tours() {
                                 imgUrl={guide.imgUrl}
                                 title={guide.title}
                                 excerpt={guide.excerpt}
+                                href={`blog/${guide.slug}`}
                             />
                         </div>
                     ))}

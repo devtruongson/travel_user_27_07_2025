@@ -48,9 +48,8 @@ const carousel: KeenSliderPlugin = (slider) => {
     slider.on("created", () => {
         const deg = 360 / slider.slides.length;
         slider.slides.forEach((element, idx) => {
-            element.style.transform = `rotateY(${
-                deg * idx
-            }deg) translateZ(${z}px)`;
+            element.style.transform = `rotateY(${deg * idx
+                }deg) translateZ(${z}px)`;
 
             element.addEventListener("mouseenter", () => {
                 isPaused = true;
@@ -61,9 +60,8 @@ const carousel: KeenSliderPlugin = (slider) => {
             element.addEventListener("mouseleave", () => {
                 isPaused = false;
                 element.style.transition = "transform 0.3s";
-                element.style.transform = `rotateY(${
-                    deg * idx
-                }deg) translateZ(${z}px)`;
+                element.style.transform = `rotateY(${deg * idx
+                    }deg) translateZ(${z}px)`;
             });
         });
         progress = slider.track.details.progress;
@@ -102,8 +100,8 @@ export default function TourGuideCarousel(props: TProps) {
                         const languages = Array.isArray(guide.language)
                             ? guide.language
                             : guide.language
-                            ? [guide.language]
-                            : [];
+                                ? [guide.language]
+                                : [];
                         return (
                             <div
                                 className="carousel__cell rounded-[10px] relative"
@@ -158,13 +156,13 @@ export default function TourGuideCarousel(props: TProps) {
                                             {getPrice(guide.price_per_day)} VNĐ
                                         </div>
                                     </div>
-                                    <CustomButton className="tour-learn-more">
+                                    <CustomButton className="tour-learn-more" asLink href={`/service/huong-dan-vien/${guide.guide_id}`}>
                                         <span
                                             className="tour-circle"
                                             aria-hidden="true"
-                                        >
-                                            <span className="tour-icon tour-arrow"></span>
-                                        </span>
+                                        ></span>
+                                        <span className="tour-icon tour-arrow"></span>
+
                                         <span className="tour-button-text">
                                             Xem chi tiết
                                         </span>
@@ -174,7 +172,7 @@ export default function TourGuideCarousel(props: TProps) {
                         );
                     })}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

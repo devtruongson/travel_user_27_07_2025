@@ -3,15 +3,15 @@ import { PUBLIC_API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
 import { ReviewType } from "@/types/review";
 import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 type Props = {
     tour_id?: number;
 };
+
 const TourReviewUI = ({ tour_id }: Props) => {
-    console.log("Tour ID:", tour_id);
     const user = useSelector((state: RootState) => state.auth.user);
     const [reviews, setReviews] = useState<ReviewType[]>([]);
     const [newReview, setNewReview] = useState({
@@ -19,6 +19,9 @@ const TourReviewUI = ({ tour_id }: Props) => {
         comment: "",
     });
     const [showReviewForm, setShowReviewForm] = useState(false);
+    // Thêm state kiểm tra người dùng đã đặt tour chưa
+    const [hasBookedTour, setHasBookedTour] = useState(false);
+    const [checkingBooking, setCheckingBooking] = useState(false);
 
     const StarRating = ({
         rating,
@@ -65,21 +68,47 @@ const TourReviewUI = ({ tour_id }: Props) => {
     const getRatingDistribution = () => {
         const distribution = [0, 0, 0, 0, 0];
         if (reviews?.length) {
-            (reviews || []).forEach((review) => {
+            reviews.forEach((review) => {
                 distribution[review.rating - 1]++;
             });
         }
         return distribution.reverse();
     };
 
+    // Thêm hàm kiểm tra xem người dùng đã đặt tour chưa
+    const checkUserHasBookedTour = useCallback(async () => {
+        if (!user?.id || !tour_id) return;
+
+        setCheckingBooking(true);
+        try {
+            const res = await PUBLIC_API.get(
+                `/bookings/check-user-tour/${user.id}/${tour_id}`
+            );
+            setHasBookedTour(res?.data?.hasBooked || false);
+        } catch (error) {
+            console.error("Error checking booking history:", error);
+            setHasBookedTour(false);
+        } finally {
+            setCheckingBooking(false);
+        }
+    }, [user?.id, tour_id]);
+
     const handleSubmitReview = useCallback(async () => {
         if (!user?.id) {
-            toast("Vui lòng đăng nhập để đánh giá");
+            toast.error("Vui lòng đăng nhập để đánh giá");
             return;
         }
-        if (!newReview.rating || !newReview.comment) {
-            toast("Vui lòng điền đủ thông tin");
+
+        if (!hasBookedTour) {
+            toast.error("Bạn cần đặt tour này trước khi đánh giá");
+            return;
         }
+
+        if (!newReview.rating || !newReview.comment) {
+            toast.error("Vui lòng điền đủ thông tin");
+            return;
+        }
+
         try {
             const review = {
                 user_id: user?.id,
@@ -90,24 +119,23 @@ const TourReviewUI = ({ tour_id }: Props) => {
             const res = await PUBLIC_API.post("/reviews", review);
             if (res?.data?.succes) {
                 setReviews([res.data?.data, ...reviews]);
+                toast.success("Đánh giá của bạn đã được gửi thành công");
             }
-            console.log("Review submitted:", res);
-            setReviews([res?.data?.data, ...reviews]);
             setNewReview({ ...newReview, rating: 5, comment: "" });
             setShowReviewForm(false);
         } catch (error) {
-            console.log(error);
+            console.error("Error submitting review:", error);
+            toast.error("Có lỗi xảy ra khi gửi đánh giá");
         }
-    }, [newReview, reviews, tour_id, user?.id]);
+    }, [newReview, reviews, tour_id, user?.id, hasBookedTour]);
 
     useEffect(() => {
         if (tour_id) {
-            const fetch = async () => {
+            const fetchReviews = async () => {
                 try {
                     const res = await PUBLIC_API.get(
                         `/reviews/tour/${tour_id}`
                     );
-                    console.log("Fetched Reviews:", res?.data);
                     setReviews(res?.data?.data?.data || []);
                 } catch (error) {
                     console.error("Error fetching reviews:", error);
@@ -115,11 +143,14 @@ const TourReviewUI = ({ tour_id }: Props) => {
                 }
             };
 
-            fetch();
+            fetchReviews();
         }
     }, [tour_id]);
 
-    console.log("Reviews:", reviews);
+    // Thêm useEffect để kiểm tra booking khi user hoặc tour_id thay đổi
+    useEffect(() => {
+        checkUserHasBookedTour();
+    }, [checkUserHasBookedTour]);
 
     return (
         <div className="w-full bg-gray-50 min-h-screen">
@@ -160,7 +191,10 @@ const TourReviewUI = ({ tour_id }: Props) => {
                                         className="bg-yellow-400 h-2 rounded-full"
                                         style={{
                                             width: `${
-                                                (count / reviews.length) * 100
+                                                reviews.length
+                                                    ? (count / reviews.length) *
+                                                      100
+                                                    : 0
                                             }%`,
                                         }}
                                     ></div>
@@ -173,17 +207,33 @@ const TourReviewUI = ({ tour_id }: Props) => {
                     </div>
                 </div>
 
-                {/* Write Review Button */}
-                <button
-                    onClick={() => setShowReviewForm(!showReviewForm)}
-                    className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                    Viết đánh giá
-                </button>
+                {/* Write Review Button - Chỉ hiển thị nếu user đã book tour */}
+                {user?.id ? (
+                    checkingBooking ? (
+                        <div className="mt-4 italic text-gray-500">
+                            Đang kiểm tra thông tin...
+                        </div>
+                    ) : hasBookedTour ? (
+                        <button
+                            onClick={() => setShowReviewForm(!showReviewForm)}
+                            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                        >
+                            Viết đánh giá
+                        </button>
+                    ) : (
+                        <div className="mt-4 text-amber-600">
+                            Bạn cần đặt tour này trước khi có thể đánh giá
+                        </div>
+                    )
+                ) : (
+                    <div className="mt-4 text-amber-600">
+                        Vui lòng đăng nhập để đánh giá tour
+                    </div>
+                )}
             </div>
 
             {/* Review Form */}
-            {showReviewForm && (
+            {showReviewForm && hasBookedTour && (
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">
                         Viết đánh giá của bạn
@@ -262,7 +312,9 @@ const TourReviewUI = ({ tour_id }: Props) => {
                                 ) : (
                                     <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                                         <span className="text-gray-600 font-semibold">
-                                            {review?.user?.full_name.charAt(0)}
+                                            {review?.user?.full_name?.charAt(
+                                                0
+                                            ) || "?"}
                                         </span>
                                     </div>
                                 )}
@@ -272,6 +324,10 @@ const TourReviewUI = ({ tour_id }: Props) => {
                                         <div className="flex items-center space-x-2">
                                             <span className="font-medium text-gray-900">
                                                 {review?.user?.full_name}
+                                            </span>
+                                            {/* Thêm badge xác nhận người dùng đã trải nghiệm tour */}
+                                            <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                                                Đã trải nghiệm tour
                                             </span>
                                         </div>
                                         <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -291,26 +347,6 @@ const TourReviewUI = ({ tour_id }: Props) => {
                                     <p className="text-gray-700 mb-4">
                                         {review.comment}
                                     </p>
-
-                                    {/* <div className="flex items-center space-x-4 text-sm">
-                                        <button className="flex items-center space-x-1 text-gray-500 hover:text-green-600">
-                                            <span>👍</span>
-                                            <span>
-                                                Hữu ích ({review.likes})
-                                            </span>
-                                        </button>
-                                        <button className="flex items-center space-x-1 text-gray-500 hover:text-red-600">
-                                            <span>👎</span>
-                                            <span>
-                                                Không hữu ích ({review.dislikes}
-                                                )
-                                            </span>
-                                        </button>
-                                        <button className="flex items-center space-x-1 text-gray-500 hover:text-orange-600">
-                                            <span>🚩</span>
-                                            <span>Báo cáo</span>
-                                        </button>
-                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -327,23 +363,29 @@ const TourReviewUI = ({ tour_id }: Props) => {
                             Hãy là người đầu tiên chia sẻ trải nghiệm của bạn về
                             tour này
                         </p>
-                        <button
-                            onClick={() => setShowReviewForm(true)}
-                            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center space-x-2"
-                        >
-                            <span>✍️</span>
-                            <span>Viết đánh giá đầu tiên</span>
-                        </button>
+                        {user?.id ? (
+                            hasBookedTour ? (
+                                <button
+                                    onClick={() => setShowReviewForm(true)}
+                                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center space-x-2"
+                                >
+                                    <span>✍️</span>
+                                    <span>Viết đánh giá đầu tiên</span>
+                                </button>
+                            ) : (
+                                <div className="text-amber-600">
+                                    Bạn cần đặt tour này trước khi có thể đánh
+                                    giá
+                                </div>
+                            )
+                        ) : (
+                            <div className="text-amber-600">
+                                Vui lòng đăng nhập để đánh giá tour
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
-
-            {/* Load More */}
-            {/* <div className="text-center mt-8">
-                <button className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">
-                    Xem thêm đánh giá
-                </button>
-            </div> */}
         </div>
     );
 };

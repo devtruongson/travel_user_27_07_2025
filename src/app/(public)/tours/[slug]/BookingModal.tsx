@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -63,10 +64,10 @@ export default function BookingModal({
             data?.vehicle === "airplane"
                 ? 2000000
                 : data?.vehicle === "bus"
-                    ? 300000
-                    : data?.vehicle === "train"
-                        ? 200000
-                        : 0;
+                ? 300000
+                : data?.vehicle === "train"
+                ? 200000
+                : 0;
         const priceHotel =
             services.hotels.find((h: any) => h.hotel_id == form.hotel_id)
                 ?.price || 0;
@@ -160,7 +161,9 @@ export default function BookingModal({
             }
             const res = await API.post("/bookings", body);
 
-            toast.success("Đặt tour thành công, đang chuyển đến trang thanh toán! 🎉");
+            toast.success(
+                "Đặt tour thành công, đang chuyển đến trang thanh toán! 🎉"
+            );
             onClose();
 
             if (res.data.payment_url) {
@@ -168,7 +171,12 @@ export default function BookingModal({
             }
         } catch (error: any) {
             console.error("Booking error: ", error);
-            toast.error("Đặt tour thất bại. Vui lòng thử lại!", error);
+            toast.error(
+                error?.response?.data?.message
+                    ? error?.response?.data?.message
+                    : "Đặt tour thất bại. Vui lòng thử lại!",
+                error
+            );
         } finally {
             setIsLoading(false);
         }
@@ -232,8 +240,8 @@ export default function BookingModal({
     const endDate =
         form.start_date && tour?.duration
             ? dayjs(form.start_date)
-                .add(tour.duration, "day")
-                .format("DD/MM/YYYY")
+                  .add(tour.duration, "day")
+                  .format("DD/MM/YYYY")
             : null;
 
     // const totalPrice = tour
@@ -459,7 +467,7 @@ export default function BookingModal({
                                                             <select
                                                                 value={
                                                                     form[
-                                                                    key as keyof typeof form
+                                                                        key as keyof typeof form
                                                                     ] as any
                                                                 }
                                                                 onChange={(e) =>
@@ -481,19 +489,19 @@ export default function BookingModal({
                                                                         <option
                                                                             key={
                                                                                 item[
-                                                                                id
+                                                                                    id
                                                                                 ] +
                                                                                 "_fstack"
                                                                             }
                                                                             value={
                                                                                 item[
-                                                                                id
+                                                                                    id
                                                                                 ]
                                                                             }
                                                                         >
                                                                             {
                                                                                 item[
-                                                                                name
+                                                                                    name
                                                                                 ]
                                                                             }
                                                                         </option>
@@ -529,11 +537,12 @@ export default function BookingModal({
                                                 ].map((method) => (
                                                     <label
                                                         key={method.value}
-                                                        className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${form.payment_method ===
+                                                        className={`relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                            form.payment_method ===
                                                             method.value
-                                                            ? "border-blue-500 bg-blue-50"
-                                                            : "border-gray-200 hover:border-gray-300"
-                                                            }`}
+                                                                ? "border-blue-500 bg-blue-50"
+                                                                : "border-gray-200 hover:border-gray-300"
+                                                        }`}
                                                     >
                                                         <input
                                                             type="radio"
@@ -559,10 +568,10 @@ export default function BookingModal({
                                                         </div>
                                                         {form.payment_method ===
                                                             method.value && (
-                                                                <div className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
-                                                                    ✓
-                                                                </div>
-                                                            )}
+                                                            <div className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                                                ✓
+                                                            </div>
+                                                        )}
                                                     </label>
                                                 ))}
                                             </div>
@@ -586,13 +595,13 @@ export default function BookingModal({
                                                 {form.quantity} người ×{" "}
                                                 {tour?.discount_price
                                                     ? parseInt(
-                                                        tour.discount_price
-                                                    ).toLocaleString()
+                                                          tour.discount_price
+                                                      ).toLocaleString()
                                                     : tour?.price
-                                                        ? parseInt(
-                                                            tour.price
-                                                        ).toLocaleString()
-                                                        : "0"}
+                                                    ? parseInt(
+                                                          tour.price
+                                                      ).toLocaleString()
+                                                    : "0"}
                                                 ₫
                                             </p>
                                         </div>

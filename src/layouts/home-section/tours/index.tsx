@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import styles from "./style.module.css";
 import ButtonGlobal from "@/components/buttonGlobal";
 import TourCard from "@/components/tourCard";
-import TOURDATA from "@/data/featured_tours.json";
-import GUIDEDATA from "@/data/travel_guide.json";
-import Marquee from "react-fast-marquee";
 import GuideCard from "@/components/travelGuideCard";
-import Image from "next/image";
-import { PUBLIC_API } from "@/lib/api";
-import getPrice from "@/utils/getPrice";
+import { BACKEND, PUBLIC_API } from "@/lib/api";
 import { createSlug } from "@/utils/slug";
+import Image from "next/image";
+import Marquee from "react-fast-marquee";
+import styles from "./style.module.css";
 
 const getToures = async () => {
     try {
@@ -21,8 +18,23 @@ const getToures = async () => {
     }
 };
 
+const getBlogs = async () => {
+    try {
+        const response = await BACKEND.get(`/blogs`);
+
+        if (response.data && response.data.data && response.data.data.data) {
+            return response.data.data.data;
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching blogs:", error);
+        return [];
+    }
+};
+
 export default async function Tours() {
     const tours = await getToures();
+    const blogs = await getBlogs();
     const length = tours?.length || 0;
     const firstList = tours?.slice(0, length / 2);
     const secondList = tours?.slice(length / 2);
@@ -35,7 +47,12 @@ export default async function Tours() {
                     <h2 className="font-[900] text-[#8e00fb] text-[52px]">
                         Khám phá Việt Nam cùng VTravel
                     </h2>
-                    <ButtonGlobal text="Khám phá ngay" className="mt-8" asLink href="/tours" />
+                    <ButtonGlobal
+                        text="Khám phá ngay"
+                        className="mt-8"
+                        asLink
+                        href="/tours"
+                    />
                 </div>
                 <div className="w-[calc(100%-400px)] ml-[400px] relative z-2">
                     <div className="flex gap-7">
@@ -44,8 +61,9 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
-                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                            }/${tour?.image || ""}`}
+                                        imgUrl={`${
+                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                        }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}
@@ -67,8 +85,9 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
-                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                            }/${tour?.image || ""}`}
+                                        imgUrl={`${
+                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                        }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}
@@ -110,17 +129,29 @@ export default async function Tours() {
                     direction="left"
                     className="cursor-pointer"
                 >
-                    {GUIDEDATA.map((guide, index) => (
-                        <div className="mx-2 sm:mx-4" key={index}>
-                            <GuideCard
-                                address={guide.address}
-                                imgUrl={guide.imgUrl}
-                                title={guide.title}
-                                excerpt={guide.excerpt}
-                                href={`blog/${guide.slug}`}
-                            />
+                    {blogs && blogs.length > 0 ? (
+                        blogs.map((blog: any, index: number) => (
+                            <div
+                                className="mx-2 sm:mx-4"
+                                key={blog.id || index}
+                            >
+                                <GuideCard
+                                    address={blog.location || "Việt Nam"}
+                                    imgUrl={
+                                        blog.thumbnail_url ||
+                                        "/images/blog-placeholder.jpg"
+                                    }
+                                    title={blog.title}
+                                    excerpt={blog.description}
+                                    href={`/blog/${blog.slug}`}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-white text-center w-full py-4">
+                            Không tìm thấy dữ liệu blog.
                         </div>
-                    ))}
+                    )}
                 </Marquee>
             </div>
         </section>

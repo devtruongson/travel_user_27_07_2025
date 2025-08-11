@@ -2,9 +2,9 @@
 import TourGuideCarousel from "@/components/tourGuideCarousel";
 // import TOURGUIDEDATA from "@/data/tour_guide.json";
 import ButtonGlobal from "@/components/buttonGlobal";
+import { PUBLIC_API } from "@/lib/api";
 import Image from "next/image";
 import styles from "./style.module.css";
-import { PUBLIC_API } from "@/lib/api";
 
 const getGuide = async () => {
     try {
@@ -36,7 +36,12 @@ export default async function Guide() {
                         Tận hưởng từng khoảnh khắc trong chuyến hành trình của
                         bạn cùng VTravel!
                     </p>
-                    <ButtonGlobal text="Xem thêm" className="mt-10" asLink href="/service/thue-huong-dan-vien" />
+                    <ButtonGlobal
+                        text="Xem thêm"
+                        className="mt-10"
+                        asLink
+                        href="/service/thue-huong-dan-vien"
+                    />
                 </div>
                 <div className="w-1/2">
                     <TourGuideCarousel guides={guides} />

@@ -5,9 +5,10 @@ export const getGuides = async () => {
         const res = await PUBLIC_API.get(
             `${process.env.NEXT_PUBLIC_API_URL}/guides`
         );
+        console.log("Guides API response:", res?.data);
         return res?.data || [];
     } catch (error) {
         console.error("Error fetching guides:", error);
-        return null;
+        return [];
     }
 };

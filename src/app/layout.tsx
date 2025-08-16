@@ -1,6 +1,6 @@
 import BackToTop from "@/components/backToTop";
-import BtnBookNow from "@/components/bookNow";
 import BookChat from "@/components/boxchat";
+import LiveChat from "@/components/LiveChat";
 import Footer from "@/layouts/footer";
 import Header from "@/layouts/header";
 import type { Metadata } from "next";
@@ -53,6 +53,7 @@ export default async function RootLayout({
                     {/* <BtnBookNow /> */}
                     <BookChat />
                     <BackToTop />
+                    <LiveChat />
                 </Providers>
             </body>
         </html>

@@ -228,20 +228,11 @@ export default function HeaderClient({ navigation }: Props) {
                                                                 href="/profile"
                                                                 className="text-black"
                                                             >
-                                                                Thông tin tài
-                                                                khoản
+                                                                Hồ sơ & Đơn hàng
                                                             </Link>
                                                         </li>
                                                         <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
                                                             Tours yêu thích
-                                                        </li>
-                                                        <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
-                                                            <Link
-                                                                href="/myorder"
-                                                                className="text-black"
-                                                            >
-                                                                Đơn hàng
-                                                            </Link>
                                                         </li>
                                                         <li className="px-5 py-2">
                                                             <AlertDialog>

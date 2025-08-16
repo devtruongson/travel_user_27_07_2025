@@ -1,7 +1,5 @@
-import ProfileClient from "./profile";
+import CombinedProfileClient from "./combined";
 
 export default function ProfilePage() {
-  return (
-    <ProfileClient />
-  )
+    return <CombinedProfileClient />;
 }

@@ -5,7 +5,7 @@ import ScrollDownIndicator from "@/components/scrollDownIndicator";
 import BannerPage from "@/layouts/banner";
 import { BACKEND } from "@/lib/api";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -21,7 +21,7 @@ interface Blog {
     thumbnail_url: string;
     created_at: string;
     slug: string;
-    views_count: number;
+    view_count: number;
     author: string;
 }
 
@@ -29,9 +29,14 @@ export default function BlogDetail({ params }: { params: { slug: string } }) {
     const [blog, setBlog] = useState<Blog | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const hasFetched = useRef(false);
 
     useEffect(() => {
         const fetchBlogDetail = async () => {
+            // Ngăn chặn gọi API 2 lần
+            if (hasFetched.current) return;
+            hasFetched.current = true;
+
             try {
                 setLoading(true);
 
@@ -116,7 +121,7 @@ export default function BlogDetail({ params }: { params: { slug: string } }) {
                         <div>
                             <p className="text-gray-600">
                                 <span className="font-medium">Lượt xem:</span>{" "}
-                                {blog.views_count || 0}
+                                {blog.view_count || 0}
                             </p>
                         </div>
                     </div>

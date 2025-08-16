@@ -18,7 +18,7 @@ interface Blog {
     thumbnail_url: string;
     created_at: string;
     slug: string;
-    views_count: number;
+    view_count: number;
     author: string;
 }
 
@@ -147,7 +147,7 @@ export default function BlogPage() {
                                                     )}
                                                 </p>
                                                 <p className="text-[18px] font-normal text-gray-900 px-6">
-                                                    {featuredBlog.views_count ||
+                                                    {featuredBlog.view_count ||
                                                         0}{" "}
                                                     lượt xem
                                                 </p>
@@ -194,7 +194,7 @@ export default function BlogPage() {
                                                         )}
                                                     </p>
                                                     <p className="text-[16px] font-normal text-gray-900 px-6">
-                                                        {blog.views_count || 0}{" "}
+                                                        {blog.view_count || 0}{" "}
                                                         lượt xem
                                                     </p>
                                                 </div>

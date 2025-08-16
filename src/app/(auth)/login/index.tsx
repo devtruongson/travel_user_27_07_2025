@@ -44,12 +44,14 @@ type Props = {
     onSwitch: () => void;
     onLoginVerifiedSuccess: (user: any) => void;
     onNeedVerify: (userId: string) => void;
+    onForgotPassword: () => void;
 };
 
 export default function LoginForm({
     onSwitch,
     onLoginVerifiedSuccess,
     onNeedVerify,
+    onForgotPassword,
 }: Props) {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -197,6 +199,16 @@ export default function LoginForm({
                 >
                     {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </Button>
+
+                <div className="text-center mt-3">
+                    <button
+                        type="button"
+                        onClick={onForgotPassword}
+                        className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800"
+                    >
+                        Quên mật khẩu?
+                    </button>
+                </div>
             </form>
 
             <div className="text-sm text-center mt-4">

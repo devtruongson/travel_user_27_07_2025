@@ -11,6 +11,8 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { API } from "@/lib/api";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { updateUserAvatar } from "@/lib/redux/slices/authSlice";
 import type { RootState } from "@/lib/redux/store";
 import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
@@ -135,6 +137,7 @@ const Badge = ({
 
 export default function CombinedProfileClient() {
     const user = useSelector((state: RootState) => state.auth.user);
+    const dispatch = useDispatch();
 
     // Profile states
     const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
@@ -179,20 +182,31 @@ export default function CombinedProfileClient() {
     };
 
     const handleUpdateAvatar = useCallback(async () => {
-        if (!selectedAvatarFile || !user) return;
+        if (!selectedAvatarFile) {
+            toast.error("Vui lòng chọn ảnh trước khi cập nhật avatar");
+            return;
+        }
+        console.log("selectedAvatarFile", selectedAvatarFile);
         setProfileLoading(true);
         try {
             const formData = new FormData();
             formData.append("avatar", selectedAvatarFile);
 
-            await API.put(`/user/${user?.id}`, formData, {
+            const res = await API.post("/profile/avatar", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
             toast.success("Cập nhật avatar thành công");
-            setPreviewUrl(null);
+            // Cập nhật lại avatar_url nếu backend trả về avatar_url mới
+            if (res.data?.avatar_url) {
+                setPreviewUrl(res.data.avatar_url);
+                // Cập nhật avatar vào Redux store
+                dispatch(updateUserAvatar(res.data.avatar_url));
+            } else {
+                setPreviewUrl(null);
+            }
         } catch (error: any) {
             toast.error(
                 error?.response?.data?.message || "Lỗi cập nhật avatar"
@@ -200,7 +214,7 @@ export default function CombinedProfileClient() {
         } finally {
             setProfileLoading(false);
         }
-    }, [selectedAvatarFile, user]);
+    }, [selectedAvatarFile, dispatch]);
 
     // Booking handlers
     const getStatusColor = (status: string) => {

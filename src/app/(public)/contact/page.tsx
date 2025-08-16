@@ -1,3 +1,4 @@
+"use client";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,10 @@ import style from "./style.module.css";
 import BannerPage from "@/layouts/banner";
 import MotionFade from "@/components/motionFade";
 import styles from "./style.module.css";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { toast } from "sonner";
+import { PUBLIC_API } from "@/lib/api";
 import {
     Select,
     SelectContent,
@@ -25,6 +30,67 @@ xl: 1280px
 */
 
 export default function ContactPage() {
+    const [loading, setLoading] = useState(false);
+    const [service, setService] = useState("");
+    
+    // State cho form
+    const [formData, setFormData] = useState({
+        fullname: "",
+        email: "",
+        phone: "",
+        content: ""
+    });
+
+    // Xử lý thay đổi input
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // Xử lý submit form
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!formData.fullname || !formData.email || !formData.phone || !formData.content || !service) {
+            toast.error("Vui lòng điền đầy đủ thông tin");
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            // Gọi API để lưu contact
+            await PUBLIC_API.post("/contacts", {
+                service_type: service,
+                full_name: formData.fullname,
+                email: formData.email, 
+                phone: formData.phone,
+                message: formData.content,
+                status: "pending"
+            });
+            
+            toast.success("Gửi yêu cầu liên hệ thành công!");
+            
+            // Reset form
+            setFormData({
+                fullname: "",
+                email: "",
+                phone: "",
+                content: ""
+            });
+            setService("");
+            
+        } catch (error) {
+            console.error("Error submitting contact form:", error);
+            toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div>
             <BannerPage classNameSection={`${style.banner} h-screen w-full`}>
@@ -66,123 +132,140 @@ export default function ContactPage() {
                     </TabsList>
                     <TabsContent value="account">
                         <div className="xl:w-5xl lg:w-3xl md:w-2xl sm:w-xl h-auto mx-auto mb-7 bg-white border border-s-gray-100 rounded-xl px-14 py-7">
-                            <div>
-                                <label
-                                    htmlFor=""
-                                    className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
-                                >
-                                    Tên dịch vụ
-                                </label>
+                            <form onSubmit={handleSubmit}>
                                 <div>
-                                    <Select>
-                                        <div className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
-                                            <SelectTrigger>
-                                                <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
-                                                    <SelectValue placeholder="Chọn dịch vụ" />
-                                                </div>
-                                            </SelectTrigger>
+                                    <label
+                                        htmlFor=""
+                                        className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold"
+                                    >
+                                        Tên dịch vụ
+                                    </label>
+                                    <div>
+                                        <Select value={service} onValueChange={setService}>
+                                            <div className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-[60px] rounded-xl border border-blue-400 cursor-pointer mt-2 px-0 py-3">
+                                                <SelectTrigger>
+                                                    <div className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-medium px-0">
+                                                        <SelectValue placeholder="Chọn dịch vụ" />
+                                                    </div>
+                                                </SelectTrigger>
+                                            </div>
+                                            <SelectContent>
+                                                <SelectGroup className="xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-medium rounded-xl">
+                                                    <SelectLabel className="text-xl font-medium">
+                                                        Chọn dịch vụ
+                                                    </SelectLabel>
+                                                    <SelectItem
+                                                        className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
+                                                        value="flight"
+                                                    >
+                                                        Vé máy bay
+                                                    </SelectItem>
+                                                    <SelectItem
+                                                        className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
+                                                        value="tour"
+                                                    >
+                                                        Du lịch
+                                                    </SelectItem>
+                                                    <SelectItem
+                                                        className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
+                                                        value="hotel"
+                                                    >
+                                                        Khách sạn
+                                                    </SelectItem>
+                                                    <SelectItem
+                                                        className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
+                                                        value="visa"
+                                                    >
+                                                        Visa
+                                                    </SelectItem>
+                                                    <SelectItem
+                                                        className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
+                                                        value="recruitment"
+                                                    >
+                                                        Tuyển dụng
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className=" xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-auto mt-8">
+                                    <Label
+                                        className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
+                                        htmlFor="fullname"
+                                    >
+                                        Tên của bạn
+                                    </Label>
+                                    <div className="w-full border border-blue-400 rounded-xl">
+                                        <Input
+                                            type="text"
+                                            name="fullname"
+                                            placeholder="Nhập tên đầy đủ"
+                                            value={formData.fullname}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex xl:flex-nowrap lg:flex-nowrap md:flex-wrap sm:flex-wrap mt-7 ">
+                                    <div>
+                                        <Label
+                                            className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
+                                            htmlFor="email"
+                                        >
+                                            Email
+                                        </Label>
+                                        <div className="xl:w-[600px] lg:w-[480px] md:w-xl sm:w-lg border border-blue-400 rounded-xl">
+                                            <Input
+                                                type="text"
+                                                name="email"
+                                                placeholder="Nhập email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                            />
                                         </div>
-                                        <SelectContent>
-                                            <SelectGroup className="xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-medium rounded-xl">
-                                                <SelectLabel className="text-xl font-medium">
-                                                    Chọn dịch vụ
-                                                </SelectLabel>
-                                                <SelectItem
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="apple"
-                                                >
-                                                    Vé máy bay
-                                                </SelectItem>
-                                                <SelectItem
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="banana"
-                                                >
-                                                    Du lịch
-                                                </SelectItem>
-                                                <SelectItem
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="blueberry"
-                                                >
-                                                    Khách sạn
-                                                </SelectItem>
-                                                <SelectItem
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="grapes"
-                                                >
-                                                    Visa
-                                                </SelectItem>
-                                                <SelectItem
-                                                    className="xl:text-lg lg:text-lg md:text-sm sm:text-sm px-5 h-12"
-                                                    value="pineapple"
-                                                >
-                                                    Tuyển dụng
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    </div>
+                                    <div className="xl:ml-3 lg:ml-3 md:ml-0 sm:ml-0 xl:mt-0 lg:mt-0 md:mt-7 sm:mt-7">
+                                        <Label
+                                            className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
+                                            htmlFor="phone"
+                                        >
+                                            Số điện thoại
+                                        </Label>
+                                        <div className="xl:w-full lg:w-full md:w-xl sm:w-lg border border-blue-400 rounded-xl">
+                                            <Input
+                                                type="text"
+                                                name="phone"
+                                                placeholder="Nhập số điện thoại"
+                                                value={formData.phone}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className=" xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-auto mt-8">
-                                <Label
-                                    className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
-                                    htmlFor="fullname"
-                                >
-                                    Tên của bạn
-                                </Label>
-                                <div className="w-full border border-blue-400 rounded-xl">
-                                    <Input
-                                        type="text"
-                                        name="fullname"
-                                        placeholder="Nhập tên đầy đủ"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex xl:flex-nowrap lg:flex-nowrap md:flex-wrap sm:flex-wrap mt-7 ">
-                                <div>
+                                <div className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-auto mt-8">
                                     <Label
                                         className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
-                                        htmlFor="email"
+                                        htmlFor="content"
                                     >
-                                        Email
+                                        Nội dung bạn muốn gửi
                                     </Label>
-                                    <div className="xl:w-[600px] lg:w-[480px] md:w-xl sm:w-lg border border-blue-400 rounded-xl">
-                                        <Input
-                                            type="text"
-                                            name="email"
-                                            placeholder="Nhập email"
+                                    <div className="w-full min-h-56 border border-blue-400 rounded-xl mb-3">
+                                        <Textarea 
+                                            name="content"
+                                            placeholder="Nhập nội dung của bạn ở đây!" 
+                                            value={formData.content}
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                 </div>
-                                <div className="xl:ml-3 lg:ml-3 md:ml-0 sm:ml-0 xl:mt-0 lg:mt-0 md:mt-7 sm:mt-7">
-                                    <Label
-                                        className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
-                                        htmlFor="phone"
-                                    >
-                                        Số điện thoại
-                                    </Label>
-                                    <div className="xl:w-full lg:w-full md:w-xl sm:w-lg border border-blue-400 rounded-xl">
-                                        <Input
-                                            type="text"
-                                            name="phone"
-                                            placeholder="Nhập số điện thoại"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-auto mt-8">
-                                <Label
-                                    className="xl:text-xl lg:text-xl md:text-lg sm:text-lg font-bold mb-2"
-                                    htmlFor=""
+                                <button 
+                                    type="submit"
+                                    disabled={loading}
+                                    className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-[60px] xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-bold text-center text-white bg-blue-400 hover:bg-blue-500 disabled:bg-blue-300 rounded-2xl mt-4 cursor-pointer mb-8 transition-colors"
                                 >
-                                    Nội dung bạn muốn gửi
-                                </Label>
-                                <div className="w-full min-h-56 border border-blue-400 rounded-xl mb-3">
-                                    <Textarea placeholder="Nhập nội dung của bạn ở đây!" />
-                                </div>
-                            </div>
-                            <button className="xl:w-4xl lg:w-2xl md:w-xl sm:w-lg h-[60px] xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-bold text-center text-white bg-blue-400 rounded-2xl mt-4 cursor-pointer mb-8">
-                                Gửi ngay
-                            </button>
+                                    {loading ? "Đang gửi..." : "Gửi ngay"}
+                                </button>
+                            </form>
 
                             <div className="xl:w-4xl lg:w-3xl md:w-2xl sm:w-xl h-auto rounded-2xl mb-7 px-14 py-7 bg-white border border-s-gray-100">
                                 <h1 className="xl:text-2xl lg:text-2xl md:text-xl sm:text-xl font-bold mb-1.5">

@@ -44,21 +44,35 @@ export default function BookingModal({
         hotel_id: "",
         bus_route_id: "",
         motorbike_id: "",
-        payment_method: "COD",
+        payment_method: "1",
+        promotion_code: "",
     });
     const [services, setServices] = useState({
-        guides: [],
-        hotels: [],
-        busRoutes: [],
-        motorbikes: [],
+        guides: [] as any[],
+        hotels: [] as any[],
+        busRoutes: [] as any[],
+        motorbikes: [] as any[],
     });
     const [isLoading, setIsLoading] = useState(false);
-    const price = useMemo(() => {
+    const [isVerifyingPromo, setIsVerifyingPromo] = useState(false);
+    const [isLoadingPromotions, setIsLoadingPromotions] = useState(false);
+    const [promoInfo, setPromoInfo] = useState<null | {
+        discount_type: string;
+        discount_value: number;
+        discount_amount: number;
+    }>(null);
+    const [availablePromotions, setAvailablePromotions] = useState<any[]>([]);
+    const [showPromotions, setShowPromotions] = useState(false);
+
+    // Tính giá trước khi áp dụng mã giảm giá
+    const basePrice = useMemo(() => {
         if (tour) {
             return (
-                parseInt(tour?.discount_price || tour?.price) * form?.quantity
+                parseInt(tour?.discount_price || tour?.price || 0) *
+                (form?.quantity || 1)
             );
         }
+
         let p = 1200000;
         const priceVehicle =
             data?.vehicle === "airplane"
@@ -68,79 +82,192 @@ export default function BookingModal({
                 : data?.vehicle === "train"
                 ? 200000
                 : 0;
-        const priceHotel =
-            services.hotels.find((h: any) => h.hotel_id == form.hotel_id)
-                ?.price || 0;
-        const priceGuide =
-            services.guides.find((g: any) => g.guide_id == form.guide_id)
-                ?.price_per_day || 0;
-        const priceBus =
-            services.busRoutes.find(
-                (b: any) => b.bus_route_id == form.bus_route_id
-            )?.price || 0;
-        const priceBike =
-            services.motorbikes.find(
-                (b: any) => b.motorbike_id == form.motorbike_id
-            )?.price_per_day || 0;
-        const totalPriceService =
-            Number(priceBus) +
-            Number(priceHotel) +
-            Number(priceGuide) +
-            Number(priceBike);
 
-        if (data?.duration == "1") {
+        const priceHotel =
+            services?.hotels?.find(
+                (h: any) =>
+                    h?.hotel_id?.toString() === form?.hotel_id?.toString()
+            )?.price || 0;
+
+        const priceGuide =
+            services?.guides?.find(
+                (g: any) =>
+                    g?.guide_id?.toString() === form?.guide_id?.toString()
+            )?.price_per_day || 0;
+
+        const priceBus =
+            services?.busRoutes?.find(
+                (b: any) =>
+                    b?.bus_route_id?.toString() ===
+                    form?.bus_route_id?.toString()
+            )?.price || 0;
+
+        const priceBike =
+            services?.motorbikes?.find(
+                (b: any) =>
+                    b?.motorbike_id?.toString() ===
+                    form?.motorbike_id?.toString()
+            )?.price_per_day || 0;
+
+        const totalPriceService =
+            Number(priceBus || 0) +
+            Number(priceHotel || 0) +
+            Number(priceGuide || 0) +
+            Number(priceBike || 0);
+
+        if (data?.duration === "1") {
             p = 1200000 + 2 * totalPriceService;
-        }
-        if (data?.duration == "2") {
+        } else if (data?.duration === "2") {
             p = 1200000 + 3 * totalPriceService;
-        }
-        if (data?.duration == "3") {
+        } else if (data?.duration === "3") {
             p = 1200000 + 4 * totalPriceService;
-        }
-        if (data?.duration == "4") {
+        } else if (data?.duration === "4") {
             p = 1200000 + 5 * totalPriceService;
         }
-        return (p + priceVehicle) * form?.quantity;
+
+        return (p + priceVehicle) * (form?.quantity || 1);
     }, [
         data?.duration,
         data?.vehicle,
-        form.bus_route_id,
-        form.guide_id,
-        form.hotel_id,
-        form.motorbike_id,
-        form.quantity,
-        services.busRoutes,
-        services.guides,
-        services.hotels,
-        services.motorbikes,
+        form?.bus_route_id,
+        form?.guide_id,
+        form?.hotel_id,
+        form?.motorbike_id,
+        form?.quantity,
+        services?.busRoutes,
+        services?.guides,
+        services?.hotels,
+        services?.motorbikes,
         tour,
     ]);
 
+    // Tính giá sau khi áp dụng mã giảm giá
+    const finalPrice = useMemo(() => {
+        if (!promoInfo) return basePrice;
+
+        return Math.max(0, basePrice - (promoInfo?.discount_amount || 0));
+    }, [basePrice, promoInfo]);
+
     const handleChange = (key: string, value: any) => {
         setForm((prev) => ({ ...prev, [key]: value }));
+
+        // Reset promo info if code is cleared
+        if (key === "promotion_code" && !value) {
+            setPromoInfo(null);
+        }
+    };
+
+    // Xác thực mã giảm giá
+    const verifyPromoCode = async () => {
+        if (!form?.promotion_code) {
+            toast.warning("Vui lòng nhập mã giảm giá");
+            return;
+        }
+
+        setIsVerifyingPromo(true);
+        try {
+            const response = await PUBLIC_API.post("/promotions/validate", {
+                code: form.promotion_code,
+                order_total: basePrice,
+            });
+
+            if (response?.data?.success) {
+                const { promotion, discount_amount } =
+                    response?.data?.data || {};
+                setPromoInfo({
+                    discount_type: promotion?.discount_type || "fixed",
+                    discount_value: promotion?.discount_value || 0,
+                    discount_amount: discount_amount || 0,
+                });
+                toast.success("Áp dụng mã giảm giá thành công");
+            } else {
+                setPromoInfo(null);
+                toast.error(
+                    response?.data?.message || "Mã giảm giá không hợp lệ"
+                );
+            }
+        } catch (error: any) {
+            setPromoInfo(null);
+            toast.error(
+                error?.response?.data?.message ||
+                    "Không thể xác thực mã giảm giá"
+            );
+        } finally {
+            setIsVerifyingPromo(false);
+        }
+    };
+
+    // Lấy danh sách mã giảm giá có sẵn
+    const fetchAvailablePromotions = async () => {
+        setIsLoadingPromotions(true);
+        try {
+            const response = await PUBLIC_API.get("/promotions/available", {
+                params: {
+                    order_total: basePrice, // Gửi thêm giá trị đơn hàng để server lọc mã phù hợp
+                },
+            });
+            if (response?.data?.success) {
+                setAvailablePromotions(response?.data?.data || []);
+                return response?.data?.data || [];
+            } else {
+                setAvailablePromotions([]);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error fetching promotions:", error);
+            setAvailablePromotions([]);
+            return [];
+        } finally {
+            setIsLoadingPromotions(false);
+        }
+    };
+
+    // Xử lý khi click vào nút "Chọn mã"
+    const handleShowPromotions = async () => {
+        if (showPromotions) {
+            // Nếu đang hiển thị, ẩn dropdown
+            setShowPromotions(false);
+        } else {
+            // Nếu chưa hiển thị, gọi API lấy danh sách mã và hiển thị dropdown
+            setShowPromotions(true);
+
+            // Nếu chưa có danh sách mã hoặc muốn refresh
+            if (availablePromotions.length === 0) {
+                await fetchAvailablePromotions();
+            }
+        }
+    };
+
+    // Chọn mã giảm giá từ danh sách
+    const selectPromotion = (code: string) => {
+        if (!code) return;
+
+        handleChange("promotion_code", code);
+        setShowPromotions(false);
+        verifyPromoCode();
     };
 
     const handleBooking = useCallback(async () => {
-        if (!form.start_date || !user || (!isCustom && !tour)) {
+        if (!form?.start_date || !user || (!isCustom && !tour)) {
             toast.warning("Vui lòng điền đầy đủ thông tin");
             return;
         }
+
         setIsLoading(true);
         try {
             let body = {
-                user_id: user.id,
-                // tour_id: tour.tour_id,
+                user_id: user?.id,
                 custom_tour_id: null,
-                guide_id: form.guide_id || null,
-                hotel_id: form.hotel_id || null,
-                bus_route_id: form.bus_route_id || null,
-                motorbike_id: form.motorbike_id || null,
-                quantity: form.quantity,
-                start_date: dayjs(form.start_date).format("YYYY-MM-DD"),
-                total_price: price,
-                // parseInt(tour.discount_price || tour.price) * form.quantity,
-                payment_method_id: form.payment_method,
+                guide_id: form?.guide_id || null,
+                hotel_id: form?.hotel_id || null,
+                bus_route_id: form?.bus_route_id || null,
+                motorbike_id: form?.motorbike_id || null,
+                quantity: form?.quantity || 1,
+                start_date: dayjs(form?.start_date).format("YYYY-MM-DD"),
+                total_price: finalPrice, // Sử dụng giá đã trừ giảm giá
+                payment_method_id: form?.payment_method || "1",
                 status: "pending",
+                promotion_code: promoInfo ? form?.promotion_code : null, // Thêm mã giảm giá nếu có
             } as any;
 
             if (isCustom && data) {
@@ -149,16 +276,17 @@ export default function BookingModal({
                     dataCustom: {
                         ...data,
                         duation:
-                            times.find((t) => t.value === data.duration)
+                            times?.find((t) => t?.value === data?.duration)
                                 ?.label || "",
                     },
                 };
-            } else {
+            } else if (tour?.tour_id) {
                 body = {
                     ...body,
                     tour_id: tour.tour_id,
                 };
             }
+
             const res = await API.post("/bookings", body);
 
             toast.success(
@@ -166,14 +294,14 @@ export default function BookingModal({
             );
             onClose();
 
-            if (res.data.payment_url) {
+            if (res?.data?.payment_url) {
                 window.location.href = res.data.payment_url;
             }
         } catch (error: any) {
             console.error("Booking error: ", error);
             toast.error(
                 error?.response?.data?.message
-                    ? error?.response?.data?.message
+                    ? error.response.data.message
                     : "Đặt tour thất bại. Vui lòng thử lại!",
                 error
             );
@@ -182,19 +310,18 @@ export default function BookingModal({
         }
     }, [
         data,
-        form.bus_route_id,
-        form.guide_id,
-        form.hotel_id,
-        form.motorbike_id,
-        form.payment_method,
-        form.quantity,
-        form.start_date,
+        form?.bus_route_id,
+        form?.guide_id,
+        form?.hotel_id,
+        form?.motorbike_id,
+        form?.payment_method,
+        form?.promotion_code,
+        form?.quantity,
+        form?.start_date,
+        finalPrice,
         isCustom,
         onClose,
-        services.busRoutes,
-        services.guides,
-        services.hotels,
-        services.motorbikes,
+        promoInfo,
         tour,
         user,
     ]);
@@ -209,44 +336,68 @@ export default function BookingModal({
 
         const fetchData = async () => {
             try {
-                const [guideRes, hotelRes, busRes, bikeRes] = await Promise.all(
-                    [
-                        PUBLIC_API.get("/guides"),
-                        PUBLIC_API.get("/hotels"),
-                        PUBLIC_API.get("/bus-routes"),
-                        PUBLIC_API.get("/motorbikes"),
-                    ]
-                );
+                const results = await Promise.allSettled([
+                    PUBLIC_API.get("/guides"),
+                    PUBLIC_API.get("/hotels"),
+                    PUBLIC_API.get("/bus-routes"),
+                    PUBLIC_API.get("/motorbikes"),
+                ]);
+
+                // Xử lý kết quả, đảm bảo dữ liệu luôn là mảng ngay cả khi có lỗi
+                const guideRes =
+                    results[0].status === "fulfilled"
+                        ? results[0].value?.data || []
+                        : [];
+                const hotelRes =
+                    results[1].status === "fulfilled"
+                        ? results[1].value?.data || []
+                        : [];
+                const busRes =
+                    results[2].status === "fulfilled"
+                        ? results[2].value?.data || []
+                        : [];
+                const bikeRes =
+                    results[3].status === "fulfilled"
+                        ? results[3].value?.data || []
+                        : [];
 
                 setServices({
-                    guides: guideRes.data,
-                    hotels: hotelRes.data,
-                    busRoutes: busRes.data,
-                    motorbikes: bikeRes.data,
+                    guides: Array.isArray(guideRes) ? guideRes : [],
+                    hotels: Array.isArray(hotelRes) ? hotelRes : [],
+                    busRoutes: Array.isArray(busRes) ? busRes : [],
+                    motorbikes: Array.isArray(bikeRes) ? bikeRes : [],
                 });
-                if (!isCustom) {
-                    const tourRes = await PUBLIC_API.get(`/tours/slug/${slug}`);
-                    setTour(tourRes.data);
+
+                if (!isCustom && slug) {
+                    try {
+                        const tourRes = await PUBLIC_API.get(
+                            `/tours/slug/${slug}`
+                        );
+                        setTour(tourRes?.data || null);
+                    } catch (tourErr) {
+                        console.error("Error fetching tour:", tourErr);
+                        toast.error("Không thể tải thông tin tour");
+                    }
                 }
+
+                // Không cần gọi fetchAvailablePromotions ở đây nữa
+                // Sẽ được gọi khi người dùng click vào nút "Chọn mã"
             } catch (err) {
+                console.error("Error fetching data:", err);
                 toast.error("Lỗi tải dữ liệu tour");
                 onClose();
             }
         };
 
         fetchData();
-    }, [open]);
+    }, [open, slug, isCustom, user]);
 
     const endDate =
-        form.start_date && tour?.duration
+        form?.start_date && tour?.duration
             ? dayjs(form.start_date)
-                  .add(tour.duration, "day")
+                  .add(parseInt(tour.duration) || 0, "day")
                   .format("DD/MM/YYYY")
             : null;
-
-    // const totalPrice = tour
-    //     ? parseInt(tour.discount_price || tour.price) * form.quantity
-    //     : 0;
 
     if (!user) return null;
 
@@ -303,57 +454,14 @@ export default function BookingModal({
                                             Đặt Tour Du Lịch
                                         </Dialog.Title>
                                         <p className="text-lg opacity-90">
-                                            {tour?.tour_name}
+                                            {tour?.tour_name ||
+                                                "Tour tùy chỉnh"}
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="px-8 py-6 space-y-6 max-h-[70vh] overflow-y-auto">
-                                    {/* Tour Info Card */}
-                                    {/* <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-600">
-                                                    Giá tour
-                                                </p>
-                                                {tour?.discount_price ? (
-                                                    <div>
-                                                        <p className="text-sm text-gray-400 line-through">
-                                                            {parseInt(
-                                                                tour.price
-                                                            ).toLocaleString()}
-                                                            ₫
-                                                        </p>
-                                                        <p className="text-xl font-bold text-red-600">
-                                                            {parseInt(
-                                                                tour.discount_price
-                                                            ).toLocaleString()}
-                                                            ₫
-                                                        </p>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-xl font-bold text-blue-600">
-                                                        {tour?.price
-                                                            ? parseInt(
-                                                                  tour.price
-                                                              ).toLocaleString()
-                                                            : 0}
-                                                        ₫
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-sm text-gray-600">
-                                                    Thời gian
-                                                </p>
-                                                <p className="font-semibold text-gray-800">
-                                                    {tour?.duration}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div> */}
-
                                     {/* Booking Form */}
                                     <div className="space-y-6">
                                         {/* Quantity and Date */}
@@ -407,6 +515,201 @@ export default function BookingModal({
                                             </div>
                                         </div>
 
+                                        {/* Promotion Code Section */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
+                                                <span>🏷️</span>
+                                                <span>Mã giảm giá</span>
+                                            </h3>
+                                            <div className="flex space-x-2">
+                                                <div className="relative flex-1">
+                                                    <Input
+                                                        placeholder="Nhập mã giảm giá (nếu có)"
+                                                        value={
+                                                            form.promotion_code ||
+                                                            ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleChange(
+                                                                "promotion_code",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="rounded-xl border-2 border-gray-200 focus:border-blue-500 transition-colors pr-24"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 text-sm font-medium flex items-center"
+                                                        onClick={
+                                                            handleShowPromotions
+                                                        }
+                                                    >
+                                                        {isLoadingPromotions ? (
+                                                            <>
+                                                                <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-1"></div>
+                                                                <span>
+                                                                    Đang tải
+                                                                </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <span>
+                                                                    Chọn mã
+                                                                </span>
+                                                                <svg
+                                                                    className={`ml-1 w-4 h-4 transition-transform ${
+                                                                        showPromotions
+                                                                            ? "rotate-180"
+                                                                            : ""
+                                                                    }`}
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M19 9l-7 7-7-7"
+                                                                    ></path>
+                                                                </svg>
+                                                            </>
+                                                        )}
+                                                    </button>
+
+                                                    {/* Dropdown mã giảm giá */}
+                                                    {showPromotions && (
+                                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto">
+                                                            {isLoadingPromotions ? (
+                                                                <div className="flex items-center justify-center p-4 text-gray-500">
+                                                                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
+                                                                    <span>
+                                                                        Đang tải
+                                                                        danh
+                                                                        sách
+                                                                        mã...
+                                                                    </span>
+                                                                </div>
+                                                            ) : availablePromotions?.length >
+                                                              0 ? (
+                                                                availablePromotions.map(
+                                                                    (promo) => (
+                                                                        <div
+                                                                            key={
+                                                                                promo?.id ||
+                                                                                Math.random()
+                                                                            }
+                                                                            className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-none"
+                                                                            onClick={() =>
+                                                                                selectPromotion(
+                                                                                    promo?.code
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <div className="flex justify-between items-center">
+                                                                                <span className="font-medium text-gray-700">
+                                                                                    {promo?.code ||
+                                                                                        ""}
+                                                                                </span>
+                                                                                <span className="text-sm text-blue-600">
+                                                                                    {promo?.discount_type ===
+                                                                                    "percentage"
+                                                                                        ? `Giảm ${
+                                                                                              promo?.discount_value ||
+                                                                                              0
+                                                                                          }%`
+                                                                                        : `Giảm ${(
+                                                                                              promo?.discount_value ||
+                                                                                              0
+                                                                                          ).toLocaleString()}₫`}
+                                                                                </span>
+                                                                            </div>
+                                                                            {promo?.description && (
+                                                                                <p className="text-xs text-gray-500 mt-1">
+                                                                                    {
+                                                                                        promo.description
+                                                                                    }
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    )
+                                                                )
+                                                            ) : (
+                                                                <div className="p-4 text-center text-gray-500">
+                                                                    Không có mã
+                                                                    giảm giá khả
+                                                                    dụng
+                                                                </div>
+                                                            )}
+                                                            <div className="p-2 border-t border-gray-100">
+                                                                <button
+                                                                    type="button"
+                                                                    className="w-full py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                                    onClick={() =>
+                                                                        fetchAvailablePromotions()
+                                                                    }
+                                                                    disabled={
+                                                                        isLoadingPromotions
+                                                                    }
+                                                                >
+                                                                    Làm mới danh
+                                                                    sách
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    onClick={verifyPromoCode}
+                                                    disabled={
+                                                        isVerifyingPromo ||
+                                                        !form.promotion_code
+                                                    }
+                                                    className="rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-medium"
+                                                >
+                                                    {isVerifyingPromo ? (
+                                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        "Áp dụng"
+                                                    )}
+                                                </Button>
+                                            </div>
+                                            {promoInfo && (
+                                                <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm">
+                                                    <div className="flex items-center text-green-700">
+                                                        <span className="mr-2">
+                                                            ✅
+                                                        </span>
+                                                        <span className="font-medium">
+                                                            Đã áp dụng mã giảm
+                                                            giá!
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-1 text-green-600">
+                                                        Giảm{" "}
+                                                        {promoInfo?.discount_type ===
+                                                        "percentage"
+                                                            ? `${
+                                                                  promoInfo?.discount_value ||
+                                                                  0
+                                                              }%`
+                                                            : `${(
+                                                                  promoInfo?.discount_value ||
+                                                                  0
+                                                              ).toLocaleString()}₫`}{" "}
+                                                        - Số tiền giảm:{" "}
+                                                        {(
+                                                            promoInfo?.discount_amount ||
+                                                            0
+                                                        ).toLocaleString()}
+                                                        ₫
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
                                         {/* Services Selection */}
                                         <div className="space-y-4">
                                             <h3 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
@@ -421,7 +724,8 @@ export default function BookingModal({
                                                         label: "🗣️ Hướng dẫn viên",
                                                         key: "guide_id",
                                                         options:
-                                                            services.guides,
+                                                            services?.guides ||
+                                                            [],
                                                         id: "guide_id",
                                                         name: "name",
                                                     },
@@ -429,7 +733,8 @@ export default function BookingModal({
                                                         label: "🏨 Khách sạn",
                                                         key: "hotel_id",
                                                         options:
-                                                            services.hotels,
+                                                            services?.hotels ||
+                                                            [],
                                                         id: "hotel_id",
                                                         name: "name",
                                                     },
@@ -437,7 +742,8 @@ export default function BookingModal({
                                                         label: "🚌 Xe khách",
                                                         key: "bus_route_id",
                                                         options:
-                                                            services.busRoutes,
+                                                            services?.busRoutes ||
+                                                            [],
                                                         id: "bus_route_id",
                                                         name: "route_name",
                                                     },
@@ -445,7 +751,8 @@ export default function BookingModal({
                                                         label: "🏍️ Xe máy",
                                                         key: "motorbike_id",
                                                         options:
-                                                            services.motorbikes,
+                                                            services?.motorbikes ||
+                                                            [],
                                                         id: "motorbike_id",
                                                         name: "bike_type",
                                                     },
@@ -466,9 +773,11 @@ export default function BookingModal({
                                                             </label>
                                                             <select
                                                                 value={
-                                                                    form[
+                                                                    (form[
+                                                                        // @ts-ignore
                                                                         key as keyof typeof form
-                                                                    ] as any
+                                                                    ] as string) ||
+                                                                    ""
                                                                 }
                                                                 onChange={(e) =>
                                                                     handleChange(
@@ -482,28 +791,32 @@ export default function BookingModal({
                                                                 <option value="">
                                                                     Không chọn
                                                                 </option>
-                                                                {options.map(
+                                                                {(
+                                                                    options ||
+                                                                    []
+                                                                ).map(
                                                                     (
                                                                         item: any
                                                                     ) => (
                                                                         <option
                                                                             key={
-                                                                                item[
+                                                                                (item?.[
                                                                                     id
-                                                                                ] +
+                                                                                ] ||
+                                                                                    "") +
                                                                                 "_fstack"
                                                                             }
                                                                             value={
-                                                                                item[
+                                                                                item?.[
                                                                                     id
-                                                                                ]
+                                                                                ] ||
+                                                                                ""
                                                                             }
                                                                         >
-                                                                            {
-                                                                                item[
-                                                                                    name
-                                                                                ]
-                                                                            }
+                                                                            {item?.[
+                                                                                name
+                                                                            ] ||
+                                                                                ""}
                                                                         </option>
                                                                     )
                                                                 )}
@@ -522,13 +835,8 @@ export default function BookingModal({
                                                     Phương thức thanh toán
                                                 </span>
                                             </h3>
-                                            <div className="grid grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-1 gap-3">
                                                 {[
-                                                    // {
-                                                    //     value: "0",
-                                                    //     label: "💵 Thanh toán khi nhận",
-                                                    //     color: "from-green-400 to-green-600",
-                                                    // },
                                                     {
                                                         value: "1",
                                                         label: "🏧 VNPay",
@@ -581,34 +889,50 @@ export default function BookingModal({
 
                                 {/* Footer */}
                                 <div className="bg-gray-50 px-8 py-6 rounded-b-3xl">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div>
+                                    <div className="flex flex-col mb-4">
+                                        <div className="flex items-center justify-between">
                                             <p className="text-sm text-gray-600">
+                                                Tạm tính
+                                            </p>
+                                            <p className="text-lg font-medium text-gray-700">
+                                                {basePrice.toLocaleString()}₫
+                                            </p>
+                                        </div>
+
+                                        {promoInfo && (
+                                            <div className="flex items-center justify-between mt-2">
+                                                <p className="text-sm text-green-600 flex items-center">
+                                                    <span className="mr-1">
+                                                        🏷️
+                                                    </span>
+                                                    Giảm giá
+                                                </p>
+                                                <p className="text-lg font-medium text-green-600">
+                                                    -
+                                                    {(
+                                                        promoInfo?.discount_amount ||
+                                                        0
+                                                    ).toLocaleString()}
+                                                    ₫
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <div className="border-t border-gray-200 my-3"></div>
+
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium text-gray-600">
                                                 Tổng thanh toán
                                             </p>
                                             <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                                {price?.toLocaleString()}₫
-                                            </p>
-                                        </div>
-                                        <div className="text-right text-sm text-gray-500">
-                                            <p>
-                                                {form.quantity} người ×{" "}
-                                                {tour?.discount_price
-                                                    ? parseInt(
-                                                          tour.discount_price
-                                                      ).toLocaleString()
-                                                    : tour?.price
-                                                    ? parseInt(
-                                                          tour.price
-                                                      ).toLocaleString()
-                                                    : "0"}
-                                                ₫
+                                                {finalPrice.toLocaleString()}₫
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="flex space-x-3">
                                         <Button
+                                            type="button"
                                             onClick={onClose}
                                             variant="outline"
                                             className="flex-1 rounded-xl border-2 border-gray-300 hover:bg-gray-50"
@@ -616,6 +940,7 @@ export default function BookingModal({
                                             Hủy bỏ
                                         </Button>
                                         <Button
+                                            type="button"
                                             onClick={handleBooking}
                                             disabled={
                                                 isLoading || !form.start_date

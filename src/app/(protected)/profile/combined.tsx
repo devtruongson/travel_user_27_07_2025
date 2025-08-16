@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import styles from "./style.module.css";
-import Image from "next/image";
-import BannerPage from "@/layouts/banner";
-import MotionFade from "@/components/motionFade";
 import CustomButton from "@/components/customButton";
-import UpdateInfo from "./update";
-import { useCallback, useState, useEffect, useMemo } from "react";
-import { toast } from "sonner";
+import MotionFade from "@/components/motionFade";
+import { Button } from "@/components/ui/button";
+import BannerPage from "@/layouts/banner";
 import { API } from "@/lib/api";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 import { updateUserAvatar } from "@/lib/redux/slices/authSlice";
 import type { RootState } from "@/lib/redux/store";
-import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
+import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import styles from "./style.module.css";
+import UpdateInfo from "./update";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     Dialog,
     DialogContent,
@@ -27,6 +25,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Booking {
     booking_id: number;
@@ -342,7 +341,7 @@ export default function CombinedProfileClient() {
 
             <div className="container mx-auto px-4 py-12">
                 <Tabs defaultValue="profile" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8">
+                    <TabsList className="grid w-full grid-cols-2 mb-8 flex-1">
                         <TabsTrigger value="profile" className="text-lg py-3">
                             👤 Thông tin cá nhân
                         </TabsTrigger>

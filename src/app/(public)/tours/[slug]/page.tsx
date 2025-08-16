@@ -72,7 +72,7 @@ export default async function TourDetailPage({
         const tour: Tour = res.data;
         const allRes = await PUBLIC_API.get("/tours");
         const allTours: Tour[] = allRes.data;
-
+        console.log("Tour details >>>>>>>>>>>>>>>>", tour);
         const relatedTours = allTours
             .filter(
                 (t) =>
@@ -125,9 +125,7 @@ export default async function TourDetailPage({
                     />
                 </BannerPage>
 
-                {/* Enhanced Main content */}
                 <main className="container m-auto px-4 py-16 space-y-20">
-                    {/* Tour Overview Cards */}
                     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-32 relative z-10">
                         <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-blue-100">
                             <div className="text-3xl mb-3">💰</div>
@@ -174,7 +172,6 @@ export default async function TourDetailPage({
                         </div>
                     </section>
 
-                    {/* Tour Description */}
                     <section id="detail" className="scroll-mt-20">
                         <div className="text-center mb-12">
                             <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -191,7 +188,6 @@ export default async function TourDetailPage({
                         </div>
                     </section>
 
-                    {/* Enhanced Schedule */}
                     <section>
                         <div className="text-center mb-12">
                             <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent mb-4">
@@ -207,11 +203,11 @@ export default async function TourDetailPage({
                                             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                                                 <h4 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-0">
                                                     <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-                                                        Ngày {schedule.day}:
+                                                        Ngày {index + 1}:
                                                     </span>{" "}
                                                     {schedule.title}
                                                 </h4>
-                                                <div className="flex items-center space-x-2 text-sm md:text-base text-gray-600 bg-gray-100 px-4 py-2 rounded-full">
+                                                {/* <div className="flex items-center space-x-2 text-sm md:text-base text-gray-600 bg-gray-100 px-4 py-2 rounded-full">
                                                     <span>🕐</span>
                                                     <span>
                                                         {getTime(
@@ -222,7 +218,7 @@ export default async function TourDetailPage({
                                                             schedule.end_time
                                                         )}
                                                     </span>
-                                                </div>
+                                                </div> */}
                                             </div>
                                             {schedule.activity_description ? (
                                                 <div className="prose prose-gray max-w-none text-gray-700 pl-4 border-l-2 border-gray-200">
@@ -247,7 +243,6 @@ export default async function TourDetailPage({
                         </div>
                     </section>
 
-                    {/* Enhanced Gallery */}
                     {tour.album?.images?.length ? (
                         <section>
                             <div className="text-center mb-12">
@@ -279,7 +274,6 @@ export default async function TourDetailPage({
                         </section>
                     ) : null}
 
-                    {/* Enhanced Booking Section */}
                     <section className="relative">
                         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-1 rounded-3xl">
                             <div className="bg-white rounded-3xl p-8 md:p-12 text-center">
@@ -334,13 +328,10 @@ export default async function TourDetailPage({
                         </div>
                     </section>
 
-                    {/* review */}
-                    {}
                     <section>
                         <TourReviewUI tour_id={res?.data?.tour_id} />
                     </section>
 
-                    {/* Enhanced Related Tours */}
                     {relatedTours.length > 0 && (
                         <section>
                             <div className="text-center mb-12">

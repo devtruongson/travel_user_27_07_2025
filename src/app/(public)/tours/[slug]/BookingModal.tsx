@@ -149,6 +149,18 @@ export default function BookingModal({
     }, [basePrice, promoInfo]);
 
     const handleChange = (key: string, value: any) => {
+        // Kiểm tra nếu đang thay đổi quantity và có tour data với min_people
+        if (key === "quantity" && tour?.min_people) {
+            const minPeople = tour.min_people;
+            const newQuantity = parseInt(value) || 1;
+
+            if (newQuantity < minPeople) {
+                toast.warning(`Tour này yêu cầu tối thiểu ${minPeople} người.`);
+                setForm((prev) => ({ ...prev, [key]: minPeople }));
+                return;
+            }
+        }
+
         setForm((prev) => ({ ...prev, [key]: value }));
 
         // Reset promo info if code is cleared
@@ -250,6 +262,14 @@ export default function BookingModal({
     const handleBooking = useCallback(async () => {
         if (!form?.start_date || !user || (!isCustom && !tour)) {
             toast.warning("Vui lòng điền đầy đủ thông tin");
+            return;
+        }
+
+        // Kiểm tra số người tối thiểu cho tour thường
+        if (!isCustom && tour?.min_people && form.quantity < tour.min_people) {
+            toast.warning(
+                `Tour này yêu cầu tối thiểu ${tour.min_people} người.`
+            );
             return;
         }
 
@@ -373,7 +393,19 @@ export default function BookingModal({
                         const tourRes = await PUBLIC_API.get(
                             `/tours/slug/${slug}`
                         );
-                        setTour(tourRes?.data || null);
+                        const tourData = tourRes?.data || null;
+                        setTour(tourData);
+
+                        // Cập nhật quantity mặc định theo min_people của tour
+                        if (tourData?.min_people) {
+                            setForm((prev) => ({
+                                ...prev,
+                                quantity: Math.max(
+                                    prev.quantity,
+                                    tourData.min_people
+                                ),
+                            }));
+                        }
                     } catch (tourErr) {
                         console.error("Error fetching tour:", tourErr);
                         toast.error("Không thể tải thông tin tour");
@@ -471,11 +503,13 @@ export default function BookingModal({
                                                     <span>👥</span>
                                                     <span>
                                                         Số người tham gia
+                                                        {tour?.min_people &&
+                                                            ` (Tối thiểu ${tour.min_people} người)`}
                                                     </span>
                                                 </label>
                                                 <Input
                                                     type="number"
-                                                    min={1}
+                                                    min={tour?.min_people || 1}
                                                     value={form.quantity}
                                                     onChange={(e) =>
                                                         handleChange(
@@ -486,7 +520,22 @@ export default function BookingModal({
                                                         )
                                                     }
                                                     className="rounded-xl border-2 border-gray-200 focus:border-blue-500 transition-colors"
+                                                    placeholder={
+                                                        tour?.min_people
+                                                            ? `Tối thiểu ${tour.min_people} người`
+                                                            : "Số người"
+                                                    }
                                                 />
+                                                {tour?.min_people &&
+                                                    form.quantity <
+                                                        tour.min_people && (
+                                                        <p className="text-red-500 text-xs">
+                                                            Tour này yêu cầu tối
+                                                            thiểu{" "}
+                                                            {tour.min_people}{" "}
+                                                            người
+                                                        </p>
+                                                    )}
                                             </div>
 
                                             <div className="space-y-2">
@@ -943,7 +992,11 @@ export default function BookingModal({
                                             type="button"
                                             onClick={handleBooking}
                                             disabled={
-                                                isLoading || !form.start_date
+                                                isLoading ||
+                                                !form.start_date ||
+                                                (tour?.min_people &&
+                                                    form.quantity <
+                                                        tour.min_people)
                                             }
                                             className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 disabled:opacity-50"
                                         >

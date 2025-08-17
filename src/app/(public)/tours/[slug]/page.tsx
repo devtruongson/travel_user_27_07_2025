@@ -23,6 +23,7 @@ interface Tour {
     image: string;
     price: string;
     discount_price?: string;
+    min_people: number;
     destination: string;
     duration: string;
     album?: {
@@ -126,7 +127,7 @@ export default async function TourDetailPage({
                 </BannerPage>
 
                 <main className="container m-auto px-4 py-16 space-y-20">
-                    <section className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-32 relative z-10">
+                    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 -mt-32 relative z-10">
                         <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-blue-100">
                             <div className="text-3xl mb-3">💰</div>
                             <h3 className="font-bold text-lg text-gray-800 mb-2">
@@ -158,6 +159,16 @@ export default async function TourDetailPage({
                             </h3>
                             <p className="text-lg text-gray-700">
                                 {tour.duration}
+                            </p>
+                        </div>
+
+                        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-orange-100">
+                            <div className="text-3xl mb-3">👥</div>
+                            <h3 className="font-bold text-lg text-gray-800 mb-2">
+                                Số người tối thiểu
+                            </h3>
+                            <p className="text-xl font-bold text-orange-600">
+                                {tour.min_people || 2} người
                             </p>
                         </div>
 

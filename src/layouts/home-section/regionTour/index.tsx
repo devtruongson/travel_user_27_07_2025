@@ -46,7 +46,6 @@ export default async function RegionTour() {
                     data={northernTour}
                     classNameImg="w-full"
                     nameListTour="Danh sách tour miền Bắc"
-
                 />
                 <div className={styles.distance}></div>
                 <RegionTourLayout

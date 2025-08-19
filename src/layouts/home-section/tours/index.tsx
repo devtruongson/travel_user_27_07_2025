@@ -40,23 +40,29 @@ export default async function Tours() {
     const secondList = tours?.slice(length / 2);
 
     return (
-        <section className={`${styles.tours} relative z-10 pt-36`}>
-            <div className="container m-auto relative z-2 h-full ">
-                <div className={`${styles.stickyBox} uppercase max-w-[400px]`}>
-                    <h4 className="sub-title text-[#fff]">Danh sách Tours</h4>
-                    <h2 className="font-[900] text-[#8e00fb] text-[52px]">
+        <section
+            className={`${styles.tours} relative z-10 pt-20 md:pt-28 lg:pt-36`}
+        >
+            <div className="container m-auto relative z-2 h-full px-4 md:px-6">
+                <div
+                    className={`${styles.stickyBox} uppercase max-w-full lg:max-w-[400px] mb-8 lg:mb-0`}
+                >
+                    <h4 className="sub-title text-[#fff] text-sm md:text-base">
+                        Danh sách Tours
+                    </h4>
+                    <h2 className="font-[900] text-[#8e00fb] text-3xl md:text-4xl lg:text-[52px] leading-tight">
                         Khám phá Việt Nam cùng VTravel
                     </h2>
                     <ButtonGlobal
                         text="Khám phá ngay"
-                        className="mt-8"
+                        className="mt-6 md:mt-8"
                         asLink
                         href="/tours"
                     />
                 </div>
-                <div className="w-[calc(100%-400px)] ml-[400px] relative z-2">
-                    <div className="flex gap-7">
-                        <div className="list-tour w-1/2 flex flex-col gap-7">
+                <div className="w-full lg:w-[calc(100%-400px)] lg:ml-[400px] relative z-2">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-7">
+                        <div className="list-tour w-full md:w-1/2 flex flex-col gap-4 md:gap-7">
                             {(firstList || []).map(
                                 (tour: any, index: number) => (
                                     <TourCard
@@ -74,13 +80,13 @@ export default async function Tours() {
                                             tour?.price || ""
                                         )}
                                         rating={tour?.rating}
-                                        clasName="h-[600px]"
+                                        clasName="h-[400px] md:h-[500px] lg:h-[600px]"
                                         bottomClassName="justify-between items-center "
                                     />
                                 )
                             )}
                         </div>
-                        <div className="list-tour w-1/2 pt-[10.69rem] flex flex-col gap-7">
+                        <div className="list-tour w-full md:w-1/2 md:pt-[5rem] lg:pt-[10.69rem] flex flex-col gap-4 md:gap-7">
                             {(secondList || []).map(
                                 (tour: any, index: number) => (
                                     <TourCard
@@ -98,7 +104,7 @@ export default async function Tours() {
                                             tour?.price || ""
                                         )}
                                         rating={tour?.rating}
-                                        clasName="h-[600px]"
+                                        clasName="h-[400px] md:h-[500px] lg:h-[600px]"
                                         bottomClassName="justify-between items-center "
                                         href={`/tours/${createSlug(
                                             tour.tour_name
@@ -114,7 +120,7 @@ export default async function Tours() {
                         width={500}
                         height={500}
                         quality={100}
-                        className="absolute top-[-100px] left-[50%] object-cover object-center transform translate-y-[-100%] translate-x-[-50%] w-[600px] h-auto"
+                        className="absolute top-[-50px] md:top-[-80px] lg:top-[-100px] left-[50%] object-cover object-center transform translate-y-[-100%] translate-x-[-50%] w-[400px] md:w-[500px] lg:w-[600px] h-auto hidden md:block"
                     />
                 </div>
             </div>

@@ -25,7 +25,7 @@ const getCate = async () => {
 export default async function ToursPage() {
     const cates = await getCate();
 
-    console.log("Tour categories:", cates);
+    // console.log("Tour categories:", cates);
 
     return (
         <>

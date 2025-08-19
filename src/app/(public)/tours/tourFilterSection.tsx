@@ -230,7 +230,7 @@ export default function TourFilterSection({ cate }: { cate: any }) {
                             {error}
                         </p>
                     ) : tours.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {tours.map((tour) => (
                                 <TourCard
                                     key={tour.tour_id}

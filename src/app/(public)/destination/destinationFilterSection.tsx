@@ -132,14 +132,14 @@ export default function DestinationFilterSection() {
                                                         category.category_id
                                                     )
                                                         ? prev.filter(
-                                                            (item) =>
-                                                                item !==
-                                                                category.category_id
-                                                        )
+                                                              (item) =>
+                                                                  item !==
+                                                                  category.category_id
+                                                          )
                                                         : [
-                                                            ...prev,
-                                                            category.category_id,
-                                                        ]
+                                                              ...prev,
+                                                              category.category_id,
+                                                          ]
                                                 )
                                             }
                                         />
@@ -175,7 +175,7 @@ export default function DestinationFilterSection() {
                             {error}
                         </p>
                     ) : filteredDestination.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredDestination.map((destination) => (
                                 <TourCard
                                     key={destination.destination_id}

@@ -1,116 +1,164 @@
 .headingFooter {
-  font-size: 24px;
-  font-weight: 700;
-  color: rgb(0, 27, 74);
-  margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    color: rgb(0, 27, 74);
+    margin-bottom: 16px;
 }
+
+@media (min-width: 768px) {
+    .headingFooter {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+}
+
 .parent {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .child {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-style: preserve-3d;
-  transition: all 0.5s ease-in-out;
-  border-radius: 50%;
-  margin: 0 5px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
+    transition: all 0.5s ease-in-out;
+    border-radius: 50%;
+    margin: 0 3px;
+}
+
+@media (min-width: 768px) {
+    .child {
+        width: 50px;
+        height: 50px;
+        margin: 0 5px;
+    }
 }
 
 .child:hover {
-  background-color: white;
-  background-position: -100px 100px, -100px 100px;
-  transform: rotate3d(0.5, 1, 0, 30deg);
-  transform: perspective(180px) rotateX(60deg) translateY(2px);
-  box-shadow: 0px 10px 10px rgb(1, 49, 182);
+    background-color: white;
+    background-position: -100px 100px, -100px 100px;
+    transform: rotate3d(0.5, 1, 0, 30deg);
+    transform: perspective(180px) rotateX(60deg) translateY(2px);
+    box-shadow: 0px 10px 10px rgb(1, 49, 182);
 }
 
 .button {
-  border: none;
-  background-color: transparent;
-  font-size: 20px;
-  cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .button {
+        font-size: 20px;
+    }
 }
 
 .button:hover {
-  width: inherit;
-  height: inherit;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
+    width: inherit;
+    height: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
 }
 .inputGroup {
-  display: flex;
-  gap: 10px;
-  position: relative;
-  padding: 7px 0 0;
-  width: 100%;
-  margin-bottom: 10px;
-  margin-top: 2px;
+    display: flex;
+    gap: 10px;
+    position: relative;
+    padding: 7px 0 0;
+    width: 100%;
+    margin-bottom: 10px;
+    margin-top: 2px;
 }
 
 .inputText {
-  font-family: inherit;
-  width: 100%;
-  border: none;
-  border-bottom: 2px solid #7f7f7f;
-  border-radius: 0 !important;
-  outline: 0;
-  font-size: 17px;
-  color: #7f7f7f;
-  padding: 7px 0;
-  background: transparent;
-  transition: border-color 0.2s;
+    font-family: inherit;
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #7f7f7f;
+    border-radius: 0 !important;
+    outline: 0;
+    font-size: 15px;
+    color: #7f7f7f;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+}
+
+@media (min-width: 768px) {
+    .inputText {
+        font-size: 17px;
+    }
 }
 
 .inputText::placeholder {
-  color: transparent;
+    color: transparent;
 }
 
 .inputText:placeholder-shown ~ .inputTextLabel {
-  font-size: 17px;
-  cursor: text;
+    font-size: 15px;
+    cursor: text;
+}
+
+@media (min-width: 768px) {
+    .inputText:placeholder-shown ~ .inputTextLabel {
+        font-size: 17px;
+    }
 }
 
 .inputTextLabel {
-  position: absolute;
-  display: block;
-  transition: 0.2s;
-  font-size: 17px;
-  color: #7f7f7f;
-  pointer-events: none;
+    position: absolute;
+    display: block;
+    transition: 0.2s;
+    font-size: 15px;
+    color: #7f7f7f;
+    pointer-events: none;
+}
+
+@media (min-width: 768px) {
+    .inputTextLabel {
+        font-size: 17px;
+    }
 }
 
 .inputText:focus {
-  padding-bottom: 6px;
-  border-width: 3px;
-  border-image: linear-gradient(to right, #00a4da, #5100ba);
-  border-image-slice: 1;
+    padding-bottom: 6px;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #00a4da, #5100ba);
+    border-image-slice: 1;
 }
 
 .inputText:focus ~ .inputTextLabel {
-  color: #005dc0;
+    color: #005dc0;
 }
 
 .inputText:not(:placeholder-shown) ~ .inputTextLabel,
 .inputText:focus ~ .inputTextLabel {
-  position: absolute;
-  display: block;
-  transition: 0.2s;
-  font-size: 15px;
-  font-weight: 700;
-  top: -17px;
+    position: absolute;
+    display: block;
+    transition: 0.2s;
+    font-size: 13px;
+    font-weight: 700;
+    top: -17px;
+}
+
+@media (min-width: 768px) {
+    .inputText:not(:placeholder-shown) ~ .inputTextLabel,
+    .inputText:focus ~ .inputTextLabel {
+        font-size: 15px;
+    }
 }
 
 .inputText:required,
 .inputText:invalid {
-  box-shadow: none;
+    box-shadow: none;
 }

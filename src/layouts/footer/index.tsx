@@ -106,7 +106,7 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="w-full md:w-1/2 lg:w-1/5 text-center lg:text-left">
+                <div className="w-full md:w-full lg:w-1/5 text-center lg:text-left">
                     <h5 className={`${styles.headingFooter}`}>Liên kết</h5>
                     <ul className="flex flex-col gap-2 md:gap-3">
                         {listLink.map((item, index) => (
@@ -125,7 +125,7 @@ export default function Footer() {
                         ))}
                     </ul>
                 </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 text-center lg:text-left">
+                <div className="w-full md:w-full lg:w-1/4 text-center lg:text-left">
                     <h5 className={`${styles.headingFooter}`}>
                         Liên hệ với chúng tôi
                     </h5>

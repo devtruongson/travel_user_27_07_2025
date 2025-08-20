@@ -61,7 +61,7 @@ export default async function Tours() {
                     />
                 </div>
                 <div className="w-full lg:w-[calc(100%-400px)] lg:ml-[400px] relative z-2">
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-7">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-7 md:pt-[340px]">
                         <div className="list-tour w-full md:w-1/2 flex flex-col gap-4 md:gap-7">
                             {(firstList || []).map(
                                 (tour: any, index: number) => (
@@ -122,7 +122,7 @@ export default async function Tours() {
                         width={500}
                         height={500}
                         quality={100}
-                        className="absolute top-[-50px] md:top-[-80px] lg:top-[-100px] left-[50%] object-cover object-center transform translate-y-[-100%] translate-x-[-50%] w-[400px] md:w-[500px] lg:w-[600px] h-auto hidden md:block"
+                        className="absolute top-[-50px] md:top-[300px] lg:top-[-100px] left-[50%] object-cover object-center transform translate-y-[-100%] translate-x-[-50%] w-[400px] md:w-[500px] lg:w-[600px] h-auto hidden md:block"
                     />
                 </div>
             </div>

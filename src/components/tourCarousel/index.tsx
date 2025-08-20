@@ -33,7 +33,7 @@ export default function TourCarousel({ tours, href = "/" }: TProps) {
                 slides: { perView: 2, spacing: 15 },
             },
             "(min-width: 768px)": {
-                slides: { perView: 3, spacing: 15 },
+                slides: { perView: 2, spacing: 15 },
             },
             "(min-width: 1024px)": {
                 slides: { perView: 4, spacing: 20 },

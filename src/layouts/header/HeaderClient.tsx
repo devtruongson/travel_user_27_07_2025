@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useRef } from "react";
 import styles from "./style.module.css";
 
 import {
@@ -57,6 +57,8 @@ export default function HeaderClient({ navigation }: Props) {
     const [isSticky, setIsSticky] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [showSearch, setShowSearch] = useState<boolean>(false);
+    const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
+    const userMenuRef = useRef<HTMLDivElement>(null);
 
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
@@ -92,11 +94,22 @@ export default function HeaderClient({ navigation }: Props) {
             setIsSticky(window.scrollY > 0);
         };
 
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                userMenuRef.current &&
+                !userMenuRef.current.contains(event.target as Node)
+            ) {
+                setShowUserMenu(false);
+            }
+        };
+
         window.addEventListener("scroll", handleScroll);
+        document.addEventListener("mousedown", handleClickOutside);
         handleScroll();
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
 
@@ -111,18 +124,18 @@ export default function HeaderClient({ navigation }: Props) {
                     <>
                         <div className="mx-auto container px-2 sm:px-6 lg:px-8">
                             <div className="relative flex items-center justify-between">
-                                <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                                <div className="absolute inset-y-0 left-0 flex items-center lg:hidden">
                                     <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
                                         <Bars3Icon className="block size-6 group-data-open:hidden" />
                                         <XMarkIcon className="hidden size-6 group-data-open:block" />
                                     </DisclosureButton>
                                 </div>
-                                <div className="flex flex-1 items-center justify-center sm:justify-between">
+                                <div className="flex flex-1 items-center justify-center lg:justify-between">
                                     <div className="flex shrink-0 items-center">
                                         <Image
-                                        onClick={() => {
-                                            window.location.href = "/"
-                                        }}
+                                            onClick={() => {
+                                                window.location.href = "/";
+                                            }}
                                             alt="Logo"
                                             src="/images/logo.png"
                                             className={styles.logo}
@@ -131,7 +144,7 @@ export default function HeaderClient({ navigation }: Props) {
                                             quality={100}
                                         />
                                     </div>
-                                    <div className="hidden sm:ml-6 sm:block">
+                                    <div className="hidden lg:ml-6 lg:block">
                                         <div className="flex space-x-4">
                                             {navigation.map((item) => (
                                                 <Link
@@ -153,7 +166,7 @@ export default function HeaderClient({ navigation }: Props) {
                                 </div>
 
                                 {/* Search Form - Desktop */}
-                                <div className="hidden sm:block mr-4">
+                                <div className="hidden lg:block mr-4">
                                     <form
                                         onSubmit={handleSearch}
                                         className="flex items-center"
@@ -181,7 +194,7 @@ export default function HeaderClient({ navigation }: Props) {
                                 </div>
 
                                 {/* Search toggle button - Mobile */}
-                                <div className="sm:hidden mr-2">
+                                <div className="lg:hidden mr-2">
                                     <button
                                         onClick={toggleSearch}
                                         className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700"
@@ -190,7 +203,7 @@ export default function HeaderClient({ navigation }: Props) {
                                     </button>
                                 </div>
 
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-2 sm:pr-0">
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-2 lg:static lg:inset-auto lg:ml-2 lg:pr-0">
                                     {/* <CustomButton className="relative rounded-full p-1 text-gray-400 hover:text-white">
                                         <BellIcon aria-hidden="true" />
                                     </CustomButton> */}
@@ -207,8 +220,18 @@ export default function HeaderClient({ navigation }: Props) {
                                                 size={25}
                                             />
                                         ) : isAuthenticated && user ? (
-                                            <div className="relative group inline-block">
-                                                <button className="py-2 cursor-pointer">
+                                            <div
+                                                className="relative inline-block"
+                                                ref={userMenuRef}
+                                            >
+                                                <button
+                                                    className="py-2 cursor-pointer"
+                                                    onClick={() =>
+                                                        setShowUserMenu(
+                                                            !showUserMenu
+                                                        )
+                                                    }
+                                                >
                                                     <Image
                                                         src={
                                                             user.avatar_url ||
@@ -221,82 +244,96 @@ export default function HeaderClient({ navigation }: Props) {
                                                     />
                                                 </button>
 
-                                                <div className="absolute hidden group-hover:block bg-white right-0 text-black shadow-md rounded-[10px] border border-[#999999] min-w-[200px] z-50">
-                                                    <ul className="py-2">
-                                                        <li className="px-5 py-2 truncate border-b border-[#d1d1d1] text-cyan-600">
-                                                            {user.full_name}
-                                                        </li>
-                                                        <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
-                                                            <Link
-                                                                href="/profile"
-                                                                className="text-black"
-                                                            >
-                                                                Hồ sơ & Đơn hàng
-                                                            </Link>
-                                                        </li>
-                                                        <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
-                                                        <Link
-                                                                href="/favorites"
-                                                                className="text-black"
-                                                            >
-                                                                Tours yêu thích
-                                                            </Link>
-                                                        </li>
-                                                        <li className="px-5 py-2">
-                                                            <AlertDialog>
-                                                                <AlertDialogTrigger
-                                                                    asChild
+                                                {showUserMenu && (
+                                                    <div className="absolute bg-white right-0 text-black shadow-md rounded-[10px] border border-[#999999] min-w-[200px] z-50">
+                                                        <ul className="py-2">
+                                                            <li className="px-5 py-2 truncate border-b border-[#d1d1d1] text-cyan-600">
+                                                                {user.full_name}
+                                                            </li>
+                                                            <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
+                                                                <Link
+                                                                    href="/profile"
+                                                                    className="text-black"
+                                                                    onClick={() =>
+                                                                        setShowUserMenu(
+                                                                            false
+                                                                        )
+                                                                    }
                                                                 >
-                                                                    <CustomButton className="bg-red-600 hover:bg-red-400 text-white cursor-pointer rounded-2xl">
-                                                                        Đăng
-                                                                        xuất
-                                                                    </CustomButton>
-                                                                </AlertDialogTrigger>
-                                                                <AlertDialogContent>
-                                                                    <AlertDialogHeader>
-                                                                        <AlertDialogTitle>
-                                                                            Bạn
-                                                                            chắc
-                                                                            chắn
-                                                                            muốn
-                                                                            đăng
-                                                                            xuất?
-                                                                        </AlertDialogTitle>
-                                                                        <AlertDialogDescription>
-                                                                            Hành
-                                                                            động
-                                                                            này
-                                                                            sẽ
-                                                                            kết
-                                                                            thúc
-                                                                            phiên
-                                                                            đăng
-                                                                            nhập
-                                                                            hiện
-                                                                            tại
-                                                                            của
-                                                                            bạn.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogFooter>
-                                                                        <AlertDialogCancel className="bg-gray-300 hover:bg-gray-400">
-                                                                            Hủy
-                                                                        </AlertDialogCancel>
-                                                                        <AlertDialogAction
-                                                                            className="bg-red-600 hover:bg-red-700"
-                                                                            onClick={
-                                                                                handleLogout
-                                                                            }
-                                                                        >
-                                                                            Xác
-                                                                            nhận
-                                                                        </AlertDialogAction>
-                                                                    </AlertDialogFooter>
-                                                                </AlertDialogContent>
-                                                            </AlertDialog>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                                                    Hồ sơ & Đơn
+                                                                    hàng
+                                                                </Link>
+                                                            </li>
+                                                            <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
+                                                                <Link
+                                                                    href="/favorites"
+                                                                    className="text-black"
+                                                                    onClick={() =>
+                                                                        setShowUserMenu(
+                                                                            false
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Tours yêu
+                                                                    thích
+                                                                </Link>
+                                                            </li>
+                                                            <li className="px-5 py-2">
+                                                                <AlertDialog>
+                                                                    <AlertDialogTrigger
+                                                                        asChild
+                                                                    >
+                                                                        <CustomButton className="bg-red-600 hover:bg-red-400 text-white cursor-pointer rounded-2xl">
+                                                                            Đăng
+                                                                            xuất
+                                                                        </CustomButton>
+                                                                    </AlertDialogTrigger>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>
+                                                                                Bạn
+                                                                                chắc
+                                                                                chắn
+                                                                                muốn
+                                                                                đăng
+                                                                                xuất?
+                                                                            </AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                Hành
+                                                                                động
+                                                                                này
+                                                                                sẽ
+                                                                                kết
+                                                                                thúc
+                                                                                phiên
+                                                                                đăng
+                                                                                nhập
+                                                                                hiện
+                                                                                tại
+                                                                                của
+                                                                                bạn.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel className="bg-gray-300 hover:bg-gray-400">
+                                                                                Hủy
+                                                                            </AlertDialogCancel>
+                                                                            <AlertDialogAction
+                                                                                className="bg-red-600 hover:bg-red-700"
+                                                                                onClick={
+                                                                                    handleLogout
+                                                                                }
+                                                                            >
+                                                                                Xác
+                                                                                nhận
+                                                                            </AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : (
                                             <CustomButton
@@ -315,7 +352,7 @@ export default function HeaderClient({ navigation }: Props) {
 
                         {/* Mobile search form */}
                         {showSearch && (
-                            <div className="px-4 pt-2 pb-3 sm:hidden">
+                            <div className="px-4 pt-2 pb-3 lg:hidden">
                                 <form
                                     onSubmit={handleSearch}
                                     className="flex items-center"
@@ -339,7 +376,7 @@ export default function HeaderClient({ navigation }: Props) {
                             </div>
                         )}
 
-                        <DisclosurePanel className="sm:hidden">
+                        <DisclosurePanel className="lg:hidden">
                             <div className="space-y-1 px-2 pt-2 pb-3">
                                 {navigation.map((item) => (
                                     <DisclosureButton

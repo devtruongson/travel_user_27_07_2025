@@ -1,15 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { IoMdAirplane } from "react-icons/io";
 import { MdAccessTime } from "react-icons/md";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaHeart } from "react-icons/fa";
 import "./style.css";
 import CustomButton from "../customButton";
+import { useFavorites } from "@/context/favorites";
 
 interface IProps {
     href?: string;
     imgUrl?: string;
     nameTour?: string;
+    tourId?: number;
     nameDestination?: string;
     originalPrice?: number;
     promotionPrice?: number;
@@ -44,7 +48,10 @@ export default function TourCard(props: IProps) {
         descDestination = "",
         nameDestination = "",
         btnCard = "Khám phá",
+        tourId,
     } = props;
+
+    const { isFavorite, toggleFavorite, loading } = useFavorites();
 
     function formatCurrency(value?: number) {
         return value?.toLocaleString("vi-VN", {
@@ -52,6 +59,8 @@ export default function TourCard(props: IProps) {
             currency: "VND",
         });
     }
+
+    
 
     if (!props) {
         return <></>;
@@ -121,7 +130,7 @@ export default function TourCard(props: IProps) {
                             <h3>{nameTour}</h3>
                         </div>
                     )}
-                    <div className={`${bottomClassName ?? ""} flex gap-8`}>
+                    <div className={`${bottomClassName ?? ""} flex gap-4 flex-wrap items-center`}>
                         {!isDestination &&
                             (promotionPrice != undefined &&
                                 promotionPrice > 0 &&
@@ -139,7 +148,25 @@ export default function TourCard(props: IProps) {
                                     {formatCurrency(originalPrice)}
                                 </p>
                             ))}
-                        <div className="flex-1">
+                        {!isDestination && typeof tourId === "number" && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleFavorite(tourId);
+                                }}
+                                disabled={loading}
+                                className={`px-4 py-2 !hidden rounded-md border transition ${
+                                    isFavorite(tourId)
+                                        ? "bg-red-600/90 hover:bg-red-600 text-white border-red-500/60"
+                                        : "bg-white/20 hover:bg-white/30 text-white border-white/40"
+                                }`}
+                            >
+                                {isFavorite(tourId) ? "Bỏ yêu thích" : "Thêm yêu thích"}
+                            </button>
+                        )}
+                        <div className="flex-1 text-right">
                             <CustomButton className="tour-learn-more">
                                 <span
                                     className="tour-circle"
@@ -163,6 +190,24 @@ export default function TourCard(props: IProps) {
                         />
                     ))}
                 </div>
+                {!isDestination && typeof tourId === "number" && (
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(tourId);
+                        }}
+                        aria-label="Toggle favorite"
+                        className="absolute top-5 left-5 w-10 h-10 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow hover:scale-105 transition"
+                        disabled={loading}
+                    >
+                        <FaHeart
+                            className={isFavorite(tourId) ? "text-red-600" : "text-gray-400"}
+                            size={18}
+                        />
+                    </button>
+                )}
             </Link>
         </div>
     );

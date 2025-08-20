@@ -67,6 +67,7 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
+                                        tourId={tour?.tour_id}
                                         imgUrl={`${
                                             process.env.NEXT_PUBLIC_IMAGE_DOMAIN
                                         }/${tour?.image || ""}`}
@@ -91,6 +92,7 @@ export default async function Tours() {
                                 (tour: any, index: number) => (
                                     <TourCard
                                         key={index}
+                                        tourId={tour?.tour_id}
                                         imgUrl={`${
                                             process.env.NEXT_PUBLIC_IMAGE_DOMAIN
                                         }/${tour?.image || ""}`}

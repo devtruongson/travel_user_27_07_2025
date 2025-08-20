@@ -120,6 +120,9 @@ export default function HeaderClient({ navigation }: Props) {
                                 <div className="flex flex-1 items-center justify-center sm:justify-between">
                                     <div className="flex shrink-0 items-center">
                                         <Image
+                                        onClick={() => {
+                                            window.location.href = "/"
+                                        }}
                                             alt="Logo"
                                             src="/images/logo.png"
                                             className={styles.logo}
@@ -232,7 +235,12 @@ export default function HeaderClient({ navigation }: Props) {
                                                             </Link>
                                                         </li>
                                                         <li className="px-5 py-2 hover:bg-cyan-400 cursor-pointer">
-                                                            Tours yêu thích
+                                                        <Link
+                                                                href="/favorites"
+                                                                className="text-black"
+                                                            >
+                                                                Tours yêu thích
+                                                            </Link>
                                                         </li>
                                                         <li className="px-5 py-2">
                                                             <AlertDialog>

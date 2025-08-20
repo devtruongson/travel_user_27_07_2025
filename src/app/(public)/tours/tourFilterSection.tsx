@@ -238,6 +238,7 @@ export default function TourFilterSection({ cate }: { cate: any }) {
                                         tour.tour_name
                                     )}`}
                                     imgUrl={getFullImageUrl(tour.image)}
+                                    tourId={tour.tour_id}
                                     nameTour={tour.tour_name}
                                     originalPrice={parseFloat(tour.price)}
                                     promotionPrice={parseFloat(

@@ -3,7 +3,7 @@ import { PUBLIC_API } from "@/lib/api";
 export const getBuses = async () => {
     try {
         const res = await PUBLIC_API.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/buses`
+            `${process.env.NEXT_PUBLIC_API_URL}/bus-routes`
         );
 
         return res?.data || [];

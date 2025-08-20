@@ -60,17 +60,15 @@ export default function TourCard(props: IProps) {
         });
     }
 
-    
-
     if (!props) {
         return <></>;
     }
 
-
     return (
         <div
-            className={`group ${clasName ?? ""
-                } main-card rounded-[20px] overflow-hidden relative transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-2xl`}
+            className={`group ${
+                clasName ?? ""
+            } main-card rounded-[20px] overflow-hidden relative transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-2xl`}
         >
             <Link href={href}>
                 {imgUrl ? (
@@ -130,11 +128,11 @@ export default function TourCard(props: IProps) {
                             <h3>{nameTour}</h3>
                         </div>
                     )}
-                    <div className={`${bottomClassName ?? ""} flex gap-4 flex-wrap items-center`}>
+                    <div className={`${bottomClassName ?? ""} flex gap-8 `}>
                         {!isDestination &&
                             (promotionPrice != undefined &&
-                                promotionPrice > 0 &&
-                                promotionPrice < originalPrice ? (
+                            promotionPrice > 0 &&
+                            promotionPrice < originalPrice ? (
                                 <div>
                                     <p className="text-[#ffd220] text-[1.75rem] font-bold leading-[1.2]">
                                         {formatCurrency(promotionPrice)}
@@ -163,7 +161,9 @@ export default function TourCard(props: IProps) {
                                         : "bg-white/20 hover:bg-white/30 text-white border-white/40"
                                 }`}
                             >
-                                {isFavorite(tourId) ? "Bỏ yêu thích" : "Thêm yêu thích"}
+                                {isFavorite(tourId)
+                                    ? "Bỏ yêu thích"
+                                    : "Thêm yêu thích"}
                             </button>
                         )}
                         <div className="flex-1 text-right">
@@ -203,7 +203,11 @@ export default function TourCard(props: IProps) {
                         disabled={loading}
                     >
                         <FaHeart
-                            className={isFavorite(tourId) ? "text-red-600" : "text-gray-400"}
+                            className={
+                                isFavorite(tourId)
+                                    ? "text-red-600"
+                                    : "text-gray-400"
+                            }
                             size={18}
                         />
                     </button>

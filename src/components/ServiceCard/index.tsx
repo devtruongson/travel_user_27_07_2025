@@ -52,7 +52,7 @@ const getItemDisplayInfo = (item: ServiceItem) => {
 
     console.log("Unknown item type:", item);
     return {
-        name: item.name || "Unknown",
+        name: item?.name || "Unknown",
         description: "Chất lượng cao, giá cả hợp lý",
     };
 };
@@ -71,12 +71,12 @@ export default function ServiceCard({
     return (
         <div
             className={`mb-20 ${
-                reversed ? "lg:flex-row-reverse" : ""
-            } flex flex-col lg:flex-row items-center gap-8`}
+                reversed ? "md:flex-row-reverse" : ""
+            } flex flex-col md:flex-row items-center gap-6 md:gap-8`}
         >
             {/* Service Image */}
-            <div className="lg:w-1/2">
-                <div className="relative h-80 rounded-2xl overflow-hidden shadow-lg">
+            <div className="w-full md:w-1/2">
+                <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden shadow-lg">
                     <Image
                         src={image}
                         alt={title}
@@ -87,11 +87,13 @@ export default function ServiceCard({
             </div>
 
             {/* Service Content */}
-            <div className="lg:w-1/2">
-                <h3 className="text-3xl font-bold text-gray-800 mb-4">
+            <div className="w-full md:w-1/2">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
                     {title}
                 </h3>
-                <p className="text-gray-600 mb-6 text-lg">{description}</p>
+                <p className="text-gray-600 mb-6 text-base md:text-lg">
+                    {description}
+                </p>
 
                 {/* Service Items */}
                 <div className="space-y-4 mb-6">

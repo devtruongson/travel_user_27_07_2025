@@ -106,10 +106,10 @@ export default function BlogPage() {
                 ) : (
                     <div>
                         <div className="w-full mx-auto">
-                            <div className="grid grid-flow-row-dense grid-cols-2 gap-10">
+                            <div className="grid grid-flow-row-dense grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                 {/* Featured Blog */}
                                 <div>
-                                    <h1 className="text-3xl font-extrabold text-black mt-5 mb-3">
+                                    <h1 className="text-2xl md:text-3xl font-extrabold text-black mt-5 mb-3">
                                         Điểm nổi bật
                                     </h1>
                                     {featuredBlog && (
@@ -133,11 +133,11 @@ export default function BlogPage() {
                                                         {featuredBlog.location}
                                                     </span>
                                                 </div>
-                                                <h2 className="text-[30px] font-extrabold text-black hover:text-blue-600 transition-colors">
+                                                <h2 className="text-2xl md:text-[30px] font-extrabold text-black hover:text-blue-600 transition-colors">
                                                     {featuredBlog.title}
                                                 </h2>
                                             </Link>
-                                            <p className="py-2 text-[20px] font-normal text-gray-900 line-clamp-3">
+                                            <p className="py-2 text-lg md:text-[20px] font-normal text-gray-900 line-clamp-3">
                                                 {featuredBlog.description}
                                             </p>
                                             <div className="flex items-center mt-2">
@@ -158,10 +158,10 @@ export default function BlogPage() {
 
                                 {/* Latest Blogs */}
                                 <div>
-                                    <h1 className="text-3xl font-extrabold text-black mt-5 mb-3">
+                                    <h1 className="text-2xl md:text-3xl font-extrabold text-black mt-5 mb-3">
                                         Mới nhất
                                     </h1>
-                                    <div className="grid grid-flow-row-dense grid-cols-2 grid-rows-2 gap-5">
+                                    <div className="grid grid-flow-row-dense grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5">
                                         {latestBlogs.map((blog) => (
                                             <div key={blog.id} className="mb-3">
                                                 <Link

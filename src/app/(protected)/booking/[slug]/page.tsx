@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +6,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { toast } from "sonner";
-import dayjs from "dayjs";
 import { PUBLIC_API, API } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,13 @@ import { Select } from "@/components/ui/select";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 
 export default function BookingPage() {
-    const { slug } = useParams();
     const router = useRouter();
     const user = useSelector((state: RootState) => state.auth.user);
+    const params = useParams();
 
     const [tour, setTour] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [slug, setSlug] = useState<string>("");
     const [form, setForm] = useState({
         quantity: 2, // Sẽ được cập nhật theo min_people của tour
         start_date: null,
@@ -38,11 +39,26 @@ export default function BookingPage() {
     });
 
     useEffect(() => {
+        const getSlug = async () => {
+            if (params.slug) {
+                const resolvedSlug =
+                    typeof params.slug === "string"
+                        ? params.slug
+                        : params.slug[0];
+                setSlug(resolvedSlug);
+            }
+        };
+        getSlug();
+    }, [params]);
+
+    useEffect(() => {
         if (!user) {
             toast.warning("Vui lòng đăng nhập để đặt tour.");
             router.push("/");
             return;
         }
+
+        if (!slug) return;
 
         const fetchData = async () => {
             try {
@@ -67,7 +83,8 @@ export default function BookingPage() {
                     busRoutes: busRes.data,
                     motorbikes: bikeRes.data,
                 });
-            } catch (err) {
+            } catch (error) {
+                console.error("Error fetching data:", error);
                 toast.error("Không thể tải dữ liệu tour.");
                 router.push("/");
             } finally {
@@ -76,7 +93,7 @@ export default function BookingPage() {
         };
 
         fetchData();
-    }, [slug]);
+    }, [slug, user, router]);
 
     const handleChange = (key: string, value: any) => {
         // Kiểm tra nếu đang thay đổi quantity và tour đã được load
@@ -123,7 +140,8 @@ export default function BookingPage() {
             await API.post("/bookings", body);
             toast.success("Đặt tour thành công!");
             router.push("/my-bookings");
-        } catch (err) {
+        } catch (error) {
+            console.error("Error booking tour:", error);
             toast.error("Đặt tour thất bại.");
         }
     };

@@ -10,10 +10,7 @@ import GallerySection from "@/layouts/destination-section/GallerySection";
 import HighlightSection from "@/layouts/destination-section/HighlightSection";
 import DelicaciesSection from "@/layouts/destination-section/DelicaciesSection";
 import EndingImage from "@/layouts/destination-section/EndingImage";
-import RelatedSection from "@/layouts/destination-section/RelatedSection";
-import TourCarousel from "@/components/tourCarousel";
 import { PUBLIC_API } from "@/lib/api";
-import TUORDATA from "@/data/tours_miennam.json";
 
 type Section =
     | { type: "intro"; title: string; content: string }
@@ -29,10 +26,13 @@ type Section =
 export async function generateMetadata({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
     try {
-        const res = await PUBLIC_API.get(`/destinations/slug/${params.slug}`);
+        const resolvedParams = await params;
+        const res = await PUBLIC_API.get(
+            `/destinations/slug/${resolvedParams.slug}`
+        );
         const destination = res.data;
 
         return {
@@ -47,15 +47,16 @@ export async function generateMetadata({
 export default async function DestinationDetailPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
     try {
-        const res = await PUBLIC_API.get(`/destinations/slug/${params.slug}`);
+        const resolvedParams = await params;
+        const res = await PUBLIC_API.get(
+            `/destinations/slug/${resolvedParams.slug}`
+        );
         const destination = res.data;
 
         const sections = destination.sections as Section[];
-
-        const sectionMap = Object.fromEntries(sections.map((s) => [s.type, s]));
 
         const getSection = (type: string) =>
             sections.find((section) => section.type === type);

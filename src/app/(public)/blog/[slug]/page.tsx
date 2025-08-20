@@ -25,13 +25,28 @@ interface Blog {
     author: string;
 }
 
-export default function BlogDetail({ params }: { params: { slug: string } }) {
+export default function BlogDetail({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
     const [blog, setBlog] = useState<Blog | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [slug, setSlug] = useState<string>("");
     const hasFetched = useRef(false);
 
     useEffect(() => {
+        const getParams = async () => {
+            const resolvedParams = await params;
+            setSlug(resolvedParams.slug);
+        };
+        getParams();
+    }, [params]);
+
+    useEffect(() => {
+        if (!slug) return;
+
         const fetchBlogDetail = async () => {
             // Ngăn chặn gọi API 2 lần
             if (hasFetched.current) return;
@@ -41,9 +56,7 @@ export default function BlogDetail({ params }: { params: { slug: string } }) {
                 setLoading(true);
 
                 // Gọi API để lấy chi tiết blog theo slug
-                const response = await BACKEND.get(
-                    `/blogs/slug/${params.slug}`
-                );
+                const response = await BACKEND.get(`/blogs/slug/${slug}`);
 
                 if (response.data && response.data.data) {
                     setBlog(response.data.data);
@@ -61,7 +74,7 @@ export default function BlogDetail({ params }: { params: { slug: string } }) {
         };
 
         fetchBlogDetail();
-    }, [params.slug]);
+    }, [slug]);
 
     // Format date function
     const formatDate = (dateString: string) => {

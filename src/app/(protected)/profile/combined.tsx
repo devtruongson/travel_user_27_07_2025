@@ -260,7 +260,8 @@ export default function CombinedProfileClient() {
             await API.put(`/bookings/${bookingId}/cancel`);
             toast.success("Hủy booking thành công");
             fetchBookings();
-        } catch (error) {
+        } catch (err) {
+            console.error("Cancel booking failed:", err);
             toast.error("Không thể hủy booking");
         }
     };

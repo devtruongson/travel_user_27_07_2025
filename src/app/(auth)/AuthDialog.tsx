@@ -144,7 +144,7 @@ export default function AuthDialog({ open, onOpenChange }: Props) {
                 {step === "login" && (
                     <LoginForm
                         onSwitch={() => setStep("register")}
-                        onLoginVerifiedSuccess={(_user) => {
+                        onLoginVerifiedSuccess={() => {
                             onOpenChange(false);
                         }}
                         onNeedVerify={(userId) => {

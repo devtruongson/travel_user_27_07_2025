@@ -92,7 +92,8 @@ function BookingSuccessContent() {
                 hour: "2-digit",
                 minute: "2-digit",
             }).format(date);
-        } catch (error) {
+        } catch (err) {
+            console.error("Date format error:", err);
             return dateString;
         }
     };
@@ -470,7 +471,8 @@ function BookingSuccessContent() {
                                     </li>
                                     <li>
                                         • Bạn có thể kiểm tra trạng thái đặt
-                                        tour trong mục "Đặt tour của tôi"
+                                        tour trong mục &quot;Đặt tour của
+                                        tôi&quot;
                                     </li>
                                     <li>
                                         • Nếu có thắc mắc, vui lòng liên hệ

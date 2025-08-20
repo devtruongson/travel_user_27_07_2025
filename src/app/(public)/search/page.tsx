@@ -6,7 +6,18 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Cập nhật interface theo cấu trúc dữ liệu mới
+// Cập nhật interface theo cấu trúc dữ                             <div className="text-center py-8 border rounded-md">
+                                <p className="font-medium">
+                                    Không tìm thấy tour nào
+                                </p>
+                                <p className="text-gray-500 mt-1">
+                                    Không có tour nào phù hợp với từ khóa &quot;
+                                    {query}&quot;.
+                                </p>
+                            </div>                         <p className="text-gray-500 mt-2">
+                                    Không có tour nào phù hợp với từ khóa &quot;
+                                    {query}&quot;.
+                                </p>mới
 interface Tour {
     tour_id: number;
     tour_name: string;
@@ -242,8 +253,8 @@ export default function SearchPage() {
                                     Không tìm thấy kết quả nào
                                 </p>
                                 <p className="text-gray-500 mt-1">
-                                    Không có kết quả nào phù hợp với từ khóa "
-                                    {query}". Vui lòng thử tìm kiếm với từ khóa
+                                    Không có kết quả nào phù hợp với từ khóa &quot;
+                                    {query}&quot;. Vui lòng thử tìm kiếm với từ khóa
                                     khác.
                                 </p>
                             </div>

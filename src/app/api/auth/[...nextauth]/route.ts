@@ -17,7 +17,7 @@ const handler = NextAuth({
                 }
                 try {
                     const res = await axios.post(
-                        "http://localhost:8000/api/login",
+                        "https://api.moitruongxanhphatloc.com/api/login",
                         {
                             login: credentials.login,
                             password: credentials.password,

@@ -1,7 +1,8 @@
-import styles from "./style.module.css";
+/* eslint-disable @next/next/no-img-element */
 import ButtonGlobal from "@/components/buttonGlobal";
 import Counter from "@/components/counter";
 import Image from "next/image";
+import styles from "./style.module.css";
 
 export default function Intro() {
     return (

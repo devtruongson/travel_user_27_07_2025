@@ -878,24 +878,6 @@ export default function BookingModal({
                                                         ))}
                                                     </ul>
                                                     {/* Debug buttons */}
-                                                    <div className="mt-3 pt-3 border-t border-red-200">
-                                                        <div className="flex space-x-2">
-                                                            <button
-                                                                type="button"
-                                                                onClick={debugBusRouteData}
-                                                                className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                                                            >
-                                                                Debug Data
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={updateBusRouteData}
-                                                                className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                                                            >
-                                                                Update Data
-                                                            </button>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             )}
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -94,7 +94,7 @@ export default async function TourDetailPage({
                         )})`,
                     }}
                 >
-                    <div className="flex items-center container m-auto justify-center absolute top-0 left-0 right-0 bottom-0 z-2 text-center">
+                    <div className="pt-[100px] flex items-center container m-auto justify-center absolute top-0 left-0 right-0 bottom-0 z-2 text-center">
                         <MotionFade
                             animation="fadeInBottomToTop"
                             className="w-full text-white px-4"

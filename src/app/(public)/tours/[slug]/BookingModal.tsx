@@ -391,6 +391,55 @@ export default function BookingModal({
         user,
     ]);
 
+    // Debug function để kiểm tra dữ liệu xe khách
+    const debugBusRouteData = async () => {
+        if (!form.bus_route_id || !form.start_date) {
+            toast.warning("Vui lòng chọn xe khách và ngày khởi hành");
+            return;
+        }
+
+        try {
+            const endDate = tour?.duration 
+                ? dayjs(form.start_date).add(parseInt(tour.duration) || 0, "day").format("YYYY-MM-DD")
+                : dayjs(form.start_date).format("YYYY-MM-DD");
+
+            const debugData = {
+                bus_route_id: form.bus_route_id,
+                start_date: dayjs(form.start_date).format("YYYY-MM-DD"),
+                end_date: endDate,
+            };
+
+            const response = await PUBLIC_API.post("/bookings/debug-bus-route", debugData);
+            
+            if (response.data.success) {
+                console.log("Debug Bus Route Data:", response.data.data);
+                toast.success("Đã ghi log debug vào console. Vui lòng mở Developer Tools để xem.");
+            } else {
+                toast.error("Không thể lấy dữ liệu debug");
+            }
+        } catch (error: any) {
+            console.error("Debug error:", error);
+            toast.error("Lỗi khi debug dữ liệu");
+        }
+    };
+
+    // Function để cập nhật dữ liệu xe khách
+    const updateBusRouteData = async () => {
+        try {
+            const response = await PUBLIC_API.post("/bookings/update-bus-route-data");
+            
+            if (response.data.success) {
+                console.log("Updated Bus Routes:", response.data.data);
+                toast.success("Cập nhật dữ liệu xe khách thành công");
+            } else {
+                toast.error("Không thể cập nhật dữ liệu");
+            }
+        } catch (error: any) {
+            console.error("Update error:", error);
+            toast.error("Lỗi khi cập nhật dữ liệu");
+        }
+    };
+
     useEffect(() => {
         if (!open) return;
 
@@ -828,6 +877,25 @@ export default function BookingModal({
                                                             </li>
                                                         ))}
                                                     </ul>
+                                                    {/* Debug buttons */}
+                                                    <div className="mt-3 pt-3 border-t border-red-200">
+                                                        <div className="flex space-x-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={debugBusRouteData}
+                                                                className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                            >
+                                                                Debug Data
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={updateBusRouteData}
+                                                                className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                                                            >
+                                                                Update Data
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

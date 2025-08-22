@@ -56,6 +56,7 @@ export default function BookingModal({
     const [isLoading, setIsLoading] = useState(false);
     const [isVerifyingPromo, setIsVerifyingPromo] = useState(false);
     const [isLoadingPromotions, setIsLoadingPromotions] = useState(false);
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [promoInfo, setPromoInfo] = useState<null | {
         discount_type: string;
         discount_value: number;
@@ -63,6 +64,7 @@ export default function BookingModal({
     }>(null);
     const [availablePromotions, setAvailablePromotions] = useState<any[]>([]);
     const [showPromotions, setShowPromotions] = useState(false);
+    const [availabilityErrors, setAvailabilityErrors] = useState<{[key: string]: string}>({});
 
     // Tính giá trước khi áp dụng mã giảm giá
     const basePrice = useMemo(() => {
@@ -166,6 +168,11 @@ export default function BookingModal({
         // Reset promo info if code is cleared
         if (key === "promotion_code" && !value) {
             setPromoInfo(null);
+        }
+
+        // Clear availability errors when changing relevant fields
+        if (['quantity', 'start_date', 'bus_route_id', 'motorbike_id'].includes(key)) {
+            setAvailabilityErrors({});
         }
     };
 
@@ -271,6 +278,44 @@ export default function BookingModal({
                 `Tour này yêu cầu tối thiểu ${tour.min_people} người.`
             );
             return;
+        }
+
+        // Kiểm tra availability của các dịch vụ trước khi đặt
+        setIsCheckingAvailability(true);
+        try {
+            const endDate = tour?.duration 
+                ? dayjs(form.start_date).add(parseInt(tour.duration) || 0, "day").format("YYYY-MM-DD")
+                : dayjs(form.start_date).format("YYYY-MM-DD");
+
+            const availabilityData = {
+                start_date: dayjs(form.start_date).format("YYYY-MM-DD"),
+                end_date: endDate,
+                quantity: form.quantity,
+                bus_route_id: form.bus_route_id || null,
+                motorbike_id: form.motorbike_id || null,
+            };
+
+            const availabilityRes = await PUBLIC_API.post("/bookings/check-availability", availabilityData);
+            
+            if (!availabilityRes.data.success || !availabilityRes.data.data.valid) {
+                const errors = availabilityRes.data.data.errors || {};
+                setAvailabilityErrors(errors);
+                
+                // Hiển thị lỗi đầu tiên
+                const firstError = Object.values(errors)[0];
+                if (firstError) {
+                    toast.error(firstError as string);
+                }
+                return;
+            }
+
+            setAvailabilityErrors({});
+        } catch (error: any) {
+            console.error("Availability check error:", error);
+            toast.error("Không thể kiểm tra availability của dịch vụ. Vui lòng thử lại.");
+            return;
+        } finally {
+            setIsCheckingAvailability(false);
         }
 
         setIsLoading(true);
@@ -767,6 +812,24 @@ export default function BookingModal({
                                                     Dịch vụ bổ sung (tùy chọn)
                                                 </span>
                                             </h3>
+                                            
+                                            {/* Availability Errors */}
+                                            {Object.keys(availabilityErrors).length > 0 && (
+                                                <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                                                    <div className="flex items-center text-red-700 mb-2">
+                                                        <span className="mr-2">⚠️</span>
+                                                        <span className="font-medium">Lỗi availability:</span>
+                                                    </div>
+                                                    <ul className="text-sm text-red-600 space-y-1">
+                                                        {Object.entries(availabilityErrors).map(([key, error]) => (
+                                                            <li key={key} className="flex items-start">
+                                                                <span className="mr-2">•</span>
+                                                                <span>{error}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {[
                                                     {
@@ -993,17 +1056,21 @@ export default function BookingModal({
                                             onClick={handleBooking}
                                             disabled={
                                                 isLoading ||
+                                                isCheckingAvailability ||
                                                 !form.start_date ||
                                                 (tour?.min_people &&
                                                     form.quantity <
-                                                        tour.min_people)
+                                                        tour.min_people) ||
+                                                Object.keys(availabilityErrors).length > 0
                                             }
                                             className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 disabled:opacity-50"
                                         >
-                                            {isLoading ? (
+                                            {isLoading || isCheckingAvailability ? (
                                                 <div className="flex items-center space-x-2">
                                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                    <span>Đang xử lý...</span>
+                                                    <span>
+                                                        {isCheckingAvailability ? "Đang kiểm tra..." : "Đang xử lý..."}
+                                                    </span>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center space-x-2">

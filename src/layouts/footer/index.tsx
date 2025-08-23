@@ -7,8 +7,28 @@ import { FaHeadphones } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { TbWorld } from "react-icons/tb";
 import { FaArrowRightLong } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { getCompanyContact, CompanyContact } from "@/services/getCompanyContact";
 
 export default function Footer() {
+    const [companyContact, setCompanyContact] = useState<CompanyContact | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCompanyContact = async () => {
+            try {
+                const contact = await getCompanyContact();
+                setCompanyContact(contact);
+            } catch (error) {
+                console.error('Error fetching company contact:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCompanyContact();
+    }, []);
+
     const listLink = [
         {
             title: "Trang chủ",
@@ -141,8 +161,7 @@ export default function Footer() {
                                     Địa chỉ:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    Tòa nhà VTravel số 1 đường Không tên, Hải
-                                    Châu, Đà Nẵng
+                                    {loading ? 'Đang tải...' : (companyContact?.address || 'Chưa có thông tin')}
                                 </span>
                             </div>
                         </li>
@@ -153,7 +172,7 @@ export default function Footer() {
                                     Hotline:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    0987654321
+                                    {loading ? 'Đang tải...' : (companyContact?.hotline || 'Chưa có thông tin')}
                                 </span>
                             </div>
                         </li>
@@ -164,7 +183,7 @@ export default function Footer() {
                                     Email:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    vtravel@gmail.com
+                                    {loading ? 'Đang tải...' : (companyContact?.email || 'Chưa có thông tin')}
                                 </span>
                             </div>
                         </li>
@@ -175,7 +194,7 @@ export default function Footer() {
                                     Website:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    www.vtravel.com.vn
+                                    {loading ? 'Đang tải...' : (companyContact?.website || 'Chưa có thông tin')}
                                 </span>
                             </div>
                         </li>

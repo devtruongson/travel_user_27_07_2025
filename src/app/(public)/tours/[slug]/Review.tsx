@@ -2,6 +2,7 @@
 import { PUBLIC_API } from "@/lib/api";
 import { RootState } from "@/lib/redux/store";
 import { ReviewType } from "@/types/review";
+import { pl } from "date-fns/locale";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -117,7 +118,7 @@ const TourReviewUI = ({ tour_id }: Props) => {
                 comment: newReview.comment,
             };
             const res = await PUBLIC_API.post("/reviews", review);
-            if (res?.data?.succes) {
+            if (res?.data?.success) {
                 setReviews([res.data?.data, ...reviews]);
                 toast.success("Đánh giá của bạn đã được gửi thành công");
             }
@@ -305,9 +306,19 @@ const TourReviewUI = ({ tour_id }: Props) => {
                                     <Image
                                         width={40}
                                         height={40}
-                                        src={review?.user?.avatar}
+                                        src={
+                                            review?.user?.avatar.startsWith(
+                                                "http"
+                                            )
+                                                ? review?.user?.avatar
+                                                : `${
+                                                      process.env
+                                                          .NEXT_PUBLIC_IMAGE_DOMAIN ||
+                                                      ""
+                                                  }/${review?.user?.avatar}`
+                                        }
                                         alt="avatar"
-                                        className="w-10 h-10 rounded-full"
+                                        className="w-10 h-10 rounded-full object-cover"
                                     />
                                 ) : (
                                     <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">

@@ -1,17 +1,23 @@
-import styles from "./style.module.css";
+"use client";
+
+import {
+    CompanyContact,
+    getCompanyContact,
+} from "@/services/getCompanyContact";
 import Image from "next/image";
 import Link from "next/link";
-import { FiChevronsRight } from "react-icons/fi";
-import { FaLocationDot } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 import { FaHeadphones } from "react-icons/fa";
+import { FaArrowRightLong, FaLocationDot } from "react-icons/fa6";
+import { FiChevronsRight } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { TbWorld } from "react-icons/tb";
-import { FaArrowRightLong } from "react-icons/fa6";
-import { useEffect, useState } from "react";
-import { getCompanyContact, CompanyContact } from "@/services/getCompanyContact";
+import styles from "./style.module.css";
 
 export default function Footer() {
-    const [companyContact, setCompanyContact] = useState<CompanyContact | null>(null);
+    const [companyContact, setCompanyContact] = useState<CompanyContact | null>(
+        null
+    );
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,7 +26,7 @@ export default function Footer() {
                 const contact = await getCompanyContact();
                 setCompanyContact(contact);
             } catch (error) {
-                console.error('Error fetching company contact:', error);
+                console.error("Error fetching company contact:", error);
             } finally {
                 setLoading(false);
             }
@@ -161,7 +167,10 @@ export default function Footer() {
                                     Địa chỉ:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    {loading ? 'Đang tải...' : (companyContact?.address || 'Chưa có thông tin')}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : companyContact?.address ||
+                                          "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -172,7 +181,10 @@ export default function Footer() {
                                     Hotline:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    {loading ? 'Đang tải...' : (companyContact?.hotline || 'Chưa có thông tin')}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : companyContact?.hotline ||
+                                          "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -183,7 +195,10 @@ export default function Footer() {
                                     Email:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    {loading ? 'Đang tải...' : (companyContact?.email || 'Chưa có thông tin')}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : companyContact?.email ||
+                                          "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -194,7 +209,10 @@ export default function Footer() {
                                     Website:
                                 </span>
                                 <span className="text-sm md:text-base">
-                                    {loading ? 'Đang tải...' : (companyContact?.website || 'Chưa có thông tin')}
+                                    {loading
+                                        ? "Đang tải..."
+                                        : companyContact?.website ||
+                                          "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>

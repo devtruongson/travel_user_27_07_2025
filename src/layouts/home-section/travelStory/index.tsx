@@ -34,12 +34,7 @@ export default function TravelStory() {
                 const response = await axios.get(
                     `${process.env.NEXT_PUBLIC_API_URL}/blogs`
                 );
-
-                if (
-                    response.data &&
-                    response.data.data &&
-                    response.data.data.data
-                ) {
+                if (response?.data?.data?.data) {
                     // Lọc blog có tag chứa "cẩm nang" (không phân biệt hoa thường)
                     const blogs = response.data.data.data.filter(
                         (blog: BlogItem) => {

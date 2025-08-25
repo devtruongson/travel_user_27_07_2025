@@ -11,7 +11,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import BookTourButton from "./BookTourButton";
+import TourDepartureWrapper from "./TourDepartureWrapper";
 import styles from "./style.module.css";
 import TourReviewUI from "./Review";
 
@@ -334,7 +334,12 @@ export default async function TourDetailPage({
                                         </p>
                                     )}
                                 </div>
-                                <BookTourButton slug={params.slug} />
+                                <div className="mt-8">
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                                        📅 Chọn ngày khởi hành
+                                    </h3>
+                                    <TourDepartureWrapper tourId={res?.data?.tour_id} />
+                                </div>
                             </div>
                         </div>
                     </section>

@@ -47,3 +47,34 @@
 .header.headerSticky button svg {
     color: black;
 }
+
+/* CSS cho nút đăng xuất */
+.logoutButton {
+    width: 100%;
+    text-align: left;
+    background-color: #dc2626;
+    color: white;
+    cursor: pointer;
+    border-radius: 16px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.logoutButton:hover {
+    background-color: #ef4444;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.logoutButton:active {
+    transform: translateY(0);
+}
+
+.logoutButton:focus {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+}

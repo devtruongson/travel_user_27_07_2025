@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, DollarSign, Users } from 'lucide-react';
-import { PUBLIC_API } from '@/lib/api';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, DollarSign, Users, CloudCog } from 'lucide-react';
+import { API } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { store } from '@/lib/redux/store';
+import { toast } from 'sonner';
 
 interface TourDeparture {
     departure_id: number;
@@ -12,7 +14,15 @@ interface TourDeparture {
     max_capacity: number;
     booked_count: number;
     status: string;
+    min_people?: number;
     notes?: string;
+}
+
+interface TourInfo {
+    tour_id: number;
+    name: string;
+    min_people: number;
+    price: number;
 }
 
 interface AdditionalService {
@@ -35,12 +45,16 @@ interface TourDepartureCalendarProps {
     tourId: number;
     onSelectDeparture: (departure: TourDeparture) => void;
     selectedDeparture?: TourDeparture | null;
+    promoCode?: string;
+    promoDiscount?: number;
 }
 
 const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
     tourId,
     onSelectDeparture,
-    selectedDeparture
+    selectedDeparture,
+    promoCode,
+    promoDiscount
 }) => {
     const router = useRouter();
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -55,6 +69,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [bookingLoading, setBookingLoading] = useState(false);
+    const [tourInfo, setTourInfo] = useState<TourInfo | null>(null);
     const [services, setServices] = useState<ServiceData>({
         guides: [],
         hotels: [],
@@ -73,7 +88,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
 
     // Kiểm tra đăng nhập
     const checkAuth = () => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const token = store.getState().auth.accessToken;
         if (!token) {
             alert('❌ Vui lòng đăng nhập để đặt tour!');
             router.push('/login');
@@ -105,24 +120,66 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
     // Fetch available months
     const fetchAvailableMonths = async () => {
         try {
-            const response = await PUBLIC_API.get(`/tour-departures/${tourId}/months`);
+            setLoading(true);
+            const response = await API.get(`/tour-departures/tour/${tourId}`);
+            console.log("check", response.data);
+            
             if (response.data.success) {
-                const months = response.data.data || [];
-                setAvailableMonths(months);
+                const departuresData = response.data.data || [];
+                setDepartures(departuresData);
                 
-                // Tự động chuyển đến tháng đầu tiên có departure
-                if (months.length > 0) {
-                    const [firstMonth, firstYear] = months[0].split('/');
-                    const monthNum = parseInt(firstMonth) - 1;
-                    const yearNum = parseInt(firstYear);
-                    setCurrentMonth(monthNum);
-                    setCurrentYear(yearNum);
+                if (departuresData.length > 0) {
+                    // Tạo danh sách các tháng có departure
+                    const months = [...new Set(departuresData.map((departure: TourDeparture) => {
+                        const date = new Date(departure.departure_date);
+                        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    }))];
+                    
+                    setAvailableMonths(months.sort() as string[]);
+                    
+                    // Tự động chuyển đến tháng đầu tiên có departure
+                    if (months.length > 0) {
+                        const firstMonth = months[0] as string;
+                        const [year, month] = firstMonth.split('-');
+                        const monthNum = parseInt(month) - 1;
+                        const yearNum = parseInt(year);
+                        setCurrentMonth(monthNum);
+                        setCurrentYear(yearNum);
+                    }
+                } else {
+                    console.log('Không có departures nào cho tour này');
+                    setAvailableMonths([]);
                 }
+            } else {
+                console.error('API response error:', response.data);
+                setAvailableMonths([]);
             }
         } catch (error) {
-            console.error('Error fetching available months:', error);
+            console.error('Error fetching departures:', error);
+            setAvailableMonths([]);
         } finally {
-            setInitialLoading(false);
+            setLoading(false);
+            setInitialLoading(false); // Quan trọng: set initialLoading = false
+        }
+    };
+
+    // Fetch thông tin tour
+    const fetchTourInfo = async () => {
+        try {
+            const response = await API.get(`/tours/${tourId}`);
+            console.log("Tour info response:", response.data);
+            
+            if (response.data.success) {
+                setTourInfo(response.data.data);
+                // Set quantity mặc định bằng min_people của tour
+                if (response.data.data.min_people && response.data.data.min_people > 1) {
+                    setQuantity(response.data.data.min_people);
+                }
+            } else {
+                console.error('Tour info API error:', response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching tour info:', error);
         }
     };
 
@@ -132,7 +189,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         
         setLoading(true);
         try {
-            const response = await PUBLIC_API.get(`/tour-departures/tour/${tourId}`, {
+            const response = await API.get(`/tour-departures/tour/${tourId}`, {
                 params: {
                     month: currentMonth + 1,
                     year: currentYear
@@ -154,21 +211,57 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
 
     useEffect(() => {
         fetchAvailableMonths();
-        fetchServices();
+        fetchTourInfo();
     }, [tourId]);
+
+    // Fetch services khi có departure được chọn
+    useEffect(() => {
+        if (localSelectedDeparture) {
+            fetchServices();
+        }
+    }, [localSelectedDeparture, quantity]);
 
     // Fetch services from API
     const fetchServices = async () => {
         setServicesLoading(true);
         try {
+            // Gọi API check-availability để lấy các dịch vụ được tự động chọn
+            const response = await API.post("/bookings/check-availability", {
+                tour_id: tourId,
+                start_date: localSelectedDeparture?.departure_date || new Date().toISOString().split('T')[0],
+                end_date: localSelectedDeparture?.departure_date || new Date().toISOString().split('T')[0],
+                quantity: quantity
+            });
+
+            if (response.data.success) {
+                const { auto_selected_services, services_details } = response.data.data;
+                
+                // Cập nhật services với các dịch vụ được tự động chọn
+                setServices({
+                    guides: auto_selected_services.guide ? [auto_selected_services.guide] : [],
+                    hotels: auto_selected_services.hotel ? [auto_selected_services.hotel] : [],
+                    busRoutes: auto_selected_services.bus ? [auto_selected_services.bus] : [],
+                    motorbikes: auto_selected_services.motorbike ? (
+                        Array.isArray(auto_selected_services.motorbike) 
+                            ? auto_selected_services.motorbike 
+                            : [auto_selected_services.motorbike]
+                    ) : [],
+                });
+
+                // Tự động chọn các dịch vụ được đề xuất
+                const selectedServiceTypes = Object.keys(auto_selected_services);
+                setSelectedServices(selectedServiceTypes);
+            }
+        } catch (error) {
+            console.error("Error fetching auto-selected services:", error);
+            // Fallback: lấy tất cả services nếu API không hoạt động
             const results = await Promise.allSettled([
-                PUBLIC_API.get("/guides"),
-                PUBLIC_API.get("/hotels"),
-                PUBLIC_API.get("/bus-routes"),
-                PUBLIC_API.get("/motorbikes"),
+                API.get("/guides"),
+                API.get("/hotels"),
+                API.get("/bus-routes"),
+                API.get("/motorbikes"),
             ]);
 
-            // Xử lý kết quả, đảm bảo dữ liệu luôn là mảng ngay cả khi có lỗi
             const guideRes = results[0].status === "fulfilled" ? results[0].value?.data || [] : [];
             const hotelRes = results[1].status === "fulfilled" ? results[1].value?.data || [] : [];
             const busRes = results[2].status === "fulfilled" ? results[2].value?.data || [] : [];
@@ -180,8 +273,6 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 busRoutes: Array.isArray(busRes) ? busRes : [],
                 motorbikes: Array.isArray(bikeRes) ? bikeRes : [],
             });
-        } catch (error) {
-            console.error("Error fetching services:", error);
         } finally {
             setServicesLoading(false);
         }
@@ -267,7 +358,8 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         if (day.departure) {
             setSelectedDate(day.dateString);
             setLocalSelectedDeparture(day.departure);
-            setQuantity(1); // Reset quantity khi chọn departure mới
+            // Set quantity mặc định bằng min_people của tour
+            setQuantity(tourInfo?.min_people || 1);
             setSelectedServices([]); // Reset selected services
             setShowBookingForm(false); // Reset booking form
             setIsGuestBooking(false); // Reset guest booking mode
@@ -290,24 +382,28 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 return services.guides.map(guide => ({
                     name: guide.name || 'Hướng dẫn viên',
                     price: guide.price_per_day || 0,
+                    price_per_day: guide.price_per_day || 0,
                     description: guide.description || 'Chuyên nghiệp, thông thạo địa phương'
                 }));
             case 'hotel':
                 return services.hotels.map(hotel => ({
                     name: hotel.name || 'Khách sạn',
                     price: hotel.price || 0,
+                    price_per_day: hotel.price || 0,
                     description: hotel.description || 'Tiện nghi đầy đủ'
                 }));
             case 'bus':
                 return services.busRoutes.map(bus => ({
                     name: bus.route_name || 'Tuyến xe',
                     price: bus.price || 0,
+                    price_per_day: bus.price || 0,
                     description: bus.description || 'An toàn và thoải mái'
                 }));
             case 'motorbike':
                 return services.motorbikes.map(bike => ({
                     name: bike.bike_type || 'Xe máy',
                     price: bike.price_per_day || 0,
+                    price_per_day: bike.price_per_day || 0,
                     description: bike.description || 'Bảo hiểm đầy đủ'
                 }));
             default:
@@ -319,20 +415,50 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         if (!localSelectedDeparture) return 0;
         
         const basePrice = localSelectedDeparture.price * quantity;
-        const servicesPrice = selectedServices.reduce((total, serviceId) => {
-            const service = additionalServices.find(s => s.id === serviceId);
-            return total + (service ? service.price : 0);
+        const servicesPrice = selectedServices.reduce((total, serviceType) => {
+            const service = getServiceDetails(serviceType)[0];
+            if (!service) return total;
+            
+            switch (serviceType) {
+                case 'guide':
+                case 'hotel':
+                case 'motorbike':
+                    // Tính giá theo ngày cho các dịch vụ này
+                    return total + (service.price_per_day || service.price || 0);
+                case 'bus':
+                    // Xe khách tính giá cố định
+                    return total + (service.price || 0);
+                default:
+                    return total;
+            }
         }, 0);
         
-        return basePrice + servicesPrice;
+        const subtotal = basePrice + servicesPrice;
+        
+        // Áp dụng mã giảm giá nếu có (promoDiscount giờ là số tiền giảm thực tế)
+        if (promoCode && promoDiscount && promoDiscount > 0) {
+            const finalPrice = subtotal - promoDiscount;
+            // Đảm bảo giá không nhỏ hơn 10,000 VNĐ
+            return Math.max(finalPrice, 10000);
+        }
+        
+        return subtotal;
     };
 
+    
     const handleBooking = async () => {
         if (!localSelectedDeparture) return;
         
         // Validation cơ bản
         if (quantity < 1) {
             alert('❌ Số người tham gia phải lớn hơn 0');
+            return;
+        }
+        
+        // Kiểm tra số người tối thiểu
+        const minPeople = tourInfo?.min_people || 1;
+        if (quantity < minPeople) {
+            alert(`❌ Số người tối thiểu để đặt tour này là ${minPeople} người. Bạn đã chọn ${quantity} người.`);
             return;
         }
         
@@ -372,6 +498,9 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 total_price: calculateTotalPrice(),
                 payment_method_id: "1", // VNPay
                 status: "pending",
+                // Mã giảm giá nếu có
+                promo_code: promoCode || null,
+                promo_discount: promoDiscount || 0,
                 // Dịch vụ bổ sung - lấy ID của dịch vụ được chọn
                 guide_id: selectedServices.includes('guide') ? (() => {
                     const selectedGuide = services.guides.find(g => g.guide_id);
@@ -396,40 +525,30 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 bookingData.guest_info = guestInfo;
             } else {
                 // Thêm user_id nếu đã đăng nhập
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                if (token) {
-                    try {
-                        // Decode JWT để lấy user_id (giả sử token có payload user_id)
-                        const payload = JSON.parse(atob(token.split('.')[1]));
-                        if (payload.user_id) {
-                            bookingData.user_id = payload.user_id;
-                        }
-                    } catch (error) {
-                        console.error('Error decoding token:', error);
-                    }
+
+                if (store.getState().auth.user) {
+                    bookingData.user_id = store.getState().auth.user.id;
                 }
             }
 
             // Gọi API booking
             console.log('Sending booking data:', bookingData);
-            const response = await PUBLIC_API.post("/bookings", bookingData);
+            const response = await API.post("/bookings", bookingData);
             console.log('Booking response:', response.data);
 
             if (response.data.success || response.data.message) {
                 // Success - show confirmation
-                let successMessage = `🎉 Đặt tour thành công!\n\n📅 Ngày: ${new Date(localSelectedDeparture.departure_date).toLocaleDateString('vi-VN')}\n👥 Số người: ${quantity}\n💰 Tổng tiền: ${calculateTotalPrice().toLocaleString('vi-VN')} VNĐ\n🔧 Dịch vụ: ${selectedServices.length > 0 ? selectedServices.map(id => {
-                    const service = additionalServices.find(s => s.id === id);
-                    return service?.name;
+                let successMessage = `🎉 Đặt tour thành công!\n\n📅 Ngày: ${new Date(localSelectedDeparture.departure_date).toLocaleDateString('vi-VN')}\n👥 Số người: ${quantity}\n💰 Tổng tiền: ${calculateTotalPrice().toLocaleString('vi-VN')} VNĐ\n🔧 Dịch vụ: ${selectedServices.length > 0 ? selectedServices.map(serviceType => {
+                    const service = getServiceDetails(serviceType)[0];
+                    return service?.name || serviceType;
                 }).join(', ') : 'Không có'}\n\nChúng tôi sẽ liên hệ với bạn trong vòng 24h để xác nhận chi tiết!`;
                 
-                // Thêm thông tin user mới tạo nếu có
                 if (response.data.guest_user) {
                     successMessage += `\n\n✅ Tài khoản đã được tạo tự động:\n📧 Email: ${response.data.guest_user.email}\n🔐 Mật khẩu: Đã được gửi qua email\n\nBạn có thể sử dụng email này để đăng nhập sau!`;
                 }
-                
-                alert(successMessage);
 
-                // Reset form
+                toast.success('Bạn đã đặt tour thành công!')
+                
                 setShowBookingForm(false);
                 setSelectedServices([]);
                 setQuantity(1);
@@ -446,6 +565,14 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             
         } catch (error: any) {
             console.error('Booking error:', error);
+            
+            // Xử lý lỗi về số người tối thiểu
+            if (error?.response?.status === 400 && error?.response?.data?.data?.min_people_required) {
+                const errorData = error.response.data.data;
+                alert(`❌ ${error.response.data.message}\n\n📋 Thông tin tour:\n- Tên tour: ${errorData.tour_name || tourInfo?.name || 'Không xác định'}\n- Số người tối thiểu: ${errorData.min_people_required}\n- Bạn đã chọn: ${errorData.current_quantity} người`);
+                return;
+            }
+            
             const errorMessage = error?.response?.data?.message || error?.message || 'Có lỗi xảy ra khi đặt tour. Vui lòng thử lại!';
             alert(`❌ ${errorMessage}`);
         } finally {
@@ -463,6 +590,36 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
         ];
         return months[month];
+    };
+
+    const getServiceIcon = (serviceType: string) => {
+        switch (serviceType) {
+            case 'guide':
+                return '👨‍💼';
+            case 'hotel':
+                return '🏨';
+            case 'bus':
+                return '🚌';
+            case 'motorbike':
+                return '🏍️';
+            default:
+                return '🔧';
+        }
+    };
+
+    const getServiceSelectionReason = (serviceType: string, guestCount: number) => {
+        switch (serviceType) {
+            case 'guide':
+                return `Tự động chọn vì số khách >= 10 người (${guestCount} người)`;
+            case 'hotel':
+                return 'Tự động chọn vì tour kéo dài nhiều ngày';
+            case 'bus':
+                return `Tự động chọn vì số khách >= 15 người (${guestCount} người)`;
+            case 'motorbike':
+                return 'Tự động chọn vì số khách ít và tour ngắn';
+            default:
+                return 'Được chọn tự động dựa trên yêu cầu tour';
+        }
     };
 
     // Danh sách dịch vụ bổ sung từ API với giá thực tế
@@ -557,8 +714,26 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             </div>
         );
     }
-        
+
+    // No departures state
+    if (departures.length === 0 && !loading) {
         return (
+            <div className="tour-departure-calendar bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4">
+                    <h2 className="text-xl font-bold text-center">LỊCH KHỞI HÀNH</h2>
+                </div>
+                <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                        <div className="text-6xl mb-4">📅</div>
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">Không có lịch khởi hành</h3>
+                        <p className="text-gray-500">Tour này chưa có lịch khởi hành nào</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
+    return (
         <div className="tour-departure-calendar bg-white rounded-lg shadow-lg overflow-hidden">
             <style jsx>{`
                 .tour-departure-calendar {
@@ -768,6 +943,12 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                          Còn lại: {localSelectedDeparture.max_capacity - localSelectedDeparture.booked_count} chỗ
                                      </span>
                                  </div>
+                                 <div className="flex items-center space-x-2">
+                                     <span className="text-orange-600">👥</span>
+                                     <span className="text-gray-700">
+                                         Tối thiểu: {tourInfo?.min_people || 1} người
+                                     </span>
+                                 </div>
                                  <div className="text-gray-600">
                                      Trạng thái: {localSelectedDeparture.status === 'available' ? 'Còn chỗ' : 'Hết chỗ'}
                                  </div>
@@ -858,9 +1039,6 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                                       </div>
 
                                                   </div>
-                                                  <p className="text-xs text-green-600 mt-2">
-                                                      💡 Tài khoản sẽ được tạo tự động với email của bạn
-                                                  </p>
                                               </div>
                                           )}
                                       </div>
@@ -881,144 +1059,88 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                              <div>
                                                  <label className="block text-sm font-medium text-gray-700 mb-2">
                                                      👥 Số người tham gia
+                                                     {tourInfo && (
+                                                         <span className="ml-2 text-xs text-blue-600">
+                                                             (Tối thiểu: {tourInfo.min_people} người)
+                                                         </span>
+                                                     )}
                                                  </label>
                                                  <input
                                                      type="number"
-                                                     min="1"
+                                                     min={tourInfo?.min_people || 1}
                                                      max={localSelectedDeparture.max_capacity - localSelectedDeparture.booked_count}
                                                      value={quantity}
                                                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                      onChange={(e) => {
                                                          const newQuantity = parseInt(e.target.value) || 1;
+                                                         const minPeople = tourInfo?.min_people || 1;
+                                                         
+                                                         if (newQuantity < minPeople) {
+                                                             alert(`⚠️ Số người tối thiểu để đặt tour này là ${minPeople} người!`);
+                                                             return;
+                                                         }
+                                                         
                                                          setQuantity(newQuantity);
                                                      }}
                                                  />
-                                             </div>
-                                             
-                                             {/* Dịch vụ bổ sung */}
-                                             <div>
-                                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                     🔧 Dịch vụ bổ sung
-                                                     {servicesLoading && (
-                                                         <span className="ml-2 text-xs text-gray-500">
-                                                             <div className="inline-flex items-center">
-                                                                 <div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-1"></div>
-                                                                 Đang tải...
-                                                             </div>
-                                                         </span>
-                                                     )}
-                                                 </label>
-                                                 
-                                                 {servicesLoading ? (
-                                                     // Loading skeleton cho services
-                                                     <div className="space-y-2">
-                                                         {Array.from({ length: 3 }).map((_, index) => (
-                                                             <div key={index} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                                                                 <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                                                                 <div className="flex-1">
-                                                                     <div className="flex items-center space-x-2 mb-1">
-                                                                         <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
-                                                                         <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-                                                                         <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-                                                                     </div>
-                                                                     <div className="w-32 h-3 bg-gray-200 rounded animate-pulse"></div>
-                                                                 </div>
-                                                             </div>
-                ))}
-            </div>
-                                                 ) : additionalServices.length > 0 ? (
-                                                     <div className="space-y-2">
-                                                         {additionalServices.map((service) => (
-                                                             <label key={service.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                                 <input
-                                                                     type="checkbox"
-                                                                     checked={selectedServices.includes(service.id)}
-                                                                     onChange={() => handleServiceToggle(service.id)}
-                                                                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                                                 />
-                                                                 <div className="flex-1">
-                                                                     <div className="flex items-center space-x-2">
-                                                                         <span className="text-lg">{service.icon}</span>
-                                                                         <span className="font-medium text-gray-800">{service.name}</span>
-                                                                         <span className="text-sm font-bold text-green-600">
-                                                                             {service.price.toLocaleString('vi-VN')} VNĐ
-                                                                         </span>
-                                                                     </div>
-                                                                     <p className="text-xs text-gray-600 mt-1">{service.description}</p>
-                                                                     
-                                                                     {/* Hiển thị thông tin chi tiết từ API */}
-                                                                     {(() => {
-                                                                         const serviceDetails = getServiceDetails(service.type);
-                                                                         if (serviceDetails.length > 0) {
-        return (
-                                                                                 <div className="mt-2 space-y-1">
-                                                                                     <div className="text-xs font-medium text-gray-600">
-                                                                                         Chi tiết dịch vụ:
-                                                                                     </div>
-                                                                                     {serviceDetails.slice(0, 3).map((detail, index) => (
-                                                                                         <div key={index} className="text-xs bg-gray-50 p-1 rounded">
-                                                                                             <div className="flex justify-between items-center">
-                                                                                                 <span className="text-gray-700">{detail.name}</span>
-                                                                                                 <span className="font-medium text-green-600">
-                                                                                                     {detail.price.toLocaleString('vi-VN')} VNĐ
-                                                                                                 </span>
-                                                                                             </div>
-                                                                                             {detail.description && (
-                                                                                                 <div className="text-gray-500 text-xs mt-1">
-                                                                                                     {detail.description}
-                                                                                                 </div>
-                                                                                             )}
-                                                                                         </div>
-                                                                                     ))}
-                                                                                     {serviceDetails.length > 3 && (
-                                                                                         <div className="text-xs text-blue-600 text-center">
-                                                                                             +{serviceDetails.length - 3} dịch vụ khác
-                                                                                         </div>
-                                                                                     )}
-                                                                                 </div>
-                                                                             );
-                                                                         }
-                                                                         return null;
-                                                                     })()}
-                                                                 </div>
-                                                             </label>
-                                                         ))}
-                                                     </div>
-                                                 ) : (
-                                                     <div className="text-center py-6 text-gray-500">
-                                                         <div className="text-2xl mb-2">🔧</div>
-                                                         <p className="text-sm">Không có dịch vụ bổ sung khả dụng</p>
-                                                         <button
-                                                             onClick={fetchServices}
-                                                             className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
-                                                         >
-                                                             Thử lại
-                                                         </button>
+                                                 {tourInfo && (
+                                                     <div className="mt-1 text-xs text-gray-500">
+                                                         {quantity < tourInfo.min_people ? (
+                                                             <span className="text-red-600">
+                                                                 ⚠️ Số người tối thiểu: {tourInfo.min_people} người
+                                                             </span>
+                                                         ) : (
+                                                             <span className="text-green-600">
+                                                                 ✅ Đủ số người tối thiểu
+                                                             </span>
+                                                         )}
                                                      </div>
                                                  )}
                                              </div>
-                                             
                                              {/* Tổng tiền */}
                                              <div className="bg-gray-50 p-3 rounded-lg">
                                                  <div className="space-y-2">
                                                      <div className="flex justify-between text-sm">
                                                          <span>Giá tour cơ bản:</span>
                                                          <span>{(localSelectedDeparture.price * quantity).toLocaleString('vi-VN')} VNĐ</span>
-                        </div>
+                                                     </div>
                                                      {selectedServices.length > 0 && (
                                                          <div className="flex justify-between text-sm">
-                                                             <span>Dịch vụ bổ sung:</span>
-                                                             <span>{selectedServices.reduce((total, serviceId) => {
-                                                                 const service = additionalServices.find(s => s.id === serviceId);
-                                                                 return total + (service ? service.price : 0);
+                                                             <span>Dịch vụ được tự động chọn:</span>
+                                                             <span>{selectedServices.reduce((total, serviceType) => {
+                                                                 const service = getServiceDetails(serviceType)[0];
+                                                                 if (!service) return total;
+                                                                 
+                                                                 switch (serviceType) {
+                                                                     case 'guide':
+                                                                     case 'hotel':
+                                                                     case 'motorbike':
+                                                                         return total + (service.price_per_day || service.price || 0);
+                                                                     case 'bus':
+                                                                         return total + (service.price || 0);
+                                                                     default:
+                                                                         return total;
+                                                                 }
                                                              }, 0).toLocaleString('vi-VN')} VNĐ</span>
-                        </div>
+                                                         </div>
+                                                     )}
+                                                     {/* Hiển thị mã giảm giá nếu có */}
+                                                     {promoCode && promoDiscount && promoDiscount > 0 && (
+                                                         <div className="border-t pt-2 space-y-2">
+                                                             <div className="flex justify-between text-sm text-green-600">
+                                                                 <span>Mã giảm giá ({promoCode}):</span>
+                                                                 <span>-{promoDiscount.toLocaleString('vi-VN')} VNĐ</span>
+                                                             </div>
+                                                             <div className="text-xs text-green-500 text-center bg-green-50 p-2 rounded">
+                                                                 🎉 Tiết kiệm được {promoDiscount.toLocaleString('vi-VN')} VNĐ
+                                                             </div>
+                                                         </div>
                                                      )}
                                                      <div className="border-t pt-2 flex justify-between font-bold text-lg">
                                                          <span>Tổng cộng:</span>
                                                          <span className="text-green-600">{calculateTotalPrice().toLocaleString('vi-VN')} VNĐ</span>
-                        </div>
-                    </div>
+                                                     </div>
+                                                 </div>
                                              </div>
                                              
                                                                                            {/* Nút đặt tour */}
@@ -1093,16 +1215,32 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                              {/* Dịch vụ bổ sung */}
                              {selectedServices.length > 0 && (
                                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200 mb-3">
-                                     <div className="text-xs text-blue-600 mb-1">Dịch vụ bổ sung</div>
+                                     <div className="text-xs text-blue-600 mb-1">Dịch vụ được tự động chọn</div>
                                      <div className="space-y-1">
-                                         {selectedServices.map(serviceId => {
-                                             const service = additionalServices.find(s => s.id === serviceId);
-                                             return service ? (
-                                                 <div key={serviceId} className="flex items-center justify-between text-xs">
-                                                     <span className="text-gray-700">{service.icon} {service.name}</span>
-                                                     <span className="font-medium text-blue-600">{service.price.toLocaleString('vi-VN')} VNĐ</span>
+                                         {selectedServices.map(serviceType => {
+                                             const service = getServiceDetails(serviceType)[0];
+                                             if (!service) return null;
+                                             
+                                             let servicePrice = 0;
+                                             switch (serviceType) {
+                                                 case 'guide':
+                                                 case 'hotel':
+                                                 case 'motorbike':
+                                                     servicePrice = (service.price_per_day || service.price || 0);
+                                                     break;
+                                                 case 'bus':
+                                                     servicePrice = service.price || 0;
+                                                     break;
+                                                 default:
+                                                     servicePrice = 0;
+                                             }
+                                             
+                                             return (
+                                                 <div key={serviceType} className="flex items-center justify-between text-xs">
+                                                     <span className="text-gray-700">{getServiceIcon(serviceType)} {service.name}</span>
+                                                     <span className="font-medium text-blue-600">{servicePrice.toLocaleString('vi-VN')} VNĐ</span>
                                                  </div>
-                                             ) : null;
+                                             );
                                          })}
                                      </div>
                                  </div>
@@ -1111,77 +1249,117 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                              {/* Thông tin dịch vụ từ API */}
                              {!servicesLoading && (
                                  <div className="bg-gray-100 rounded-lg p-3 border border-gray-200 mb-3">
-                                     <div className="text-xs text-gray-600 mb-2">Dịch vụ khả dụng:</div>
+                                     <div className="text-xs text-gray-600 mb-2">Dịch vụ được tự động chọn:</div>
                                      <div className="space-y-1 text-xs">
-                                         {services.guides.length > 0 && (
+                                         {selectedServices.includes('guide') && services.guides.length > 0 && (
                                              <div className="flex items-center justify-between">
                                                  <span className="text-gray-700">👨‍💼 Hướng dẫn viên</span>
-                                                 <span className="text-blue-600 font-medium">{services.guides.length}</span>
+                                                 <span className="text-blue-600 font-medium">✓ Đã chọn</span>
                                              </div>
                                          )}
-                                         {services.hotels.length > 0 && (
+                                         {selectedServices.includes('hotel') && services.hotels.length > 0 && (
                                              <div className="flex items-center justify-between">
                                                  <span className="text-gray-700">🏨 Khách sạn</span>
-                                                 <span className="text-green-600 font-medium">{services.hotels.length}</span>
+                                                 <span className="text-green-600 font-medium">✓ Đã chọn</span>
                                              </div>
                                          )}
-                                         {services.busRoutes.length > 0 && (
+                                         {selectedServices.includes('bus') && services.busRoutes.length > 0 && (
                                              <div className="flex items-center justify-between">
                                                  <span className="text-gray-700">🚌 Xe khách</span>
-                                                 <span className="text-purple-600 font-medium">{services.busRoutes.length}</span>
+                                                 <span className="text-purple-600 font-medium">✓ Đã chọn</span>
                                              </div>
                                          )}
-                                         {services.motorbikes.length > 0 && (
+                                         {selectedServices.includes('motorbike') && services.motorbikes.length > 0 && (
                                              <div className="flex items-center justify-between">
                                                  <span className="text-gray-700">🏍️ Xe máy</span>
-                                                 <span className="text-orange-600 font-medium">{services.motorbikes.length}</span>
+                                                 <span className="text-orange-600 font-medium">✓ Đã chọn</span>
+                                             </div>
+                                         )}
+                                         
+                                         {selectedServices.length === 0 && (
+                                             <div className="text-center text-gray-500">
+                                                 <span>Không có dịch vụ cần thiết</span>
                                              </div>
                                          )}
                                      </div>
                                      
                                      {/* Hiển thị giá thực tế từ API */}
-                                     <div className="mt-2 pt-2 border-t border-gray-200">
-                                         <div className="text-xs text-gray-600 mb-1">Giá thực tế từ API:</div>
-                                         <div className="space-y-1">
-                                             {services.guides.length > 0 && (
-                                                 <div className="text-xs">
-                                                     <span className="text-gray-600">Hướng dẫn viên:</span>
-                                                     <span className="ml-1 text-blue-600 font-medium">
-                                                         {Math.min(...services.guides.map(g => g.price_per_day || 0)).toLocaleString('vi-VN')} - {Math.max(...services.guides.map(g => g.price_per_day || 0)).toLocaleString('vi-VN')} VNĐ
-                                                     </span>
-                                                 </div>
-                                             )}
-                                             {services.hotels.length > 0 && (
-                                                 <div className="text-xs">
-                                                     <span className="text-gray-600">Khách sạn:</span>
-                                                     <span className="ml-1 text-green-600 font-medium">
-                                                         {Math.min(...services.hotels.map(h => h.price || 0)).toLocaleString('vi-VN')} - {Math.max(...services.hotels.map(h => h.price || 0)).toLocaleString('vi-VN')} VNĐ
-                                                     </span>
-                                                 </div>
-                                             )}
-                                             {services.busRoutes.length > 0 && (
-                                                 <div className="text-xs">
-                                                     <span className="text-gray-600">Xe khách:</span>
-                                                     <span className="ml-1 text-purple-600 font-medium">
-                                                         {Math.min(...services.busRoutes.map(b => b.price || 0)).toLocaleString('vi-VN')} - {Math.max(...services.busRoutes.map(b => b.price || 0)).toLocaleString('vi-VN')} VNĐ
-                                                     </span>
-                                                 </div>
-                                             )}
-                                             {services.motorbikes.length > 0 && (
-                                                 <div className="text-xs">
-                                                     <span className="text-gray-600">Xe máy:</span>
-                                                     <span className="ml-1 text-orange-600 font-medium">
-                                                         {Math.min(...services.motorbikes.map(b => b.price_per_day || 0)).toLocaleString('vi-VN')} - {Math.max(...services.motorbikes.map(b => b.price_per_day || 0)).toLocaleString('vi-VN')} VNĐ
-                                                     </span>
-                                                 </div>
-                        )}
-                    </div>
-                                     </div>
+                                     {selectedServices.length > 0 && (
+                                         <div className="mt-2 pt-2 border-t border-gray-200">
+                                             <div className="text-xs text-gray-600 mb-1">Giá dịch vụ được chọn:</div>
+                                             <div className="space-y-1">
+                                                 {selectedServices.includes('guide') && services.guides.length > 0 && (
+                                                     <div className="text-xs">
+                                                         <span className="text-gray-600">Hướng dẫn viên:</span>
+                                                         <span className="ml-1 text-blue-600 font-medium">
+                                                             {services.guides[0].price_per_day?.toLocaleString('vi-VN') || '0'} VNĐ/ngày
+                                                         </span>
+                                                     </div>
+                                                 )}
+                                                 {selectedServices.includes('hotel') && services.hotels.length > 0 && (
+                                                     <div className="text-xs">
+                                                         <span className="text-gray-600">Khách sạn:</span>
+                                                         <span className="ml-1 text-green-600 font-medium">
+                                                             {services.hotels[0].price?.toLocaleString('vi-VN') || '0'} VNĐ/ngày
+                                                         </span>
+                                                     </div>
+                                                 )}
+                                                 {selectedServices.includes('bus') && services.busRoutes.length > 0 && (
+                                                     <div className="text-xs">
+                                                         <span className="text-gray-600">Xe khách:</span>
+                                                         <span className="ml-1 text-purple-600 font-medium">
+                                                             {services.busRoutes[0].price?.toLocaleString('vi-VN') || '0'} VNĐ
+                                                         </span>
+                                                     </div>
+                                                 )}
+                                                 {selectedServices.includes('motorbike') && services.motorbikes.length > 0 && (
+                                                     <div className="text-xs">
+                                                         <span className="text-gray-600">Xe máy:</span>
+                                                         <span className="ml-1 text-orange-600 font-medium">
+                                                             {services.motorbikes[0].price_per_day?.toLocaleString('vi-VN') || '0'} VNĐ/ngày
+                                                         </span>
+                                                     </div>
+                                                 )}
+                                             </div>
+                                         </div>
+                                     )}
                                  </div>
                              )}
                              
                              {/* Tổng cộng */}
                              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
+                                 {/* Hiển thị giá gốc nếu có mã giảm giá */}
+                                 {promoCode && promoDiscount && promoDiscount > 0 && (
+                                     <div className="text-xs text-gray-500 mb-1 line-through">
+                                         Giá gốc: {(() => {
+                                             const basePrice = localSelectedDeparture.price * quantity;
+                                             const servicesPrice = selectedServices.reduce((total, serviceType) => {
+                                                 const service = getServiceDetails(serviceType)[0];
+                                                 if (!service) return total;
+                                                 
+                                                 switch (serviceType) {
+                                                     case 'guide':
+                                                     case 'hotel':
+                                                     case 'motorbike':
+                                                         return total + (service.price_per_day || service.price || 0);
+                                                     case 'bus':
+                                                         return total + (service.price || 0);
+                                                     default:
+                                                         return total;
+                                                 }
+                                             }, 0);
+                                             return (basePrice + servicesPrice).toLocaleString('vi-VN');
+                                         })()} VNĐ
+                                     </div>
+                                 )}
+                                 
+                                 {/* Hiển thị thông tin mã giảm giá */}
+                                 {promoCode && promoDiscount && promoDiscount > 0 && (
+                                     <div className="text-xs text-green-600 mb-1">
+                                         🎉 Mã {promoCode}: -{promoDiscount}%
+                                     </div>
+                                 )}
+                                 
                                  <div className="text-xs text-gray-500 mb-1">Tổng cộng</div>
                                  <div className="text-xl font-bold text-green-600">
                                      {calculateTotalPrice().toLocaleString('vi-VN')} VNĐ

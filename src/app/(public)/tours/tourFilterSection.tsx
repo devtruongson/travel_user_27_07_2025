@@ -146,7 +146,7 @@ export default function TourFilterSection({ cate }: { cate: any }) {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <CustomButton className="bg-[#2a0094] text-[#fff] cursor-pointer">
-                            <span>Theo miền</span>
+                            <span>Danh mục</span>
                         </CustomButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>

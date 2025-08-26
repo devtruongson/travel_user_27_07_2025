@@ -77,14 +77,14 @@ export default function RegionTourLayout(props: TProps) {
                     </div>
                 </div>
             </div>
-            {data?.length > 0 ? (
+            {/* {data?.length > 0 ? (
                 <div className="mt-15">
                     <p className="uppercase font-extrabold text-[#686868] mb-2">
                         {nameListTour}
                     </p>
                     <TourCarousel tours={data} />
                 </div>
-            ) : null}
+            ) : null} */}
         </div>
     );
 }

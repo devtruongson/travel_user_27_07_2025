@@ -72,7 +72,16 @@ export default function HeaderClient({ navigation }: Props) {
     console.log(isAuthenticated);
 
     const handleLogout = () => {
-        dispatch(logout());
+        console.log('🔄 Logout button clicked!');
+        console.log('Current user:', user);
+        console.log('Current auth state:', isAuthenticated);
+        
+        try {
+            dispatch(logout());
+            console.log('✅ Logout dispatched successfully');
+        } catch (error) {
+            console.error('❌ Error during logout:', error);
+        }
     };
 
     const handleSearch = (e: FormEvent) => {
@@ -167,30 +176,52 @@ export default function HeaderClient({ navigation }: Props) {
 
                                 {/* Search Form - Desktop */}
                                 <div className="hidden lg:block mr-4">
-                                    <form
-                                        onSubmit={handleSearch}
-                                        className="flex items-center"
-                                    >
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                placeholder="Tìm kiếm..."
-                                                value={searchTerm}
-                                                onChange={(e) =>
-                                                    setSearchTerm(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className="py-2 pl-4 pr-10 rounded-full text-sm border border-gray-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-700 bg-white/90"
-                                            />
-                                            <button
-                                                type="submit"
-                                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-cyan-600"
+                                    <div className="flex items-center">
+                                        {/* Search Icon Button */}
+                                        <button
+                                            onClick={toggleSearch}
+                                            className="p-2 text-gray-500 hover:text-cyan-600 transition-colors duration-200"
+                                        >
+                                            {
+                                                showSearch? <span>
+                                                    <XMarkIcon className="h-6 w-6" />
+                                                </span> :
+                                                <span>
+                                                    <MagnifyingGlassIcon className="h-6 w-6" />
+                                                </span>
+                                            }
+                                        </button>
+                                        
+                                        {/* Animated Search Input */}
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                            showSearch ? 'w-64 opacity-100' : 'w-0 opacity-0'
+                                        }`}>
+                                            <form
+                                                onSubmit={handleSearch}
+                                                className="flex items-center"
                                             >
-                                                <MagnifyingGlassIcon className="h-5 w-5" />
-                                            </button>
+                                                <div className="relative min-w-0">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Tìm kiếm..."
+                                                        value={searchTerm}
+                                                        onChange={(e) =>
+                                                            setSearchTerm(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="py-2 pl-4 pr-10 rounded-full text-sm border border-gray-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-700 bg-white/90 w-full"
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-cyan-600"
+                                                    >
+                                                        <MagnifyingGlassIcon className="h-5 w-5" />
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
 
                                 {/* Search toggle button - Mobile */}
@@ -279,57 +310,13 @@ export default function HeaderClient({ navigation }: Props) {
                                                                 </Link>
                                                             </li>
                                                             <li className="px-5 py-2">
-                                                                <AlertDialog>
-                                                                    <AlertDialogTrigger
-                                                                        asChild
-                                                                    >
-                                                                        <CustomButton className="bg-red-600 hover:bg-red-400 text-white cursor-pointer rounded-2xl">
-                                                                            Đăng
-                                                                            xuất
-                                                                        </CustomButton>
-                                                                    </AlertDialogTrigger>
-                                                                    <AlertDialogContent>
-                                                                        <AlertDialogHeader>
-                                                                            <AlertDialogTitle>
-                                                                                Bạn
-                                                                                chắc
-                                                                                chắn
-                                                                                muốn
-                                                                                đăng
-                                                                                xuất?
-                                                                            </AlertDialogTitle>
-                                                                            <AlertDialogDescription>
-                                                                                Hành
-                                                                                động
-                                                                                này
-                                                                                sẽ
-                                                                                kết
-                                                                                thúc
-                                                                                phiên
-                                                                                đăng
-                                                                                nhập
-                                                                                hiện
-                                                                                tại
-                                                                                của
-                                                                                bạn.
-                                                                            </AlertDialogDescription>
-                                                                        </AlertDialogHeader>
-                                                                        <AlertDialogFooter>
-                                                                            <AlertDialogCancel className="bg-gray-300 hover:bg-gray-400">
-                                                                                Hủy
-                                                                            </AlertDialogCancel>
-                                                                            <AlertDialogAction
-                                                                                className="bg-red-600 hover:bg-red-700"
-                                                                                onClick={
-                                                                                    handleLogout
-                                                                                }
-                                                                            >
-                                                                                Xác
-                                                                                nhận
-                                                                            </AlertDialogAction>
-                                                                        </AlertDialogFooter>
-                                                                    </AlertDialogContent>
-                                                                </AlertDialog>
+                                                                <button
+                                                                    onClick={handleLogout}
+                                                                    className={styles.logoutButton}
+                                                                    type="button"
+                                                                >
+                                                                    Đăng xuất
+                                                                </button>
                                                             </li>
                                                         </ul>
                                                     </div>

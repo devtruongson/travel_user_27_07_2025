@@ -46,10 +46,7 @@ interface TourDepartureCalendarProps {
     onSelectDeparture: (departure: TourDeparture) => void;
     selectedDeparture?: TourDeparture | null;
     promoCode?: string;
-    promoDiscount?: {
-        value: number;
-        type: string;
-    };
+    promoDiscount?: any;
 }
 
 const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
@@ -201,8 +198,20 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             
             if (response.data.success) {
                 const departuresData = response.data.data || [];
-                console.log('Fetched departures:', departuresData);
-                console.log('Current month/year:', currentMonth + 1, currentYear);
+                console.log('📅 Fetched departures:', departuresData);
+                console.log('📅 Current month/year:', currentMonth + 1, currentYear);
+                
+                // Debug: Log chi tiết từng departure
+                departuresData.forEach((dep: any, index: number) => {
+                    console.log(`📅 Departure ${index + 1}:`, {
+                        id: dep.departure_id,
+                        date: dep.departure_date,
+                        parsedDate: new Date(dep.departure_date),
+                        localDate: new Date(dep.departure_date).toLocaleDateString('vi-VN'),
+                        price: dep.price
+                    });
+                });
+                
                 setDepartures(departuresData);
             }
         } catch (error) {
@@ -322,11 +331,19 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             const isToday = date.toDateString() === new Date().toDateString();
             const dateString = date.toISOString().split('T')[0];
             
+            // Debug: Log để kiểm tra date matching
+            console.log('🔍 Calendar date:', dateString, 'Calendar date object:', date);
+            
             // So sánh ngày với nhiều format khác nhau
             const departure = departures.find(d => {
+                // Parse API date string và chuyển về local timezone
+                // Sử dụng toLocaleDateString để tránh timezone issues
                 const apiDate = new Date(d.departure_date);
-                const apiDateString = apiDate.toISOString().split('T')[0];
-                const calendarDateString = date.toISOString().split('T')[0];
+                const apiDateString = apiDate.toLocaleDateString('en-CA'); // Format: YYYY-MM-DD
+                const calendarDateString = date.toLocaleDateString('en-CA'); // Format: YYYY-MM-DD
+                
+          
+                console.log('🔍 Match?', apiDateString === calendarDateString);
                 
                 return apiDateString === calendarDateString;
             });
@@ -348,6 +365,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
 
     const handleDateClick = (day: any) => {
         if (day.departure) {
+            
             setSelectedDate(day.dateString);
             setLocalSelectedDeparture(day.departure);
             // Set quantity mặc định bằng min_people của tour
@@ -857,9 +875,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                              {calendarDays.map((day, index) => {
                                  const hasDeparture = day.departure;
                                  const isAvailable = hasDeparture && day.departure.status === 'available';
-                                 
-                                 // Debug log cho ngày có departure
-                                 
+
                                  return (
                                      <div
                                          key={index}
@@ -889,6 +905,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                                  <div className="text-xs font-bold text-red-600">
                                                      {formatPrice(day.departure.price)}
                                                  </div>
+                                                
                                                  {day.departure.notes && (
                                                      <div className="text-xs text-gray-600 truncate">
                                                          {day.departure.notes}
@@ -1312,7 +1329,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                              {/* Tổng cộng */}
                              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
                                  {/* Hiển thị giá gốc nếu có mã giảm giá */}
-                                 {promoCode && promoDiscount && promoDiscount > 0 && (
+                                 {promoCode && promoDiscount && promoDiscount.value > 0 && (
                                      <div className="text-xs text-gray-500 mb-1 line-through">
                                          Giá gốc: {(() => {
                                              const basePrice = localSelectedDeparture.price * quantity;
@@ -1337,9 +1354,9 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                  )}
                                  
                                  {/* Hiển thị thông tin mã giảm giá */}
-                                 {promoCode && promoDiscount && promoDiscount > 0 && (
+                                 {promoCode && promoDiscount && promoDiscount.value > 0 && (
                                      <div className="text-xs text-green-600 mb-1">
-                                         🎉 Mã {promoCode}: -{promoDiscount}%
+                                         🎉 Mã {promoCode}: -{promoDiscount.value}%
                                      </div>
                                  )}
                                  

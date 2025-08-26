@@ -46,7 +46,10 @@ interface TourDepartureCalendarProps {
     onSelectDeparture: (departure: TourDeparture) => void;
     selectedDeparture?: TourDeparture | null;
     promoCode?: string;
-    promoDiscount?: number;
+    promoDiscount?: {
+        value: number;
+        type: string;
+    };
 }
 
 const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
@@ -325,21 +328,10 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 const apiDateString = apiDate.toISOString().split('T')[0];
                 const calendarDateString = date.toISOString().split('T')[0];
                 
-                console.log('Comparing dates:', {
-                    apiDate: d.departure_date,
-                    apiDateString,
-                    calendarDateString,
-                    matches: apiDateString === calendarDateString
-                });
-                
                 return apiDateString === calendarDateString;
             });
             const isSelected = selectedDate === dateString;
             
-            // Debug log cho ngày có departure
-        if (departure) {
-                console.log('Found departure for date:', dateString, departure);
-            }
             
             days.push({
                 date,
@@ -434,15 +426,11 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         }, 0);
         
         const subtotal = basePrice + servicesPrice;
-        
-        // Áp dụng mã giảm giá nếu có (promoDiscount giờ là số tiền giảm thực tế)
-        if (promoCode && promoDiscount && promoDiscount > 0) {
-            const finalPrice = subtotal - promoDiscount;
-            // Đảm bảo giá không nhỏ hơn 10,000 VNĐ
-            return Math.max(finalPrice, 10000);
-        }
-        
-        return subtotal;
+        const priceDiscount = promoDiscount.type === "fixed" ? promoDiscount.value : ( (((subtotal) / 100) * promoDiscount.value));
+
+        console.log("check promoDiscount 1`2: ", promoDiscount)
+
+        return subtotal - priceDiscount;
     };
 
     
@@ -519,7 +507,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                     return selectedBike?.motorbike_id || null;
                 })() : null,
             };
-            
+
             // Thêm thông tin khách hàng nếu là guest booking
             if (isGuestBooking) {
                 bookingData.guest_info = guestInfo;
@@ -532,9 +520,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
             }
 
             // Gọi API booking
-            console.log('Sending booking data:', bookingData);
             const response = await API.post("/bookings", bookingData);
-            console.log('Booking response:', response.data);
 
             if (response.data.success || response.data.message) {
                 // Success - show confirmation
@@ -873,9 +859,6 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                  const isAvailable = hasDeparture && day.departure.status === 'available';
                                  
                                  // Debug log cho ngày có departure
-                                 if (hasDeparture) {
-                                     console.log('Rendering day with departure:', day.dateString, day.departure);
-                                 }
                                  
                                  return (
                                      <div

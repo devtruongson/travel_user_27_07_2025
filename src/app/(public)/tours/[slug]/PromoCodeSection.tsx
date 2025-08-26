@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 interface PromoCodeSectionProps {
     tourId: number;
+    selectedDeparturePrice?: number; // Giá của departure đã chọn
 }
 
 interface PromoCodeValidation {
@@ -18,7 +19,7 @@ interface PromoCodeValidation {
     };
 }
 
-export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
+export default function PromoCodeSection({ tourId, selectedDeparturePrice }: PromoCodeSectionProps) {
     const [promoCode, setPromoCode] = useState("");
     const [isApplied, setIsApplied] = useState(false);
     const [appliedCode, setAppliedCode] = useState("");
@@ -26,6 +27,7 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [tourInfo, setTourInfo] = useState<any>(null);
+    const [selectedDeparturePriceState, setSelectedDeparturePriceState] = useState<number | null>(null);
 
     // Fetch tour info để lấy price
     useEffect(() => {
@@ -39,6 +41,9 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
             const response = await API.get(`/tours/${tourId}`);
             if (response.data.success) {
                 setTourInfo(response.data.data);
+                // Debug: Log tour info
+                console.log('🏖️ Tour Info:', response.data.data);
+                console.log('💰 Tour Price:', response.data.data?.price);
             }
         } catch (error) {
             console.error('Error fetching tour info:', error);
@@ -67,12 +72,24 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
             }
         };
 
+        // Lắng nghe event departureSelected để cập nhật giá departure
+        const handleDepartureSelected = (event: CustomEvent) => {
+            const { tourId: eventTourId, departurePrice } = event.detail;
+            
+            if (eventTourId === tourId && departurePrice) {
+                console.log('🎯 Departure selected with price:', departurePrice);
+                setSelectedDeparturePriceState(departurePrice);
+            }
+        };
+
         window.addEventListener('removePromoCode', handleRemovePromoCode as EventListener);
         window.addEventListener('applyPromoCode', handleApplyPromoCode as EventListener);
+        window.addEventListener('departureSelected', handleDepartureSelected as EventListener);
 
         return () => {
             window.removeEventListener('removePromoCode', handleRemovePromoCode as EventListener);
             window.removeEventListener('applyPromoCode', handleApplyPromoCode as EventListener);
+            window.removeEventListener('departureSelected', handleDepartureSelected as EventListener);
         };
     }, [tourId]);
 
@@ -81,15 +98,28 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
         setError("");
         
         try {
-            // Tính order_total từ tour price (sử dụng giá cơ bản của tour)
+            // Tính order_total từ departure price hoặc tour price
             let orderTotal = 0;
-            if (tourInfo?.price) {
-                // Sử dụng giá cơ bản của tour làm order_total
+            if (selectedDeparturePriceState && selectedDeparturePriceState > 0) {
+                // Ưu tiên sử dụng giá của departure đã chọn
+                orderTotal = selectedDeparturePriceState;
+                console.log('🎯 Using departure price from state:', selectedDeparturePriceState);
+            } else if (selectedDeparturePrice && selectedDeparturePrice > 0) {
+                // Fallback: sử dụng prop selectedDeparturePrice
+                orderTotal = selectedDeparturePrice;
+                console.log('🎯 Using departure price from prop:', selectedDeparturePrice);
+            } else if (tourInfo?.price) {
+                // Fallback: sử dụng giá cơ bản của tour
                 orderTotal = tourInfo.price;
+                console.log('🏖️ Using tour base price:', tourInfo.price);
             } else {
-                // Fallback: sử dụng giá mặc định nếu không có thông tin
+                // Fallback: sử dụng giá mặc định
                 orderTotal = 1000000; // 1 triệu VNĐ mặc định
+                console.log('⚠️ Using fallback price:', orderTotal);
             }
+            
+            // Debug: Log orderTotal trước khi gửi API
+            console.log('📤 Sending to API - order_total:', orderTotal);
             
             const response = await API.post('/promotions/validate', {
                 code: code, // Sử dụng 'code' thay vì 'promo_code'
@@ -97,10 +127,12 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
             });
             
             const result: PromoCodeValidation = response.data;
+
+            console.log('🚀 Result:', result);  
             
             if (result.success && result.data) {
                 // Mã giảm giá hợp lệ
-                const discountInfo = result.data;
+                const discountInfo = result.data?.promotion;
                 
                 // Gửi mã giảm giá đến TourDepartureWrapper
                 const event = new CustomEvent('applyPromoCode', {
@@ -119,8 +151,8 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
                 setAppliedDiscount(discountInfo.discount_amount);
                 setPromoCode("");
                 
-                // Thông báo thành công
-                const discountMessage = `✅ Mã giảm giá hợp lệ!\nGiảm ${discountInfo.discount_amount.toLocaleString('vi-VN')} VNĐ`;
+                // Thông báo thành công với thông tin chi tiết
+                const discountMessage = `✅ Mã giảm giá hợp lệ!\nGiảm ${discountInfo.discount_amount.toLocaleString('vi-VN')} VNĐ (${discountInfo.promotion.discount_value}%)`;
                 
                 // Kiểm tra nếu giá cuối cùng quá thấp
                 if (discountInfo.final_amount < 10000) {
@@ -138,7 +170,6 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message || 'Có lỗi xảy ra khi kiểm tra mã giảm giá';
             setError(errorMessage);
-            toast.error(`❌ ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -220,17 +251,10 @@ export default function PromoCodeSection({ tourId }: PromoCodeSectionProps) {
                                 Mã giảm giá đã được áp dụng!
                             </span>
                         </div>
-                        <p className="text-green-600 text-sm">
-                            Mã: <strong>{appliedCode}</strong> - Giảm {appliedDiscount.toLocaleString('vi-VN')} VNĐ
-                        </p>
-                        {/* Hiển thị cảnh báo nếu giá cuối cùng quá thấp */}
-                        {tourInfo?.price && (tourInfo.price - appliedDiscount) < 10000 && (
-                            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <p className="text-yellow-700 text-xs">
-                                    ⚠️ Giá cuối cùng đã được điều chỉnh lên 10,000 VNĐ
-                                </p>
-                            </div>
-                        )}
+                            {/* <p className="text-green-600 text-sm">
+                                Mã: <strong>{appliedCode}</strong> - Giảm {appliedDiscount.toLocaleString('vi-VN')} VNĐ
+                            </p> */}
+                       
                     </div>
                     <button
                         onClick={handleRemovePromoCode}

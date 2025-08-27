@@ -1336,7 +1336,10 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                 {/* Hiển thị thông tin mã giảm giá */}
                                 {promoCode && promoDiscount && promoDiscount.value > 0 && (
                                     <div className="text-xs text-green-600 mb-1">
-                                        🎉 Mã {promoCode}: -{promoDiscount.value}%
+                                        🎉 Mã {promoCode}: -{promoDiscount.toLocaleString(
+                                                "vi-VN"
+                                            )}{" "}
+                                            VNĐ
                                     </div>
                                 )}
 

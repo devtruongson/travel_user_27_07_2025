@@ -93,7 +93,6 @@ export default function HeaderClient({ navigation }: Props) {
         }
     };
 
-    // Hàm để toggle hiển thị form tìm kiếm trên mobile
     const toggleSearch = () => {
         setShowSearch(!showSearch);
     };

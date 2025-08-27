@@ -3,7 +3,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import style from "./style.module.css";
 import BannerPage from "@/layouts/banner";
 import MotionFade from "@/components/motionFade";
 import styles from "./style.module.css";
@@ -86,7 +85,7 @@ export default function ContactPage() {
 
     return (
         <div>
-            <BannerPage classNameSection={`${style.banner} h-screen w-full`}>
+            <BannerPage classNameSection={`${styles.banner} h-screen w-full`}>
                 <div className="text-center relative z-2 w-full h-full flex flex-col justify-center items-center">
                     <MotionFade animation="fadeInBottomToTop">
                         <h3

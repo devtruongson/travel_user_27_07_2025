@@ -5,6 +5,10 @@ import axios from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ScrollDownIndicator from "@/components/scrollDownIndicator";
+import BannerPage from "@/layouts/banner";
+import MotionFade from "@/components/motionFade";
+import styles from "./style.module.css";
 
 interface Tour {
     tour_id: number;
@@ -84,275 +88,288 @@ export default function SearchPage() {
     }, [query]);
 
     return (
-        <div className="container mx-auto py-10 px-4 min-h-screen">
-            <br />
-            <br />
-            <br />
-            <br />
+        <div>
+            <BannerPage classNameSection={`${styles.banner} h-screen w-full`}>
+                <div className="text-center relative z-2 w-full h-full flex flex-col justify-center items-center">
+                    <MotionFade animation="fadeInBottomToTop">
+                        <h3
+                            className={`${styles.subTitle} font-[700] text-[120px] italic h-auto mx-auto`}
+                        >
+                            Khám phá VTravel
+                        </h3>
+                    </MotionFade>
+                    {/* <h1 className="text-2xl font-bold mb-2">Kết quả tìm kiếm</h1> */}
+                    <p className="text-white mt-6 text-4xl">
+                        {query
+                            ? `Tìm kiếm cho: "${query}"`
+                            : "Vui lòng nhập từ khóa để tìm kiếm"}
+                    </p>
+                </div>
+                <ScrollDownIndicator
+                    idSection="search-results"
+                    text="Xem kết quả"
+                    className="scroll-down-page"
+                />
+            </BannerPage>
 
-            <h1 className="text-2xl font-bold mb-2">Kết quả tìm kiếm</h1>
-            <p className="text-gray-600 mb-6">
-                {query
-                    ? `Tìm kiếm cho: "${query}"`
-                    : "Vui lòng nhập từ khóa để tìm kiếm"}
-            </p>
+            <div id="search-results" className="container m-auto">
+                {query && (
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={setActiveTab}
+                        className="mb-6"
+                    >
+                        <TabsList className="mb-4">
+                            <TabsTrigger value="all">
+                                Tất cả ({meta?.total_count || 0})
+                            </TabsTrigger>
+                            <TabsTrigger value="tours">
+                                Tours ({meta?.tour_count || 0})
+                            </TabsTrigger>
+                            <TabsTrigger value="blogs">
+                                Bài viết ({meta?.blog_count || 0})
+                            </TabsTrigger>
+                        </TabsList>
 
-            {query && (
-                <Tabs
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                    className="mb-6"
-                >
-                    <TabsList className="mb-4">
-                        <TabsTrigger value="all">
-                            Tất cả ({meta?.total_count || 0})
-                        </TabsTrigger>
-                        <TabsTrigger value="tours">
-                            Tours ({meta?.tour_count || 0})
-                        </TabsTrigger>
-                        <TabsTrigger value="blogs">
-                            Bài viết ({meta?.blog_count || 0})
-                        </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="all">
-                        {loading ? (
-                            <div>Đang tải...</div>
-                        ) : error ? (
-                            <div className="text-red-500">{error}</div>
-                        ) : results &&
-                            (results.tours.length > 0 ||
-                                results.blogs.length > 0) ? (
-                            <>
-                                {results.tours.length > 0 && (
-                                    <div className="mb-8">
-                                        <h2 className="text-xl font-semibold mb-3">
-                                            Tours ({results.tours.length})
-                                        </h2>
-                                        <ul className="border rounded-md divide-y">
-                                            {results.tours.map((tour) => (
-                                                <li
-                                                    key={tour.tour_id}
-                                                    className="p-3 hover:bg-gray-50"
-                                                >
-                                                    <Link
-                                                        href={`/tours/${tour.slug}`}
-                                                        className="block"
+                        <TabsContent value="all">
+                            {loading ? (
+                                <div>Đang tải...</div>
+                            ) : error ? (
+                                <div className="text-red-500">{error}</div>
+                            ) : results &&
+                                (results.tours.length > 0 ||
+                                    results.blogs.length > 0) ? (
+                                <>
+                                    {results.tours.length > 0 && (
+                                        <div className="mb-8">
+                                            <h2 className="text-xl font-semibold mb-3">
+                                                Tours ({results.tours.length})
+                                            </h2>
+                                            <ul className="border rounded-md divide-y">
+                                                {results.tours.map((tour) => (
+                                                    <li
+                                                        key={tour.tour_id}
+                                                        className="p-3 hover:bg-gray-50"
                                                     >
-                                                        <div className="font-medium text-cyan-600">
-                                                            {tour.tour_name}
-                                                        </div>
-                                                        <div className="flex justify-between mt-1 text-sm">
-                                                            <span>
-                                                                {tour.duration}
-                                                            </span>
-                                                            <span className="font-semibold">
-                                                                {new Intl.NumberFormat(
-                                                                    "vi-VN",
-                                                                    {
-                                                                        style: "currency",
-                                                                        currency:
-                                                                            "VND",
-                                                                    }
-                                                                ).format(
-                                                                    parseFloat(
-                                                                        tour.price
-                                                                    )
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                        <div className="text-xs text-gray-500 mt-1">
-                                                            Danh mục:{" "}
+                                                        <Link
+                                                            href={`/tours/${tour.slug}`}
+                                                            className="block"
+                                                        >
+                                                            <div className="font-medium text-cyan-600">
+                                                                {tour.tour_name}
+                                                            </div>
+                                                            <div className="flex justify-between mt-1 text-sm">
+                                                                <span>
+                                                                    {tour.duration}
+                                                                </span>
+                                                                <span className="font-semibold">
+                                                                    {new Intl.NumberFormat(
+                                                                        "vi-VN",
+                                                                        {
+                                                                            style: "currency",
+                                                                            currency:
+                                                                                "VND",
+                                                                        }
+                                                                    ).format(
+                                                                        parseFloat(
+                                                                            tour.price
+                                                                        )
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                Danh mục:{" "}
+                                                                {
+                                                                    tour.category
+                                                                        .category_name
+                                                                }
+                                                            </div>
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            {results.tours.length > 5 && (
+                                                <div className="mt-3 text-right">
+                                                    <Link
+                                                        href="/search?tab=tours"
+                                                        className="text-cyan-600 hover:underline"
+                                                    >
+                                                        Xem thêm tours →
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {results.blogs.length > 0 && (
+                                        <div>
+                                            <h2 className="text-xl font-semibold mb-3">
+                                                Bài viết ({results.blogs.length})
+                                            </h2>
+                                            <ul className="border rounded-md divide-y">
+                                                {results.blogs.map((blog) => (
+                                                    <li
+                                                        key={blog.id}
+                                                        className="p-3 hover:bg-gray-50"
+                                                    >
+                                                        <Link
+                                                            href={`/blog/${blog.slug}`}
+                                                            className="block"
+                                                        >
+                                                            <div className="font-medium text-cyan-600">
+                                                                {blog.title}
+                                                            </div>
+                                                            <div className="text-sm mt-1 line-clamp-2">
+                                                                {blog.description}
+                                                            </div>
+                                                            <div className="flex justify-between mt-1 text-xs text-gray-500">
+                                                                <span>
+                                                                    {blog.location}
+                                                                </span>
+                                                                <span>
+                                                                    {new Date(
+                                                                        blog.created_at
+                                                                    ).toLocaleDateString(
+                                                                        "vi-VN"
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            {results.blogs.length > 5 && (
+                                                <div className="mt-3 text-right">
+                                                    <Link
+                                                        href="/search?tab=blogs"
+                                                        className="text-cyan-600 hover:underline"
+                                                    >
+                                                        Xem thêm bài viết →
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="text-center py-8 border rounded-md">
+                                    <p className="font-medium">
+                                        Không tìm thấy kết quả nào
+                                    </p>
+                                    <p className="text-gray-500 mt-1">
+                                        Không có kết quả nào phù hợp với từ khóa "
+                                        {query}". Vui lòng thử tìm kiếm với từ khóa
+                                        khác.
+                                    </p>
+                                </div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="tours">
+                            {loading ? (
+                                <div>Đang tải...</div>
+                            ) : error ? (
+                                <div className="text-red-500">{error}</div>
+                            ) : results && results.tours.length > 0 ? (
+                                <ul className="border rounded-md divide-y">
+                                    {results.tours.map((tour) => (
+                                        <li
+                                            key={tour.tour_id}
+                                            className="p-3 hover:bg-gray-50"
+                                        >
+                                            <Link
+                                                href={`/tours/${tour.slug}`}
+                                                className="block"
+                                            >
+                                                <div className="font-medium text-cyan-600">
+                                                    {tour.tour_name}
+                                                </div>
+                                                <div className="flex justify-between mt-1 text-sm">
+                                                    <span>{tour.duration}</span>
+                                                    <span className="font-semibold">
+                                                        {new Intl.NumberFormat(
+                                                            "vi-VN",
                                                             {
-                                                                tour.category
-                                                                    .category_name
+                                                                style: "currency",
+                                                                currency: "VND",
                                                             }
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        {results.tours.length > 5 && (
-                                            <div className="mt-3 text-right">
-                                                <Link
-                                                    href="/search?tab=tours"
-                                                    className="text-cyan-600 hover:underline"
-                                                >
-                                                    Xem thêm tours →
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                                        ).format(
+                                                            parseFloat(tour.price)
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    Danh mục:{" "}
+                                                    {tour.category.category_name}
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="text-center py-8 border rounded-md">
+                                    <p className="font-medium">
+                                        Không tìm thấy tour nào
+                                    </p>
+                                    <p className="text-gray-500 mt-1">
+                                        Không có tour nào phù hợp với từ khóa "
+                                        {query}".
+                                    </p>
+                                </div>
+                            )}
+                        </TabsContent>
 
-                                {results.blogs.length > 0 && (
-                                    <div>
-                                        <h2 className="text-xl font-semibold mb-3">
-                                            Bài viết ({results.blogs.length})
-                                        </h2>
-                                        <ul className="border rounded-md divide-y">
-                                            {results.blogs.map((blog) => (
-                                                <li
-                                                    key={blog.id}
-                                                    className="p-3 hover:bg-gray-50"
-                                                >
-                                                    <Link
-                                                        href={`/blog/${blog.slug}`}
-                                                        className="block"
-                                                    >
-                                                        <div className="font-medium text-cyan-600">
-                                                            {blog.title}
-                                                        </div>
-                                                        <div className="text-sm mt-1 line-clamp-2">
-                                                            {blog.description}
-                                                        </div>
-                                                        <div className="flex justify-between mt-1 text-xs text-gray-500">
-                                                            <span>
-                                                                {blog.location}
-                                                            </span>
-                                                            <span>
-                                                                {new Date(
-                                                                    blog.created_at
-                                                                ).toLocaleDateString(
-                                                                    "vi-VN"
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        {results.blogs.length > 5 && (
-                                            <div className="mt-3 text-right">
-                                                <Link
-                                                    href="/search?tab=blogs"
-                                                    className="text-cyan-600 hover:underline"
-                                                >
-                                                    Xem thêm bài viết →
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="text-center py-8 border rounded-md">
-                                <p className="font-medium">
-                                    Không tìm thấy kết quả nào
-                                </p>
-                                <p className="text-gray-500 mt-1">
-                                    Không có kết quả nào phù hợp với từ khóa "
-                                    {query}". Vui lòng thử tìm kiếm với từ khóa
-                                    khác.
-                                </p>
-                            </div>
-                        )}
-                    </TabsContent>
-
-                    <TabsContent value="tours">
-                        {loading ? (
-                            <div>Đang tải...</div>
-                        ) : error ? (
-                            <div className="text-red-500">{error}</div>
-                        ) : results && results.tours.length > 0 ? (
-                            <ul className="border rounded-md divide-y">
-                                {results.tours.map((tour) => (
-                                    <li
-                                        key={tour.tour_id}
-                                        className="p-3 hover:bg-gray-50"
-                                    >
-                                        <Link
-                                            href={`/tours/${tour.slug}`}
-                                            className="block"
+                        <TabsContent value="blogs">
+                            {loading ? (
+                                <div>Đang tải...</div>
+                            ) : error ? (
+                                <div className="text-red-500">{error}</div>
+                            ) : results && results.blogs.length > 0 ? (
+                                <ul className="border rounded-md divide-y">
+                                    {results.blogs.map((blog) => (
+                                        <li
+                                            key={blog.id}
+                                            className="p-3 hover:bg-gray-50"
                                         >
-                                            <div className="font-medium text-cyan-600">
-                                                {tour.tour_name}
-                                            </div>
-                                            <div className="flex justify-between mt-1 text-sm">
-                                                <span>{tour.duration}</span>
-                                                <span className="font-semibold">
-                                                    {new Intl.NumberFormat(
-                                                        "vi-VN",
-                                                        {
-                                                            style: "currency",
-                                                            currency: "VND",
-                                                        }
-                                                    ).format(
-                                                        parseFloat(tour.price)
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className="text-xs text-gray-500 mt-1">
-                                                Danh mục:{" "}
-                                                {tour.category.category_name}
-                                            </div>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <div className="text-center py-8 border rounded-md">
-                                <p className="font-medium">
-                                    Không tìm thấy tour nào
-                                </p>
-                                <p className="text-gray-500 mt-1">
-                                    Không có tour nào phù hợp với từ khóa "
-                                    {query}".
-                                </p>
-                            </div>
-                        )}
-                    </TabsContent>
-
-                    <TabsContent value="blogs">
-                        {loading ? (
-                            <div>Đang tải...</div>
-                        ) : error ? (
-                            <div className="text-red-500">{error}</div>
-                        ) : results && results.blogs.length > 0 ? (
-                            <ul className="border rounded-md divide-y">
-                                {results.blogs.map((blog) => (
-                                    <li
-                                        key={blog.id}
-                                        className="p-3 hover:bg-gray-50"
-                                    >
-                                        <Link
-                                            href={`/blog/${blog.slug}`}
-                                            className="block"
-                                        >
-                                            <div className="font-medium text-cyan-600">
-                                                {blog.title}
-                                            </div>
-                                            <div className="text-sm mt-1 line-clamp-2">
-                                                {blog.description}
-                                            </div>
-                                            <div className="flex justify-between mt-1 text-xs text-gray-500">
-                                                <span>{blog.location}</span>
-                                                <span>
-                                                    {new Date(
-                                                        blog.created_at
-                                                    ).toLocaleDateString(
-                                                        "vi-VN"
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <div className="text-center py-8 border rounded-md">
-                                <p className="font-medium">
-                                    Không tìm thấy bài viết nào
-                                </p>
-                                <p className="text-gray-500 mt-1">
-                                    Không có bài viết nào phù hợp với từ khóa "
-                                    {query}".
-                                </p>
-                            </div>
-                        )}
-                    </TabsContent>
-                </Tabs>
-            )}
+                                            <Link
+                                                href={`/blog/${blog.slug}`}
+                                                className="block"
+                                            >
+                                                <div className="font-medium text-cyan-600">
+                                                    {blog.title}
+                                                </div>
+                                                <div className="text-sm mt-1 line-clamp-2">
+                                                    {blog.description}
+                                                </div>
+                                                <div className="flex justify-between mt-1 text-xs text-gray-500">
+                                                    <span>{blog.location}</span>
+                                                    <span>
+                                                        {new Date(
+                                                            blog.created_at
+                                                        ).toLocaleDateString(
+                                                            "vi-VN"
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="text-center py-8 border rounded-md">
+                                    <p className="font-medium">
+                                        Không tìm thấy bài viết nào
+                                    </p>
+                                    <p className="text-gray-500 mt-1">
+                                        Không có bài viết nào phù hợp với từ khóa "
+                                        {query}".
+                                    </p>
+                                </div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                )}
+            </div>
         </div>
     );
 }

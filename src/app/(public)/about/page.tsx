@@ -186,7 +186,7 @@ export default function AboutPage() {
                     </div>
                     <div className="text-center md:col-span-2 lg:col-span-1">
                         <Image
-                            src="/svg/social/iconVision_aboutus.png"
+                            src="/images/Tra.jpg"
                             width={400}
                             height={400}
                             alt="avata"

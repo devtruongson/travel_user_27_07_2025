@@ -1,101 +1,101 @@
 .banner {
-    background: url("/images/banner1-about.jpeg");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    position: relative;
+  background: url("/images/banner-tour.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
 }
 .banner::before {
-    content: "";
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.404);
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.404);
 }
 .mainTitle {
-    background: linear-gradient(
-        0deg,
-        rgba(140, 132, 83, 1) 0%,
-        rgba(255, 255, 255, 1) 52%,
-        rgba(255, 255, 255, 1) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+    0deg,
+    rgba(140, 132, 83, 1) 0%,
+    rgba(255, 255, 255, 1) 52%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .subTitle {
-    background: linear-gradient(
-        0deg,
-        rgb(3, 205, 255) 0%,
-        rgba(255, 255, 255, 1) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: "Pacifico", cursive;
+  background: linear-gradient(
+    0deg,
+    rgb(3, 205, 255) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: "Pacifico", cursive;
 }
 
 .serviceSection {
-    padding: 5rem 0;
+  padding: 5rem 0;
 }
 
 .serviceCard {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .serviceCard:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .serviceImage {
-    border-radius: 1rem;
-    overflow: hidden;
-    position: relative;
-    height: 300px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  height: 300px;
 }
 
 .serviceContent {
-    padding: 2rem 0;
+  padding: 2rem 0;
 }
 
 .serviceItems {
-    display: grid;
-    gap: 1rem;
-    margin: 1.5rem 0;
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
 }
 
 .serviceItem {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    transition: all 0.3s ease;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .serviceItem:hover {
-    background: white;
-    border-color: #0891b2;
-    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.1);
+  background: white;
+  border-color: #0891b2;
+  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.1);
 }
 
 @media (max-width: 768px) {
-    .serviceSection {
-        padding: 3rem 0;
-    }
+  .serviceSection {
+    padding: 3rem 0;
+  }
 
-    .serviceCard {
-        padding: 1.5rem;
-    }
+  .serviceCard {
+    padding: 1.5rem;
+  }
 
-    .serviceContent {
-        padding: 1.5rem 0;
-    }
+  .serviceContent {
+    padding: 1.5rem 0;
+  }
 }

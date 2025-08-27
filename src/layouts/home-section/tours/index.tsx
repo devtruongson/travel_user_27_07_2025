@@ -47,10 +47,10 @@ export default async function Tours() {
                 <div
                     className={`${styles.stickyBox} uppercase max-w-full lg:max-w-[400px] mb-8 lg:mb-0`}
                 >
-                    <h4 className="sub-title text-[#fff] text-sm md:text-base">
+                    <h4 className="font-[800] text-[21px] text-[#e8e8e8] text-sm md:text-base mb-4">
                         Danh sách Tours
                     </h4>
-                    <h2 className="font-[900] text-[#8e00fb] text-3xl md:text-4xl lg:text-[52px] leading-tight">
+                    <h2 className="font-[900] text-[#ffffff] text-3xl md:text-4xl lg:text-[52px] leading-tight">
                         Khám phá Việt Nam cùng VTravel
                     </h2>
                     <ButtonGlobal
@@ -68,9 +68,8 @@ export default async function Tours() {
                                     <TourCard
                                         key={index}
                                         tourId={tour?.tour_id}
-                                        imgUrl={`${
-                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                        }/${tour?.image || ""}`}
+                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                            }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}
@@ -93,9 +92,8 @@ export default async function Tours() {
                                     <TourCard
                                         key={index}
                                         tourId={tour?.tour_id}
-                                        imgUrl={`${
-                                            process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                        }/${tour?.image || ""}`}
+                                        imgUrl={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                            }/${tour?.image || ""}`}
                                         nameTour={tour.tour_name}
                                         // startAddress={tour.startAddress}
                                         time={tour?.duration || ""}

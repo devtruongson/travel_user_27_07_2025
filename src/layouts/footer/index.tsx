@@ -170,7 +170,7 @@ export default function Footer() {
                                     {loading
                                         ? "Đang tải..."
                                         : companyContact?.address ||
-                                          "Chưa có thông tin"}
+                                        "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -184,7 +184,7 @@ export default function Footer() {
                                     {loading
                                         ? "Đang tải..."
                                         : companyContact?.hotline ||
-                                          "Chưa có thông tin"}
+                                        "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -198,7 +198,7 @@ export default function Footer() {
                                     {loading
                                         ? "Đang tải..."
                                         : companyContact?.email ||
-                                          "Chưa có thông tin"}
+                                        "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -212,7 +212,7 @@ export default function Footer() {
                                     {loading
                                         ? "Đang tải..."
                                         : companyContact?.website ||
-                                          "Chưa có thông tin"}
+                                        "Chưa có thông tin"}
                                 </span>
                             </div>
                         </li>
@@ -224,29 +224,6 @@ export default function Footer() {
                     >
                         Đăng ký nhận thông báo
                     </h5>
-                    <p className="mb-4 md:mb-5 text-sm md:text-[18px] text-center lg:text-left">
-                        Chúng tôi sẽ cập nhật những ưu đãi tours mới nhất cho
-                        bạn.
-                    </p>
-                    <form action="#">
-                        <div className={`${styles.inputGroup}`}>
-                            <input
-                                className={`${styles.inputText}`}
-                                name="text"
-                                type="text"
-                                placeholder="Your Email"
-                            />
-                            <label
-                                className={`${styles.inputTextLabel}`}
-                                htmlFor="text"
-                            >
-                                Your Email
-                            </label>
-                            <button className="absolute cursor-pointer right-0 top-[50%] transform translate-y-[-50%]">
-                                <FaArrowRightLong size={20} />
-                            </button>
-                        </div>
-                    </form>
                     <div className="w-full h-[150px] md:h-[200px] mt-4 md:mt-6">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.483555045352!2d108.24559147575981!3d16.040377840208386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421778ce3d3481%3A0x33fad7e713c5f9d!2sTRAVEL%20BUDDY!5e0!3m2!1svi!2s!4v1748412098844!5m2!1svi!2s"

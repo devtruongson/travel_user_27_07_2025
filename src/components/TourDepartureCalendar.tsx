@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, DollarSign, Users, CloudCog } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { store } from '@/lib/redux/store';
+import { RootState, store } from '@/lib/redux/store';
 import { toast } from 'sonner';
 import AuthDialog from '@/app/(auth)/AuthDialog';
+import { useSelector } from 'react-redux';
 
 interface TourDeparture {
     departure_id: number;
@@ -87,30 +88,13 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         phone: ''
     });
 
+    const user = useSelector((state: RootState) => state.auth.user);
+
     // Kiểm tra đăng nhập
     const checkAuth = () => {
-        const token = store.getState().auth.accessToken;
-        if (!token) {
+        if (!user) {
             setShowForm(true);
             return false;
-        }
-        
-        // Kiểm tra token có hợp lệ không (có thể thêm logic kiểm tra JWT expiration)
-        try {
-            // Nếu token là JWT, có thể decode để kiểm tra expiration
-            if (token.split('.').length === 3) {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                if (payload.exp && payload.exp * 1000 < Date.now()) {
-                    // Token đã hết hạn
-                    localStorage.removeItem('token');
-                    sessionStorage.removeItem('token');
-                    setShowForm(true);
-                    return false;
-                }
-            }
-        } catch (error) {
-            console.error('Error checking token:', error);
-            // Nếu có lỗi khi kiểm tra token, vẫn cho phép tiếp tục
         }
         
         return true;
@@ -121,7 +105,6 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
         try {
             setLoading(true);
             const response = await API.get(`/tour-departures/tour/${tourId}`);
-            console.log("check", response.data);
             
             if (response.data.success) {
                 const departuresData = response.data.data || [];

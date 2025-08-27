@@ -6,6 +6,7 @@ import { API } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { store } from '@/lib/redux/store';
 import { toast } from 'sonner';
+import AuthDialog from '@/app/(auth)/AuthDialog';
 
 interface TourDeparture {
     departure_id: number;
@@ -90,8 +91,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
     const checkAuth = () => {
         const token = store.getState().auth.accessToken;
         if (!token) {
-            alert('❌ Vui lòng đăng nhập để đặt tour!');
-            router.push('/login');
+            setShowForm(true);
             return false;
         }
         
@@ -104,8 +104,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                     // Token đã hết hạn
                     localStorage.removeItem('token');
                     sessionStorage.removeItem('token');
-                    alert('❌ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-                    router.push('/login');
+                    setShowForm(true);
                     return false;
                 }
             }
@@ -433,20 +432,16 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                 case 'guide':
                 case 'hotel':
                 case 'motorbike':
-                    // Tính giá theo ngày cho các dịch vụ này
-                    return total + (service.price_per_day || service.price || 0);
+                    return total + (parseFloat(service.price_per_day.toFixed(0)) || parseFloat(service.price.toFixed(0)) || 0);
                 case 'bus':
-                    // Xe khách tính giá cố định
-                    return total + (service.price || 0);
+                    return total + (parseFloat(service.price.toFixed(0)) || 0);
                 default:
                     return total;
             }
         }, 0);
         
-        const subtotal = basePrice + servicesPrice;
+        const subtotal = parseFloat(basePrice.toFixed(0)) + parseFloat(servicesPrice.toFixed(0));
         const priceDiscount = promoDiscount.type === "fixed" ? promoDiscount.value : ( (((subtotal) / 100) * promoDiscount.value));
-
-        console.log("check promoDiscount 1`2: ", promoDiscount)
 
         return subtotal - priceDiscount;
     };
@@ -561,7 +556,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
 
                 // Nếu có payment_url, chuyển hướng đến trang thanh toán
                 if (response.data.payment_url) {
-                    window.location.href = response.data.payment_url;
+                   window.open(response.data.payment_url, '_blank');
                 }
             } else {
                 throw new Error(response.data.message || 'Đặt tour thất bại');
@@ -587,6 +582,8 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
     const formatPrice = (price: number) => {
         return `${(price / 1000).toFixed(0)}K`;
     };
+
+    const [showForm, setShowForm] = useState<boolean>(false);
 
     const getMonthName = (month: number) => {
         const months = [
@@ -805,6 +802,11 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                   
              </div>
 
+             <AuthDialog
+                                        open={showForm}
+                                        onOpenChange={setShowForm}
+                                    />
+
             <div className="flex">
                                  {/* Left Sidebar - Month Selection */}
                 {/* Main Calendar */}
@@ -993,7 +995,7 @@ const TourDepartureCalendar: React.FC<TourDepartureCalendarProps> = ({
                                                   <p className="text-xs text-yellow-700">
                                                       💡 Bạn cần đăng nhập để đặt tour. 
                                                       <button 
-                                                          onClick={() => router.push('/login')}
+                                                          onClick={() => setShowForm(true)}
                                                           className="ml-1 text-blue-600 underline hover:text-blue-800"
                                                       >
                                                           Đăng nhập ngay

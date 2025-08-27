@@ -6,7 +6,7 @@ import BannerPage from "@/layouts/banner";
 import { BACKEND } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./style.module.css";
 
 // Định nghĩa kiểu dữ liệu cho blog
@@ -27,14 +27,33 @@ export default function BlogPage() {
     const [latestBlogs, setLatestBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [lastPage, setLastPage] = useState<number>(1);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // Lấy blog nổi bật (view_count cao nhất)
+        const fetchFeaturedBlog = async () => {
+            try {
+                const res = await BACKEND.get("/blogs/featured");
+                if (res.data && res.data.success && res.data.data) {
+                    setFeaturedBlog(res.data.data);
+                } else {
+                    setFeaturedBlog(null);
+                }
+            } catch (err) {
+                setFeaturedBlog(null);
+            }
+        };
+
+        // Lấy danh sách blog phân trang
         const fetchBlogs = async () => {
             try {
                 setLoading(true);
-
-                // Gọi API để lấy tất cả blogs
-                const response = await BACKEND.get(`/blogs`);
+                setError(null);
+                const response = await BACKEND.get(`/blogs`, {
+                    params: { page: currentPage, limit: 10 },
+                });
 
                 if (
                     response.data &&
@@ -42,18 +61,12 @@ export default function BlogPage() {
                     response.data.data.data
                 ) {
                     const blogs = response.data.data.data;
+                    const meta = response.data.data;
+                    setLastPage(meta?.last_page || 1);
 
-                    // Tìm blog có lượt view cao nhất để làm featured (blog nổi bật)
-                    if (blogs.length > 0) {
-                        const featuredBlog = blogs.reduce((max, blog) =>
-                            (blog.view_count || 0) > (max.view_count || 0) ? blog : max
-                        );
-                        setFeaturedBlog(featuredBlog);
-
-                        // Lấy tất cả blog còn lại (bỏ qua blog featured)
-                        const remainingBlogs = blogs.filter(blog => blog.id !== featuredBlog.id);
-                        setLatestBlogs(remainingBlogs);
-                    }
+                    setLatestBlogs(blogs);
+                } else {
+                    setLatestBlogs([]);
                 }
             } catch (err) {
                 console.error("Error fetching blogs:", err);
@@ -63,14 +76,44 @@ export default function BlogPage() {
             }
         };
 
+        fetchFeaturedBlog();
         fetchBlogs();
-    }, []);
+    }, [currentPage]);
 
     // Format date function
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     };
+
+    // Phân trang
+    const renderPagination = () => (
+        <div className="flex justify-center items-center gap-2 py-6">
+            <button
+                className="px-3 py-1 rounded border bg-white text-gray-700 disabled:opacity-50"
+                disabled={currentPage === 1}
+                onClick={() => {
+                    setCurrentPage((p) => Math.max(1, p - 1));
+                    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+                }}
+            >
+                Trang trước
+            </button>
+            <span className="px-2 text-sm">
+                Trang {currentPage} / {lastPage}
+            </span>
+            <button
+                className="px-3 py-1 rounded border bg-white text-gray-700 disabled:opacity-50"
+                disabled={currentPage === lastPage}
+                onClick={() => {
+                    setCurrentPage((p) => Math.min(lastPage, p + 1));
+                    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+                }}
+            >
+                Trang sau
+            </button>
+        </div>
+    );
 
     return (
         <>
@@ -96,22 +139,23 @@ export default function BlogPage() {
                 />
             </BannerPage>
 
-            <section id="blog" className="container pb-40 pt-28">
+            <section
+                id="blog"
+                className="container pb-40 pt-28"
+                ref={scrollRef}
+            >
                 <style jsx>{`
                     .custom-scrollbar::-webkit-scrollbar {
                         width: 6px;
                     }
-                    
                     .custom-scrollbar::-webkit-scrollbar-track {
                         background: #f1f1f1;
                         border-radius: 10px;
                     }
-                    
                     .custom-scrollbar::-webkit-scrollbar-thumb {
                         background: #c1c1c1;
                         border-radius: 10px;
                     }
-                    
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                         background: #a8a8a8;
                     }
@@ -154,7 +198,10 @@ export default function BlogPage() {
                                                         {featuredBlog.location}
                                                     </span>
                                                     <span className="inline-flex px-4 py-1 text-[16px] font-bold bg-yellow-400 rounded-[7px] text-yellow-900">
-                                                        👑 {featuredBlog.view_count || 0} lượt xem
+                                                        👑{" "}
+                                                        {featuredBlog.view_count ||
+                                                            0}{" "}
+                                                        lượt xem
                                                     </span>
                                                 </div>
                                                 <h2 className="text-2xl md:text-[30px] font-extrabold text-black hover:text-blue-600 transition-colors">
@@ -183,9 +230,9 @@ export default function BlogPage() {
                                 {/* All Blogs */}
                                 <div>
                                     <h1 className="text-2xl md:text-3xl font-extrabold text-black mt-5 mb-3">
-                                        Tất cả blog ({latestBlogs.length})
+                                        Tất cả blog
                                     </h1>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-h-[1500px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 overflow-y-auto pr-2 custom-scrollbar">
                                         {latestBlogs.map((blog) => (
                                             <div key={blog.id} className="mb-3">
                                                 <Link
@@ -225,6 +272,7 @@ export default function BlogPage() {
                                             </div>
                                         ))}
                                     </div>
+                                    {renderPagination()}
                                 </div>
                             </div>
                         </div>

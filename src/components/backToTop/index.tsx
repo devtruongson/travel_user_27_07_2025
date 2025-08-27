@@ -12,7 +12,7 @@ export default function BackToTop() {
     });
   };
   return (
-    <div className="fixed z-15 bottom-[70px] left-[25px]">
+    <div className="fixed z-15 bottom-[40px] right-[10px]">
       <CustomButton className={`${styles.button}`} onClick={handleBackToTop}>
         <div className={`${styles.buttonBox}`}>
           <span className={`${styles.buttonElem}`}>

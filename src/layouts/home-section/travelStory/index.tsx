@@ -127,7 +127,7 @@ export default function TravelStory() {
                                 </div>
                             </li>
                         </ul>
-                        <ButtonGlobal text="Xem thêm" className="mt-10" />
+                        <ButtonGlobal text="Xem thêm" className="mt-10" asLink href="/blog" />
                     </div>
                 </div>
                 <div className="py-36 absolute z-10 bottom-0 left-0 right-0 transform translate-y-[50%]">

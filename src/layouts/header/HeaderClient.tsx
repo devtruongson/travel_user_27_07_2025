@@ -75,7 +75,7 @@ export default function HeaderClient({ navigation }: Props) {
         console.log('🔄 Logout button clicked!');
         console.log('Current user:', user);
         console.log('Current auth state:', isAuthenticated);
-        
+
         try {
             dispatch(logout());
             console.log('✅ Logout dispatched successfully');
@@ -124,9 +124,8 @@ export default function HeaderClient({ navigation }: Props) {
 
     return (
         <header
-            className={`${styles.header} ${
-                isSticky ? styles.headerSticky : ""
-            } top-0 left-0 right-0 z-20 transition-colors duration-300`}
+            className={`${styles.header} ${isSticky ? styles.headerSticky : ""
+                } top-0 left-0 right-0 z-20 transition-colors duration-300`}
         >
             <Disclosure as="nav">
                 {({ open }) => (
@@ -141,17 +140,16 @@ export default function HeaderClient({ navigation }: Props) {
                                 </div>
                                 <div className="flex flex-1 items-center justify-center lg:justify-between">
                                     <div className="flex shrink-0 items-center">
-                                        <Image
-                                            onClick={() => {
-                                                window.location.href = "/";
-                                            }}
-                                            alt="Logo"
-                                            src="/images/logo.png"
-                                            className={styles.logo}
-                                            width={1000}
-                                            height={700}
-                                            quality={100}
-                                        />
+                                        <Link href="/">
+                                            <Image
+                                                alt="Logo"
+                                                src="/images/logo.png"
+                                                className={styles.logo}
+                                                width={1000}
+                                                height={700}
+                                                quality={100}
+                                            />
+                                        </Link>
                                     </div>
                                     <div className="hidden lg:ml-6 lg:block">
                                         <div className="flex space-x-4">
@@ -183,19 +181,18 @@ export default function HeaderClient({ navigation }: Props) {
                                             className="p-2 text-gray-500 hover:text-cyan-600 transition-colors duration-200"
                                         >
                                             {
-                                                showSearch? <span>
+                                                showSearch ? <span>
                                                     <XMarkIcon className="h-6 w-6" />
                                                 </span> :
-                                                <span>
-                                                    <MagnifyingGlassIcon className="h-6 w-6" />
-                                                </span>
+                                                    <span>
+                                                        <MagnifyingGlassIcon className="h-6 w-6" />
+                                                    </span>
                                             }
                                         </button>
-                                        
+
                                         {/* Animated Search Input */}
-                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                                            showSearch ? 'w-64 opacity-100' : 'w-0 opacity-0'
-                                        }`}>
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showSearch ? 'w-64 opacity-100' : 'w-0 opacity-0'
+                                            }`}>
                                             <form
                                                 onSubmit={handleSearch}
                                                 className="flex items-center"

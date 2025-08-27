@@ -57,7 +57,7 @@ export default function Intro() {
                                 Phủ sóng
                             </p>
                             <div className="text-[var(--color-primary)] font-bold text-[35px] md:text-[45px] lg:text-[55px]">
-                                <Counter targetNumber={63} duration={2000} />
+                                <Counter targetNumber={34} duration={2000} />
                                 <span className="text-[20px] md:text-[25px] lg:text-[30px] inline-block ml-1">
                                     Tỉnh thành
                                 </span>

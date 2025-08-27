@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Cập nhật interface theo cấu trúc dữ liệu mới
 interface Tour {
     tour_id: number;
     tour_name: string;
@@ -122,8 +121,8 @@ export default function SearchPage() {
                         ) : error ? (
                             <div className="text-red-500">{error}</div>
                         ) : results &&
-                          (results.tours.length > 0 ||
-                              results.blogs.length > 0) ? (
+                            (results.tours.length > 0 ||
+                                results.blogs.length > 0) ? (
                             <>
                                 {results.tours.length > 0 && (
                                     <div className="mb-8">

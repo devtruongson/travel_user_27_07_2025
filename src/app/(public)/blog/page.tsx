@@ -43,14 +43,16 @@ export default function BlogPage() {
                 ) {
                     const blogs = response.data.data.data;
 
-                    // Lấy blog đặc sắc nhất (có thể là blog mới nhất hoặc có lượt xem cao nhất)
+                    // Tìm blog có lượt view cao nhất để làm featured (blog nổi bật)
                     if (blogs.length > 0) {
-                        setFeaturedBlog(blogs[0]);
-                    }
+                        const featuredBlog = blogs.reduce((max, blog) =>
+                            (blog.view_count || 0) > (max.view_count || 0) ? blog : max
+                        );
+                        setFeaturedBlog(featuredBlog);
 
-                    // Lấy các blog mới nhất (bỏ qua blog đầu tiên đã dùng làm featured)
-                    if (blogs.length > 1) {
-                        setLatestBlogs(blogs.slice(1, 5)); // Lấy 4 blog tiếp theo
+                        // Lấy tất cả blog còn lại (bỏ qua blog featured)
+                        const remainingBlogs = blogs.filter(blog => blog.id !== featuredBlog.id);
+                        setLatestBlogs(remainingBlogs);
                     }
                 }
             } catch (err) {
@@ -95,6 +97,25 @@ export default function BlogPage() {
             </BannerPage>
 
             <section id="blog" className="container pb-40 pt-28">
+                <style jsx>{`
+                    .custom-scrollbar::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    
+                    .custom-scrollbar::-webkit-scrollbar-track {
+                        background: #f1f1f1;
+                        border-radius: 10px;
+                    }
+                    
+                    .custom-scrollbar::-webkit-scrollbar-thumb {
+                        background: #c1c1c1;
+                        border-radius: 10px;
+                    }
+                    
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                        background: #a8a8a8;
+                    }
+                `}</style>
                 {loading ? (
                     <div className="flex justify-center items-center min-h-[400px]">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -110,7 +131,7 @@ export default function BlogPage() {
                                 {/* Featured Blog */}
                                 <div>
                                     <h1 className="text-2xl md:text-3xl font-extrabold text-black mt-5 mb-3">
-                                        Điểm nổi bật
+                                        🏆 Blog nổi bật (Lượt xem cao nhất)
                                     </h1>
                                     {featuredBlog && (
                                         <>
@@ -128,9 +149,12 @@ export default function BlogPage() {
                                                     alt={featuredBlog.title}
                                                     className="w-full h-[400px] rounded-xl object-cover"
                                                 />
-                                                <div className="my-5">
-                                                    <span className="inline-flex px-7 py-1 text-[18px] font-bold bg-gray-200 rounded-[7px] text-blue-500 mr-3">
+                                                <div className="my-5 flex items-center gap-3">
+                                                    <span className="inline-flex px-7 py-1 text-[18px] font-bold bg-gray-200 rounded-[7px] text-blue-500">
                                                         {featuredBlog.location}
+                                                    </span>
+                                                    <span className="inline-flex px-4 py-1 text-[16px] font-bold bg-yellow-400 rounded-[7px] text-yellow-900">
+                                                        👑 {featuredBlog.view_count || 0} lượt xem
                                                     </span>
                                                 </div>
                                                 <h2 className="text-2xl md:text-[30px] font-extrabold text-black hover:text-blue-600 transition-colors">
@@ -156,12 +180,12 @@ export default function BlogPage() {
                                     )}
                                 </div>
 
-                                {/* Latest Blogs */}
+                                {/* All Blogs */}
                                 <div>
                                     <h1 className="text-2xl md:text-3xl font-extrabold text-black mt-5 mb-3">
-                                        Mới nhất
+                                        Tất cả blog ({latestBlogs.length})
                                     </h1>
-                                    <div className="grid grid-flow-row-dense grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-h-[1500px] overflow-y-auto pr-2 custom-scrollbar">
                                         {latestBlogs.map((blog) => (
                                             <div key={blog.id} className="mb-3">
                                                 <Link

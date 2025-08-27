@@ -79,7 +79,7 @@ export default async function TourDetailPage({
             .filter(
                 (t) =>
                     t.category?.category_name ===
-                        tour.category?.category_name &&
+                    tour.category?.category_name &&
                     t.tour_id !== tour.tour_id
             )
             .slice(0, 3);
@@ -339,10 +339,7 @@ export default async function TourDetailPage({
                                     <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                                         📅 Chọn ngày khởi hành
                                     </h3>
-                                    
-                                    {/* Promo Code Section */}
                                     <PromoCodeSection tourId={res?.data?.tour_id} />
-                                    
                                     <TourDepartureWrapper tourId={res?.data?.tour_id} />
                                 </div>
                             </div>
@@ -386,7 +383,7 @@ export default async function TourDetailPage({
                                                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-red-600">
                                                     {parseInt(
                                                         rt.discount_price ||
-                                                            rt.price
+                                                        rt.price
                                                     ).toLocaleString()}
                                                     ₫
                                                 </div>

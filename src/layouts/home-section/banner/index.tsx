@@ -1,15 +1,11 @@
 import styles from './style.module.css';
-import OverlayBanner from './overlayBanner';
-import TitleBanner from './titleBanner';
 import ContentBanner from './contentBanner';
 import ScrollAnimation from './scrollAnimation';
-import ScrollBlocker from '@/components/scrollBlocker';
 
 export default function Banner() {
 
   return (
     <>
-      {/* <ScrollBlocker /> */}
       <ScrollAnimation >
         <section className={styles.banner}>
           <div className={styles.wrapper}>
@@ -23,9 +19,7 @@ export default function Banner() {
               className={styles.iframe}
             ></iframe>
           </div>
-          {/* <TitleBanner title='KHÁM PHÁ VIỆT NAM' /> */}
           <ContentBanner />
-          {/* <OverlayBanner /> */}
         </section>
       </ScrollAnimation>
       <div className={`${styles.spacing}`}></div>

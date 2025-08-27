@@ -87,7 +87,7 @@ export default function ContactPage() {
     return (
         <div>
             <BannerPage classNameSection={`${style.banner} h-screen w-full`}>
-                <div className="text-center pt-60 relative z-2">
+                <div className="text-center relative z-2 w-full h-full flex flex-col justify-center items-center">
                     <MotionFade animation="fadeInBottomToTop">
                         <h3
                             className={`${styles.subTitle} font-[700] text-[120px] italic h-auto mx-auto`}

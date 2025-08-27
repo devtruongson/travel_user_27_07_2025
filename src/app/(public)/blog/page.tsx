@@ -75,7 +75,7 @@ export default function BlogPage() {
     return (
         <>
             <BannerPage classNameSection={`${styles.banner} h-screen w-full`}>
-                <div className="text-center pt-60 relative z-2">
+                <div className="text-center w-full h-full flex relative z-2 justify-center items-center">
                     <MotionFade animation="fadeInBottomToTop">
                         <h3
                             className={`${styles.subTitle} font-[700] text-[120px] italic h-auto mx-auto`}
